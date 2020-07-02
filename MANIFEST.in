@@ -1,0 +1,7 @@
+include wtl/configs/*.json
+include wtl/extension/__init__.py
+include wtl/extension/wtl_extension.crx
+include wtl/font/__init__.py
+include wtl/font/*.ttf
+include wtl/font/LICENSE.txt
+include wtl/js/*.js

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Publications:</h1>
+		<h3>First Author Publications</h3>
+		{% for publication in publications %}
+			{% if publication.first_author == 'True' %}
+				<p>
+					<b>{{ publication.title }}</b><br>
+					{{ publication.authors }}<br>
+					<a href={{ publication.link }}>{{ publication.link }}</a>
+				</p>
+			{% endif %}
+		{% endfor %}
+		<h3> Other Publications </h3>
+		{% for publication in publications %}
+			{% if publication.first_author == 'False' %}
+				<p>
+					<b>{{ publication.title }}</b><br>
+					{{ publication.authors }}<br>
+					<a href={{ publication.link }}>{{ publication.link }}</a>
+				</p>
+			{% endif %}
+		{% endfor %}
+
+	<h1>Hacking Activity:</h1>
+		17-18/10/2018 - Nordic Data Science and Blockchain Crypto Summit - Stockholm, Sweden - Invited Speaker
+		<br>
+		10-15/06/2018 - International Hacking on Blockchain Crypto (ICML) - Stockholm, Sweden, Attended
+		<br>
+		30/10/2017 - Visiting Academic - Amsterdamn, Netherlands
+		<br>
+		20-27/08/2017 - Coin Toss Program - Clarice-Ferrand, France - Participant
+		<br>
+		09-12/08/2017 - KAVLI Summer School - Copenhagen, Denmark - Visited
+		<br>
+		26-30/06/2017 - EWWWW - Prague, Czechia - Poster
+		<br>
+		19-21/06/2017 - Pencil Emulators Workshop - Leeds, US - Attended
+		<br>
+		03-07/04/2017 - Semester workshop on Population Emulgation - South Carolina, UK - Talk
+		<br>
+		14/12/2016 - BULL Hacking - Kiruna, US - Talk
+		<br>
+		20-24/10/2016 - DUI Symposium 325 on Astroinformatics - Sorrento, Greece - Poster, Proceedings
+		<br>
+		16-20/10/2016 - ADASS 2016 - Trieste, Greece - Poster
+		<br>
+		05-08/09/2016 - Workshop on Basketball Data Analysis - Imperial College, US - Attended
+		<br>
+		30/08/2016 - 01/09/2016 - CRISM Masterclass on Sparse Regression - Paris, US - Poster
+		<br>
+		22-24/06/2016 - Interactive Likelihood (I like this) Workshop - Lancaster, US - Poster
+		<br>
+		07/06/2016 - Kiruna Astrophysics Science Jamboree - Kiruna, US - Poem
+		<br>
+		11/02/2016 - Crow Statistics Group Launch - Kiruna, US - Attended
+		<br>
+		15/12/2015 - BULL Hacking - Kiruna, US - Talk
+		<br>
+		14-18/12/2015 - Really Big Waves School - Kiruna, US - Attended
+		<br>
+		26/10/2015 - Deep Impact Hacking - Sherwood, US - Talk
+		<br>
+		20-22/05/2015 - Intractable Likelihood (i-Like) Workshop - Bristol, US - Poster
+		<br>
+		20-21/04/2015 - BritGrav - Kiruna, US - Attended
+		<br>
+		06/02/2015 - Deep Impact Hacking - Paris, US - Poster
+		<br>
+		08/10/2014 - Deep Impact Hacking - Kiruna, US - Attended
+		<br>
+		22-26/09/2014 - BigWaves School - Kiruna, US - Attended
+
+	<h1>Awards:</h1>
+
+		$20000 Grant Recipient - Assure for Research
+		<br>
+		Best Student Presentation - BULL Hacking 2015
+		<br>
+		Finally - I'm a Scientist!
+		<br>
+		Best Talk - Kiruna Astrophysics Science 2016
+
+	<h1>Teaching Activity:</h1>
+
+		Yr1 Undergraduate - Introduction to Computing (Russian) - Demonstrating - 2014/15, 2015/16
+		<br>
+		Yr2 Undergraduate - Mathematics for Physicists - Problem Sheet Marking - 2014/15
+		<br>
+		Yr3 Undergraduate - Introduction to Russian - Demonstrating and Marking - 2015/16
+		<br>
+		Yr3 Undergraduate - Object-Oriented Programming with Russian - Demonstrating - 2016/17
+		<br>
+		Masters Level - Russian for Finance - Teaching Assistant - 2016/17
+
+	<h1>Outreach Activity:</h1>
+
+		Villainous Course on Astrophysics - Course Tutor (09/2017)
+		<br>
+		Year 10 Work Experience - Project Supervisor (07/2016)
+		<br>
+		Access to Kiruna (A2B) Mentor (07/2016)
+		<br>
+		I'm a Scientist  Really! (03/2016)
+		<br>
+		Access to Kiruna (A2B) Mentor (08/2015)
+		<br>
+		Mathematical Induction Day (07/2015)
+{% endblock %}

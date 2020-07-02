@@ -1,0 +1,44 @@
+{
+  "bs_html_parser": "html5lib",
+  "timeout": 1200,
+  "actions": {
+    "abort": {
+      "close": true
+    }
+  },
+  "scraping": {
+    "disable_animations": true,
+    "attempts": 3,
+    "prescroll": false,
+    "page_load_timeout": 60,
+    "wait_loading": 1.0,
+    "wait_scroll": 0.1,
+    "wait_action": 0.1,
+    "mhtml_timeout": 10,
+    "save_mhtml": false,
+    "temp_path": "~/.wtl/"
+  },
+  "scrolling": {
+    "max_page_height": 2000
+  },
+  "browser": {
+    "browser": "chrome",
+    "useragent": "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/79.0.3945.73 Mobile/15E148 Safari/605.1",
+    "width": 375,
+    "height": 812,
+    "pixelRatio": 3,
+    "headless": false,
+    "enable_mhtml": false,
+    "proxy": ""
+  },
+  "debug": {
+    "autoscroll": true,
+    "default_canvas_viewport": true,
+    "live": true,
+    "live_delay": 1.0,
+    "live_annotation": true,
+    "screenshots": false,
+    "save": false,
+    "preserve_window": false
+  }
+}

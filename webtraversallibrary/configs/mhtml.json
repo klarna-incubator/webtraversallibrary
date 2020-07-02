@@ -1,0 +1,8 @@
+{
+    "scraping": {
+        "save_mhtml": true
+    },
+    "browser": {
+        "enable_mhtml": true
+    }
+}

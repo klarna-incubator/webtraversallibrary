@@ -1,0 +1,11 @@
+Croissant toffee bear claw cake lollipop icing. Sweet chocolate bar cake. Fruitcake sweet I love fruitcake chocolate marshmallow pudding sugar plum candy. Macaroon I love jelly beans I love. Candy powder cookie. Cookie candy tootsie roll toffee. Soufflé donut bonbon chocolate bar. Jelly-o topping marzipan macaroon chupa chups jujubes chocolate bar chupa chups danish. Jelly beans sweet roll marzipan pie chocolate cake gummi bears. I love chupa chups I love caramels macaroon. Icing soufflé jelly-o soufflé I love candy I love candy canes sweet. I love candy canes cotton candy fruitcake jelly-o cheesecake dessert.
+
+$$ P(y_p|y_t) = \frac{P(y_p,y_t)}{P(y_t)} $$
+
+Tart bonbon I love. Gummi bears ice cream cupcake sweet roll dragée cake sweet pastry. Candy canes wafer cake icing. Toffee oat cake apple pie oat cake I love bonbon cotton candy jelly-o gummies. Marshmallow I love wafer. Bonbon ice cream sweet sweet croissant tootsie roll sweet roll soufflé. Sweet jelly danish apple pie biscuit sweet cheesecake cupcake. Jelly gummies I love soufflé. Brownie bonbon lollipop candy macaroon. Donut sweet roll apple pie donut chupa chups cheesecake. Caramels bear claw lollipop carrot cake. Tart lemon drops sugar plum topping macaroon chocolate jelly beans sesame snaps.
+
+$$ P(y_p|y_t) \propto P(y_p,y_t) \propto \exp\left[-\frac{1}{2} \left(\begin{array}{c} y_t \\ y_p \end{array}\right)^T\Sigma^{-1}\left(\begin{array}{c} y_t \\ y_p \end{array}\right)\right] $$
+
+Bonbon topping candy canes I love danish chocolate tiramisu pudding caramels. Brownie biscuit wafer cookie gummi bears icing jelly-o. Jelly cake bear claw lemon drops chocolate bear claw halvah donut. Oat cake jujubes I love. Pastry pudding tiramisu I love muffin topping chocolate bar powder. Jujubes oat cake danish pudding fruitcake oat cake gingerbread pie tiramisu. Sweet roll cake sesame snaps tiramisu dragée gummies sugar plum muffin. Chupa chups bear claw chocolate cake bear claw I love jelly-o sugar plum. Powder I love I love candy canes. Candy canes chocolate bar icing powder I love candy canes cookie. Pie fruitcake tiramisu powder. I love chocolate apple pie jelly-o. Fruitcake pudding danish.
+
+$$ \Sigma = \left(\begin{array}{cc} T & C^T \\\\ C & P \end{array}\right) $$

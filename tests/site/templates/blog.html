@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<script type="text/javascript" async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+		{% for blogPost in blogPosts %}
+			<h2><a href=/blog/{{ blogPost.content_file[:-3] }}>{{ blogPost.title }}</a></h2>
+			<h4>{{ blogPost.date }} - {{ blogPost.author }} </h4>
+			{{ blogPost.content|safe }}
+			<hr>
+			<hr>
+		{% endfor %}
+{% endblock %}

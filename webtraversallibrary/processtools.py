@@ -1,0 +1,77 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+
+#   http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+"""
+Module collecting helper functions for common processing tasks, such as muting stdout within a context.
+"""
+
+import logging
+import signal
+
+logger = logging.getLogger("wtl")
+
+
+class cached_property:
+    """
+    Decorator that caches a property return value and will return it on later calls.
+    Adapted from The Python Cookbok, 2nd edition.
+
+    .. note::
+        If you want to map different arguments to values, use `functools.lru_cache`!
+    """
+
+    def __init__(self, method):
+        self.method = method
+        self.name = method.__name__
+        self.__doc__ = method.__doc__
+
+    def __get__(self, inst, cls):
+        if inst is None:
+            return self
+        result = self.method(inst)
+        object.__setattr__(inst, self.name, result)
+        return result
+
+
+class TimeoutContext:
+    """
+    Uses :mod:`signal` to raise TimeoutError within the block, if execution went over a specified timeout.
+    """
+
+    def __init__(self, n_seconds, error_class=TimeoutError):
+        self.n_seconds = n_seconds
+        self.error_cls = error_class
+
+    def __enter__(self):
+        if self.n_seconds > 0:
+            signal.signal(signal.SIGALRM, self.raise_error)
+            signal.alarm(self.n_seconds)
+            logger.debug(f"TimeoutContext: Operation timeout is set to {self.n_seconds} sec.")
+
+    def __exit__(self, *args, **kwargs):
+        # Cancel the alarm
+        if self.n_seconds > 0:
+            signal.signal(signal.SIGALRM, signal.SIG_DFL)
+            time_left = signal.alarm(0)
+            if time_left > 0:
+                logger.debug(f"TimeoutContext: Operation finished without triggering the alarm ({time_left} sec. left)")
+            else:
+                logger.debug("TimeoutContext: Operation was interrupted by the timeout")
+
+    def raise_error(self, signal_num, _):
+        assert signal_num == signal.SIGALRM
+        raise self.error_cls(f"Operation timed out after {self.n_seconds} sec.")

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<script type="text/javascript" async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+		<h2>{{ post.title }}</h2>
+		<h4>{{ post.date }} - {{ post.author }} </h4>
+		{{ post.content|safe }}
+{% endblock %}

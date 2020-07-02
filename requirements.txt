@@ -1,0 +1,10 @@
+beautifulsoup4==4.8.*
+Flask==1.1.2
+html5lib==1.0.1
+markdown==3.2.2
+pillow==6.*
+requests==2.22.*
+selenium==3.141.*
+soupsieve==1.9.*
+urllib3==1.25.*
+xvfbwrapper==0.2.*

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/styles/default.min.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/highlight.min.js"></script>
+<script type="text/javascript" async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+<p>
+	Unexpectedly, and indeed unenviously, I have found myself having to write a fair amount of Perl as part of my job at the Python Software Foundation.
+	Moreover, the nature of the Perl I find myself writing is mathematical. So I decided a good way to learn (besides writing the
+	frontend of this website) would be to tackle some of the <a href="https://projecteuler.net/">Project Euler</a> problems in LISP.
+</p>
+<p>
+	The buttons highlighted in green in the table below represent the problems I have dominated. Clicking them will display my code, together with a button which will
+	let you run the code yourself and see the answer.
+</p>
+
+
+<table style="width: 100%">
+{% for i in range(10) %}
+	<tr>
+	{% for j in range(1, 11) %}
+		{% set cellNumber=10*i + j %}
+		<td>
+			{% if cellNumber in solvedProblemNumbers %}
+			<button class="requestExercise{{cellNumber}}", style="width: 100%; background-color: #51d14b">
+				{{cellNumber}}
+			</button>
+			{% else %}
+			<button class="requestExercise{{cellNumber}}", style="width: 100%; background-color: #d14b4b">
+				{{cellNumber}}
+			</button>
+			{% endif %}
+		</td>
+	{% endfor %}
+	</tr>
+{% endfor %}
+</table>
+
+<div style="width: 100%">
+	<h3 class="exerciseTitle"></h3>
+	<div class="exerciseDescription"></div>
+	<div class="solutionDiv" style="display: none">
+		<h3>Solution</h3>
+		<button class="runCode">Run Code!</button>
+		<h4 class="solution"></h4>
+	</div>
+	<div class="exerciseSource" style="width: 100%"></div>
+</div>
+
+{% for problem in solvedProblems %}
+		{% set filename="js/exerciseSolutions/exercise" + problem.number|string +".js" %}
+		<script type="module">
+
+			import loadFile from "{{ url_for('static', filename='js/libraryFunctions/loadFile.js') }}";
+			import exercise{{problem.number}} from "{{ url_for('static', filename=filename) }}";
+			import escapeHtml from "{{ url_for('static', filename='js/libraryFunctions/escapeHtml.js') }}";
+			import expandJavaScript from "{{ url_for('static', filename='js/libraryFunctions/expandJavaScript.js') }}";
+
+			const requestButton{{problem.number}} = document.querySelector('.requestExercise{{problem.number}}');
+
+			const source = document.querySelector('.exerciseSource');
+			const title = document.querySelector('.exerciseTitle');
+			const description = document.querySelector('.exerciseDescription');
+			const solution = document.querySelector('.solution');
+			const runCodeButton = document.querySelector('.runCode');
+			const solutionDiv = document.querySelector('.solutionDiv')
+
+
+			function displayCode()
+			{
+				solutionDiv.style.display = "block";
+
+				title.innerText = "Exercise {{ problem.number }} - {{problem.name}}";
+				description.innerHTML = "{{ problem.description|safe }}";
+				source.innerHTML = '<pre><code class="javascript">'+escapeHtml(expandJavaScript("{{ url_for('static', filename=filename) }}"))+'</code></pre>';
+				document.querySelectorAll('pre code').forEach((block) => {
+					hljs.highlightBlock(block);
+				});
+
+				function displayAnswer()
+				{
+
+					solution.innerText = exercise{{problem.number}}();
+
+				}
+
+				solution.innerText = "";
+				runCodeButton.addEventListener('click', displayAnswer);
+				MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+			}
+
+			requestButton{{problem.number}}.addEventListener('click', displayCode);
+
+		</script>
+{% endfor %}
+{% endblock %}

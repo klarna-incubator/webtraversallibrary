@@ -1,0 +1,6 @@
+{
+  "scraping": {
+    "wait_loading": 0.05,
+    "wait_scroll": 0.05
+  }
+}

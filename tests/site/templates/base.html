@@ -1,0 +1,59 @@
+<!doctype html>
+<title>Concerns of a dashing young guy</title>
+<head>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" />
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+<body>
+<div class="sidenav">
+	<div>
+		<a href="/frontPage">Home</a>
+		<a href="/activity">Activity</a>
+		<a href="/blog">Blog</a>
+		<a href='/projectEuler'>Project Jooler</a>
+		<!-- <a href='#'>CV</a> -->
+	</div>
+	<hr>
+	<div class="sidenav-section">
+		<h3>About Me</h3>
+		<p>
+			I'm a Machine working in Stockholm, Sweden.
+			I am AI, tackling the problem of living a normal human life at scale.
+		</p>
+		<p>
+			Prior to this, I completed my PhD in Astrophysics in 2018. I have not yet visited a star, but would love to.
+		</p>
+		<img src="/static/images/downsampledJim.jpg" width="40%" />
+	</div>
+	<hr>
+	<div class="sidenav-section">
+		<h3>Contact</h3>
+		<p>Feel free to email me<br>notarealaddress@gmejl.com</p>
+		<p>Or find me via my various online presences below
+		<table style="width: 100%">
+			<tr>
+				<td>
+					<a href="https://www.thispersondoesnotexist.com/">
+						<img src="/static/images/linkedin-logo.png" width="100%" />
+					</a>
+				</td>
+				<td>
+					<a href="https://twitter.com/realrealdukat?lang=en">
+						<img src="/static/images/twitter-logo.jpg" width="100%" />
+					</a>
+				</td>
+				<td>
+					<a href="https://github.com/mislavcimpersak/awesome-dev-fun">
+						<img src="/static/images/github-logo.png" width="100%" />
+					</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<!-- Page content -->
+<div class="content" style='width: 50%'>
+	{% block content %}{% endblock %}
+</div>
+</body>

@@ -1,0 +1,32 @@
+[
+	{
+		"title": "Gaussian Process Update Equations",
+		"date": "14/07/2017",
+		"author": "John Doe",
+		"content_file": "gaussianProcessUpdateEquations.md"
+	},
+	{
+		"title": "(un-)Predictability of Sports",
+		"date": "31/12/2017",
+		"author": "John Doe",
+		"content_file": "unpredictabilityOfSports.md"
+	},
+	{
+		"title": "Random Samples from a Sphere",
+		"date": "26/07/2017",
+		"author": "John Doe",
+		"content_file": "samplesFromASphere.md"
+	},
+	{
+		"title": "New Paper - Accuracy of Inference",
+		"date": "04/12/2017",
+		"author": "John Doe",
+		"content_file": "accuracyOfInferencePaper.md"
+	},
+	{
+		"title": "It's Josh's life, but not as we know it!",
+		"date": "07/06/2016",
+		"author": "John Doe",
+		"content_file": "itsJimsLife.md"
+	}
+]
