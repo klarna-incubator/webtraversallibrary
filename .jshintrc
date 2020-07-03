@@ -1,0 +1,15 @@
+{
+  "bitwise": true,
+  "esversion": 9,
+  "futurehostile": true,
+  "latedef": "nofunc",
+  "maxdepth": 6,
+  "maxparams": 6,
+  "maxstatements": 50,
+  "noarg": true,
+  "nonbsp": true,
+  "nonew": true,
+  "shadow": "outer",
+  "unused": false,
+  "varstmt": true
+}
