@@ -5,7 +5,6 @@
 [![License][license-image]][license-url]
 [![Developed at Klarna][klarna-image]][klarna-url]
 
-
 One to two paragraph statement about your project and what it does.
 
 ## Installation
@@ -147,6 +146,8 @@ The flow in a workflow is as follows:
 _For more examples and usage, please refer to the [Docs](TODO)._
 
 ## Development setup
+
+TODO
 
 Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
 
