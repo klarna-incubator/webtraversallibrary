@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7]  # TODO test on 3.8 as well
+        python-version: [3.7, 3.8]
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -24,8 +24,11 @@ jobs:
     - name: Install XVFB
       run: sudo apt-get install -y xvfb
 
-    - name: Install dependencies
+    - name: Install dependencies (Python)
       run: make update
+
+    - name: Install dependencies (JS)
+      run: sudo npm install -g jshint
 
     - name: Lint
       run: make lint radon
@@ -40,7 +43,7 @@ jobs:
       run: make build
 
     # - name: Publish to PyPI
-    #   # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    #   if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     #   uses: pypa/gh-action-pypi-publish@master
     #   with:
     #     user: __token__
