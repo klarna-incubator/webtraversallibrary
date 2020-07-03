@@ -42,10 +42,18 @@ jobs:
     - name: Build package
       run: make build
 
+    - name: Test publish to PyPI
+      if: github.event_name == 'push' && github.ref == 'master'
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.pypi_test_password }}
+        repository_url: https://test.pypi.org/legacy/
+
+    # TODO enable the following when ready (try with test server first)
     # - name: Publish to PyPI
     #   if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     #   uses: pypa/gh-action-pypi-publish@master
     #   with:
     #     user: __token__
-    #     password: ${{ secrets.pypi_test_password }}
-    #     repository_url: https://test.pypi.org/legacy/
+    #     password: ${{ secrets.pypi_password }}
