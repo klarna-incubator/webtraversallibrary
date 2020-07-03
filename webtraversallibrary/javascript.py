@@ -285,7 +285,7 @@ class JavascriptWrapper:
     def assemble_script(cls, filenames: Iterable[Path]) -> str:
         """
         Concatenates the contents of several Javascript files into one, with caching.
-        :param filenames: Path to the JS files either in wtl/js or an absolute path.
+        :param filenames: Path to the JS files either in webtraversallibrary/js or an absolute path.
         """
         contents = []
 
@@ -303,7 +303,7 @@ class JavascriptWrapper:
     def execute_file(self, filename: Union[Path, Iterable[Path]], *args, execute_async: bool = False) -> Any:
         """
         Execute the JavaScript code in given file and return the result
-        :param filename: Path to the JS file(s) either in wtl/js or an absolute path.
+        :param filename: Path to the JS file(s) either in webtraversallibrary/js or an absolute path.
         :param execute_async: if True, will wait until the javascript code has called
         arguments[arguments.length-1] and will return its input arguments.
         """

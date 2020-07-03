@@ -16,7 +16,7 @@
     "wait_action": 0.1,
     "mhtml_timeout": 10,
     "save_mhtml": false,
-    "temp_path": "~/.wtl/"
+    "temp_path": "~/.webtraversallibrary/"
   },
   "scrolling": {
     "max_page_height": 2000
