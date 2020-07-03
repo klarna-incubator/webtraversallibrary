@@ -63,7 +63,7 @@ lint:
 	$(PYTHON) -m black --check webtraversallibrary examples tests
 	$(PYTHON) -m pylint $(SOURCE_FOLDER)
 	$(PYTHON) -m pylint --disable=missing-docstring,no-self-use examples/*.py tests/*
-	# TODO jshint $(SOURCE_FOLDER)
+	jshint $(SOURCE_FOLDER)
 	$(PYTHON) -m mypy $(SOURCE_FOLDER)
 
 
