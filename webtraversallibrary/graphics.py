@@ -84,7 +84,7 @@ def draw_text(image: Image.Image, top_left: Point, color: Color, size: int, text
     padding = 2
     image_width, image_height = image.size
 
-    with importlib.resources.path("wtl.font", "OpenSans-Regular.ttf") as filepath:
+    with importlib.resources.path("webtraversallibrary.font", "OpenSans-Regular.ttf") as filepath:
         font = ImageFont.truetype(str(filepath), size)
 
     # Make sure text does not exceed image boundaries

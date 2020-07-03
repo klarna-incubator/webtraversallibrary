@@ -1,0 +1,36 @@
+# IDE and OS metadata
+.idea/
+.vscode/
+**/.DS_Store
+*.gdsl
+
+# Python and build artifacts
+**/__pycache__/
+**/.pytest_cache/
+.cache/
+.mypy_cache/
+.python-version
+docs/build/
+docs/source/
+reports/
+*.iml
+*.log
+.coverage
+coverage.xml
+htmlcov/
+.gitinfo
+.hypothesis/
+
+# Test artifacts
+tests/data/
+
+# Environment
+node_modules/
+.env-*/
+
+# Python package artifacts
+/build
+/dist
+/*.egg-info
+
+.kai-build/auto

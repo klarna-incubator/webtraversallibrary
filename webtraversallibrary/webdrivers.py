@@ -62,7 +62,7 @@ def _setup_chrome(config: Config, profile_path: Path = None) -> WebDriver:
         chrome_options.add_argument("--disk-cache-dir=chrometemp/")  # Proxy messes up access rights of cache folder
 
     if browser.enable_mhtml:
-        with importlib.resources.path("wtl.extension", "wtl_extension.crx") as filepath:
+        with importlib.resources.path("webtraversallibrary.extension", "wtl_extension.crx") as filepath:
             chrome_options.add_extension(str(filepath))
         chrome_options.add_experimental_option(
             "prefs", {"download.default_directory": os.path.expanduser(config.scraping.temp_path)}

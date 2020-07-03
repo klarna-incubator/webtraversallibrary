@@ -21,16 +21,17 @@ jobs:
     - name: Install setuptools first
       run: pip3 install setuptools
 
+    - name: Install XVFB
+      run: sudo apt-get install -y xvfb
+
     - name: Install dependencies
       run: make update
 
     - name: Lint
-      run: make lint
+      run: make lint radon
 
     - name: Test
-      run: make test
-
-    # TODO run system tests
+      run: make test test_system
 
     - name: Build package
       run: make build
