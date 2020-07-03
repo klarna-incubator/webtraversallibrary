@@ -24,7 +24,6 @@ import json
 import logging
 import os
 import re
-import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Union
@@ -84,20 +83,6 @@ class PageElement:
     def parent(self) -> PageElement:
         """Returns the parent of this PageElement."""
         return self.page.elements.by_uid(self.wtl_parent_uid)
-
-    @property
-    def wtl_uid(self) -> int:
-        """
-        Returns the wtl-uid associated with this PageElement.
-        Usage of wtl_uid is deprecated.
-        To mimic the old behaviour, use `wtl_uid`. This property will be removed in the future.
-        """
-        warnings.warn(
-            "Usage of wtl_uid is deprecated. To mimic the old behaviour, "
-            "use `wtl_uid`. This property will be removed in the future.",
-            DeprecationWarning,
-        )
-        return self.wtl_uid
 
     @cached_property
     def location(self) -> Point:

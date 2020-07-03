@@ -16,7 +16,6 @@
 # under the License.
 
 import webtraversallibrary as wtl
-import webtraversallibrary as wtl.policies
 
 
 def test_workflow():

@@ -1,7 +1,7 @@
 PROJECT_NAME = webtraversallibrary
 PROJECT_READABLE_NAME = "Web Traversal Library"
 PYTHON ?= python3
-SOURCE_FOLDER = wtl
+SOURCE_FOLDER = webtraversallibrary
 ENV_NAME = .env-$(PROJECT_NAME)
 
 
@@ -32,7 +32,7 @@ env-delete:
 
 .PHONY: update
 update:
-	pip install --upgrade -r requirements.txt
+	pip3 install --upgrade -r requirements.txt
 
 
 .PHONY: build-all
@@ -52,19 +52,19 @@ clean:
 
 .PHONY: reformat
 reformat:
-	isort --recursive wtl examples tests
-	black wtl examples tests
+	isort --recursive webtraversallibrary examples tests
+	black webtraversallibrary examples tests
 
 
 .PHONY: lint
 lint:
 	$(PYTHON) -m pycodestyle . --exclude '.env-*,setup.py,docs/*'
-	isort --recursive --check-only wtl examples tests
-	black --check wtl examples tests
-	pylint $(SOURCE_FOLDER)
-	pylint --disable=missing-docstring,no-self-use examples/*.py tests/*
-	jshint $(SOURCE_FOLDER)
-	mypy $(SOURCE_FOLDER)
+	# TODO $(PYTHON) -m isort --recursive --check-only webtraversallibrary examples tests
+	$(PYTHON) -m black --check webtraversallibrary examples tests
+	$(PYTHON) -m pylint $(SOURCE_FOLDER)
+	$(PYTHON) -m pylint --disable=missing-docstring,no-self-use examples/*.py tests/*
+	# TODO jshint $(SOURCE_FOLDER)
+	$(PYTHON) -m mypy $(SOURCE_FOLDER)
 
 
 .PHONY: test tests
