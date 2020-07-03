@@ -1,8 +1,6 @@
-.. wtl documentation master file, manually updated.
+.. webtraversallibrary documentation master file, manually updated.
 
 .. image:: logo.png
-
-.. mdinclude:: README.md
 
 
 Documentation
@@ -13,7 +11,7 @@ Documentation
 
    examples
 
-   wtl
+   webtraversallibrary
 
    CHANGELOG
 

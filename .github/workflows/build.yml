@@ -33,6 +33,9 @@ jobs:
     - name: Test
       run: make test test_system
 
+    - name: Docs
+      run: make docs
+
     - name: Build package
       run: make build
 
