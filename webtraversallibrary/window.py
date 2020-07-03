@@ -102,7 +102,7 @@ class Window:
 
         # Every window comes with one tab, reuse if possible
         if len(self.name_to_handle) > 0:
-            self.js.execute_script(f"window.open('about:blank');")
+            self.js.execute_script("window.open('about:blank');")
 
         # Get mapping of the new tab and store in the dict
         for _tab in self.driver.window_handles:
