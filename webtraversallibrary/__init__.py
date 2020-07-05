@@ -26,7 +26,9 @@ from .color import Color
 from .config import Config
 from .error import Error
 from .geometry import Point, Rectangle
+from .javascript import JavascriptWrapper
 from .policies import multi_tab_coroutine, single_tab, single_tab_coroutine
+from .scraper import Scraper
 from .selector import Selector
 from .snapshot import Elements, PageElement, PageSnapshot
 from .version import __version__

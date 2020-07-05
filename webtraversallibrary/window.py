@@ -17,7 +17,7 @@
 
 """Abstraction layer for interactions with a browser instance."""
 from pathlib import Path
-from typing import Callable, Dict, List, Set
+from typing import Any, Callable, Dict, List, Set
 
 from selenium.common.exceptions import JavascriptException, UnexpectedAlertPresentException, WebDriverException
 
@@ -89,6 +89,17 @@ class Window:
         result = self.tab_navigation[self.current]
         del self.tab_navigation[self.current]
         return result
+
+    @property
+    def cookies(self) -> List[Any]:
+        return self.driver.get_cookies()
+
+    @cookies.setter
+    def cookies(self, value: List[Any]):
+        """Replaces(!) all existing cookies with the given list."""
+        self.driver.delete_all_cookies()
+        for cookie in value:
+            self.driver.add_cookie(cookie)
 
     def create_tab(self, name: str, url: str = "about:blank"):
         """
