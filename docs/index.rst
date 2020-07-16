@@ -9,11 +9,13 @@ Documentation
 .. toctree::
    :maxdepth: 4
 
+   gettingstarted
+
+   CHANGELOG
+
    examples
 
    webtraversallibrary
-
-   CHANGELOG
 
 
 Indices and tables
