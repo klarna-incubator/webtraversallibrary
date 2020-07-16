@@ -21,11 +21,11 @@ function makeCanvas(onViewport) {
     if (onViewport) {
         canvas.style.position = 'fixed';
         canvas.style.zIndex = 999999;
-        canvas.id = 'webtraversalframework-viewport';
+        canvas.id = 'webtraversallibrary-viewport';
     } else {
         canvas.style.position = 'absolute';
         canvas.style.zIndex = 999998;
-        canvas.id = 'webtraversalframework-page';
+        canvas.id = 'webtraversallibrary-page';
     }
 
     canvas.style.pointerEvents = 'none';
@@ -41,13 +41,13 @@ function makeCanvas(onViewport) {
     return canvas;
 }
 
-let pageCanvas = document.querySelector('canvas#webtraversalframework-page');
+let pageCanvas = document.querySelector('canvas#webtraversallibrary-page');
 if (pageCanvas === null) {
     pageCanvas = makeCanvas(onViewport=false);
     document.body.append(pageCanvas);
 }
 
-let viewportCanvas = document.querySelector('canvas#webtraversalframework-viewport');
+let viewportCanvas = document.querySelector('canvas#webtraversallibrary-viewport');
 if (viewportCanvas === null) {
     viewportCanvas = makeCanvas(onViewport=true);
     document.body.append(viewportCanvas);

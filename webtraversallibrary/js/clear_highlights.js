@@ -16,7 +16,7 @@
 // under the License.
 
 const onViewport = arguments[0];
-const canvas_selector = onViewport ? 'canvas#webtraversalframework-viewport' : 'canvas#webtraversalframework-page';
+const canvas_selector = onViewport ? 'canvas#webtraversallibrary-viewport' : 'canvas#webtraversallibrary-page';
 let canvas = document.querySelector(canvas_selector);
 if (canvas !== null) {
     canvas.parentNode.removeChild(canvas);

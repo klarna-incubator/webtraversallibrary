@@ -46,7 +46,7 @@ function highlight(tag, color, intensity, canvas, fill, onViewport) {
 }
 
 const [selector, color, intensity, fill, onViewport] = arguments;
-const canvas_selector = onViewport ? 'canvas#webtraversalframework-viewport' : 'canvas#webtraversalframework-page';
+const canvas_selector = onViewport ? 'canvas#webtraversallibrary-viewport' : 'canvas#webtraversallibrary-page';
 let canvas = document.querySelector(canvas_selector);
 
 let element = document.querySelector(selector);
