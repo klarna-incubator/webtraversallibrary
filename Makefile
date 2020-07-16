@@ -102,8 +102,8 @@ radon:
 docs:
 	rm -f docs/source/*.rst
 	sphinx-apidoc -F -o docs/source $(SOURCE_FOLDER)/ --module-first
-	cp README.md docs/source/
 	cp CHANGELOG.md docs/source/
+	cp docs/gettingstarted.md docs/source/
 	cp examples/*.py docs/source/
 	cp docs/index.rst docs/source/index.rst
 	cp docs/logo.png docs/source/logo.png
