@@ -6,6 +6,7 @@
 
 # Python and build artifacts
 **/__pycache__/
+tests/site/__pycache__/
 **/.pytest_cache/
 .cache/
 .mypy_cache/

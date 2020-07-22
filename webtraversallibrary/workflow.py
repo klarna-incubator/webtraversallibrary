@@ -223,7 +223,7 @@ class Workflow:
             if (
                 not self.config.scraping.all
                 and self.previous_policy_result
-                and tab in self.previous_policy_result
+                and tab not in self.previous_policy_result
                 and self.history[-1]
                 and self.history[-1].snapshot
             ):

@@ -7,7 +7,7 @@
     }
   },
   "scraping": {
-    "all": false,
+    "all": true,
     "disable_animations": true,
     "attempts": 3,
     "prescroll": false,
