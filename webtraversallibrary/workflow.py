@@ -174,6 +174,7 @@ class Workflow:
             # Query the policy
             try:
                 policy_result = self.policy(self, all_views)
+                self.previous_policy_result = policy_result
                 policy_stopped = False
             except StopIteration:
                 logger.info("Received StopIteration from policy, will not continue.")
@@ -182,8 +183,6 @@ class Workflow:
             # Execute actions
             if not policy_stopped:
                 self._execute_policy_result(policy_result)
-
-        self.previous_policy_result = policy_result
 
         # Save snapshot to disk
         if self.config.debug.save:
