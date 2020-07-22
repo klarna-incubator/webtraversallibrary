@@ -102,6 +102,7 @@ class Workflow:
         self.metadata: Dict[Any, Any] = {}
         self.monkeypatches = MonkeyPatches(patches)
         self.classifiers = ClassifierCollection(classifiers)
+        self.previous_policy_result = None
 
         # Basic error handling
         assert self.policy, "Workflow created without a policy!"
@@ -182,6 +183,8 @@ class Workflow:
             if not policy_stopped:
                 self._execute_policy_result(policy_result)
 
+        self.previous_policy_result = policy_result
+
         # Save snapshot to disk
         if self.config.debug.save:
             for tab in self.tabs:
@@ -215,6 +218,18 @@ class Workflow:
             if initial_url:
                 initial_action = Navigate(initial_url)
                 self._perform_action(initial_action)
+
+            # Optimization: Only scrape tab if enforced, action taken, or never scraped before
+            if (
+                not self.config.scraping.all
+                and self.previous_policy_result
+                and tab in self.previous_policy_result
+                and self.history[-1]
+                and self.history[-1].snapshot
+            ):
+                self.history.append(self.history[-1])
+                all_views[tab] = self.history[-1]
+                continue
 
             # Ensure page is fully loaded
             self.current_window.scraper.wait_until_loaded()
@@ -274,8 +289,6 @@ class Workflow:
 
         # Execute other actions in the policy result
         for tab in self.open_tabs:
-            self.tab(tab)
-
             # Find corresponding actions
             if tab in policy_result:
                 actions = policy_result[tab]
@@ -290,6 +303,10 @@ class Workflow:
             # Execute actions
             if not isinstance(actions, list):
                 actions = [actions]
+
+            if actions:
+                self.tab(tab)
+
             for i, action in enumerate(actions):
                 sleep(self.config.scraping.wait_action)
 
@@ -301,6 +318,7 @@ class Workflow:
                     action = action.transformed_to_element(self.latest_view.snapshot.elements)
                     actions[i] = action
                 self._perform_action(action)
+
             self.latest_view.metadata["next_action"] = actions
 
     def create_window(self, name: str) -> Window:
@@ -552,6 +570,7 @@ class Workflow:
         Does not clear any history.
         """
         self.loop_idx = -1
+        self.previous_policy_result = None
 
         # Clear any existing windows
         for window in self.windows:

@@ -41,8 +41,9 @@ def policy(workflow: wtl.Workflow, view: wtl.View) -> Dict[wtl.View, wtl.Action]
     # Create a window to a new Wikipedia number link
     window.create_tab(str(loop_idx), url=f"https://en.wikipedia.org/wiki/{loop_idx}")
 
-    # For every view, click a random clickable element
-    return {v: choice(v.actions.by_type(wtl.actions.Click)) for v in view.values()}
+    # Click a random clickable element in a random view/tab
+    v = choice(list(view.values()))
+    return {v: choice(v.actions.by_type(wtl.actions.Click))}
 
 
 if __name__ == "__main__":
