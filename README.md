@@ -1,11 +1,9 @@
-# Project Name
+# Web Traversal Library
 > The Web Traversal Library (WTL) is a Python library for abstracting web interactions on top of a base execution layer such as Selenium.
 
 [![Build Status][ci-image]][ci-url]
 [![License][license-image]][license-url]
 [![Developed at Klarna][klarna-image]][klarna-url]
-
-One to two paragraph statement about your project and what it does.
 
 ## Installation
 
