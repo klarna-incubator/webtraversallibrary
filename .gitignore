@@ -11,8 +11,7 @@ tests/site/__pycache__/
 .cache/
 .mypy_cache/
 .python-version
-docs/build/
-docs/source/
+docs/_*
 reports/
 *.iml
 *.log
