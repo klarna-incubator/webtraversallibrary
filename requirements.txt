@@ -21,7 +21,7 @@ requests==2.22.*
 selenium==3.141.*
 setuptools==41.0.1
 soupsieve==1.9.*
-sphinx==3.1.*
+sphinx==3.*
 twine==1.13.*
 urllib3==1.25.*
 wheel==0.34.*
