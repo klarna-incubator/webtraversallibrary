@@ -28,7 +28,7 @@ jobs:
       run: make update
 
     - name: Install dependencies (JS)
-      run: sudo npm install -g jshint
+      run: npm install
 
     - name: Lint
       run: make lint radon
