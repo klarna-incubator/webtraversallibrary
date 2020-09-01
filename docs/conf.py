@@ -47,14 +47,12 @@ author = 'Klarna AB'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'recommonmark',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'recommonmark'
 ]
-
-autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
 # Makes Module Index look nicer
 modindex_common_prefix = ["webtraversallibrary."]

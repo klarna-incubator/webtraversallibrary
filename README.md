@@ -25,7 +25,7 @@ You will find more information in the API docs. As a high-level overview, common
 - *Config:* A helper class containing string, numeric, or boolean values for a number of configurations related to WTL. Some are pregrouped under certain umbrella names, such as `desktop` (running as a Desktop browser, the default is mobile emulation), but all values can be arbitrarily set. See the documentation for the `Config` class for more information.
 
 ### Getting started
-See the documentation in `docs/`. You can build them locally with `make docs` and view the `index.html` file that's generated.
+See the documentation at [webtraversallibrary.readthedocs.io](https://webtraversallibrary.readthedocs.io/)!
 
 ### General architecture
 
