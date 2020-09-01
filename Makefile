@@ -46,7 +46,7 @@ clean:
 	find $(SOURCE_FOLDER) -name __pycache__ | xargs rm -rf
 	find $(SOURCE_FOLDER) -name '*.pyc' -delete
 	rm -rf reports .coverage
-	rm -rf docs/build docs/source
+	rm -rf docs/_*
 	rm -rf .*cache
 
 
@@ -100,16 +100,7 @@ radon:
 
 .PHONY: docs
 docs:
-	rm -f docs/source/*.rst
-	sphinx-apidoc -F -o docs/source $(SOURCE_FOLDER)/ --module-first
-	cp CHANGELOG.md docs/source/
-	cp docs/gettingstarted.md docs/source/
-	cp examples/*.py docs/source/
-	cp docs/index.rst docs/source/index.rst
-	cp docs/logo.png docs/source/logo.png
-	sh docs/examples.sh
-	cp docs/conf.py docs/source/conf.py
-	$(MAKE) -C docs html SPHINXOPTS="-W" SPHINXPROJ=$(PROJECT_NAME)
+	$(MAKE) -C docs html
 
 
 .PHONY: version

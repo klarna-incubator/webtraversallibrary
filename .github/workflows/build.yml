@@ -41,3 +41,13 @@ jobs:
 
     - name: Build package
       run: make build
+
+    # - name: Push the docs
+    #   uses: cpina/github-action-push-to-another-repository@master
+    #   env:
+    #     API_TOKEN_GITHUB: ${{ secrets.DOCS_API_TOKEN_GITHUB }}
+    #   with:
+    #     source-directory: 'docs/build'
+    #     destination-github-username: ${{ secrets.DOCS_USERNAME_GITHUB }}
+    #     destination-repository-name: 'webtraversallibrary-docs'
+    #     user-email: ${{ secrets.DOCS_EMAIL_GITHUB }}

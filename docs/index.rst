@@ -1,19 +1,26 @@
-.. webtraversallibrary documentation master file, manually updated.
+Web Traversal Library documentation
+=================================================
 
 .. image:: logo.png
 
-
-Documentation
+Introduction
 =============
 
 .. toctree::
    :maxdepth: 4
+   :caption: Contents:
 
-   gettingstarted
+   gettingstarted.md
 
-   CHANGELOG
+   examples.rst
 
-   examples
+
+References
+=============
+
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
 
    webtraversallibrary
 

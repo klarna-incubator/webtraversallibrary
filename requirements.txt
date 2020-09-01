@@ -5,7 +5,6 @@ bump2version==0.5.10
 Flask==1.1.2
 html5lib==1.0.1
 isort==4.*
-m2r==0.2.*
 markdown==3.2.2
 mypy==0.720
 pillow==6.*
@@ -17,11 +16,12 @@ pytest-cov
 pytest-mock
 PyYAML==5.3.*
 radon==4.0.*
+recommonmark==0.6.*
 requests==2.22.*
 selenium==3.141.*
 setuptools==41.0.1
 soupsieve==1.9.*
-sphinx==2.0.*
+sphinx==3.1.*
 twine==1.13.*
 urllib3==1.25.*
 wheel==0.34.*
