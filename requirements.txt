@@ -6,7 +6,7 @@ Flask==1.1.2
 html5lib==1.1.*
 isort==5.*
 markdown==3.2.2
-mypy==0.782
+mypy==0.720
 pillow==6.*
 pip==20.*
 pycodestyle==2.6.*
