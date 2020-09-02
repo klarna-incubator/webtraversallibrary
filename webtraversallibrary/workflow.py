@@ -556,9 +556,7 @@ class Workflow:
             self._highlight_classifier_result(classifier, cls_name, cls_result, snapshot)
 
         return (
-            [
-                classifier.action(element) for element, _, score in cls_result if score  # type: ignore
-            ]
+            [classifier.action(element) for element, _, score in cls_result if score]  # type: ignore
             if classifier.action
             else []
         )
