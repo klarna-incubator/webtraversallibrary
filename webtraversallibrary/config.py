@@ -24,37 +24,11 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Any, List, Union
+from typing import Any, Dict, List, Union
+
+from prodict import Prodict  # pylint: disable=syntax-error
 
 logger = logging.getLogger("wtl")
-
-
-class DotDict(dict):
-    """Dot access to dictionary attributes"""
-
-    __setattr__ = dict.__setitem__  # type: ignore
-
-    __delattr__ = dict.__delitem__  # type: ignore
-
-    def __getattr__(*args, **kwargs):  # pylint: disable=no-method-argument
-        obj, attr = args
-        if attr not in obj:
-            raise KeyError(f"{attr}")
-        val = dict.get(*args, **kwargs)
-        return DotDict(val) if isinstance(val, dict) else val
-
-    @classmethod
-    def from_str(cls, key: str, value: Any) -> DotDict:
-        """Converts a key of format a.b.c.d... and a value to a corresponding DotDict structure."""
-        keys = key.split(".")
-        d: dict = {}
-        d_ref = d
-        for k in keys[:-1]:
-            d_ref[k] = {}
-            d_ref = d_ref[k]
-        d_ref[keys[-1]] = value
-
-        return cls(d)
 
 
 class Config:
@@ -97,7 +71,7 @@ class Config:
     )
 
     def __init__(self, cfg: List[Union[str, Path, dict]]):
-        self._instance = DotDict({})
+        self._instance = Prodict()
         for item in cfg:
             self.update(item)
 
@@ -166,7 +140,7 @@ class Config:
     @staticmethod
     def _parse_input_config(cfg: Union[str, Path, dict]):
         if isinstance(cfg, dict):
-            return DotDict(cfg)
+            return Prodict.from_dict(cfg)
 
         if isinstance(cfg, str) and "=" in cfg:
             key, value = cfg.split("=")
@@ -183,7 +157,15 @@ class Config:
             else:
                 parsed_value = value
 
-            return DotDict.from_str(key, parsed_value)
+            key_chain = key.split(".")
+            result: Dict[str, Any] = {}
+            ref = result
+            while len(key_chain) > 1:
+                next_key = key_chain.pop(0)
+                ref[next_key] = {}
+                ref = ref[next_key]
+            ref[key_chain.pop(0)] = parsed_value
+            return Prodict.from_dict(result)
 
         if isinstance(cfg, str):
             cfg = Path(cfg)
@@ -197,6 +179,6 @@ class Config:
                 raise FileNotFoundError(f"Given config {str(cfg)} does not exist locally or as part of wtl.")
 
             json_data = json.load(Path(cfg).open())
-            return DotDict(json_data)
+            return Prodict.from_dict(json_data)
 
         raise ValueError(f"Unexpected config input: {cfg}")
