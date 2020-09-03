@@ -17,7 +17,7 @@ pytest-mock
 PyYAML==5.3.*
 radon==4.0.*
 recommonmark==0.6.*
-requests==2.22.*
+requests==2.24.*
 selenium==3.141.*
 setuptools==41.0.1
 soupsieve==1.9.*
