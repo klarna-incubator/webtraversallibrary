@@ -23,11 +23,12 @@ setuptools.setup(
     packages=["webtraversallibrary"],
     include_package_data=True,
     install_requires=[
-        "beautifulsoup4>=4.7",
-        "html5lib",
+        "beautifulsoup4>=4.8",
+        "html5lib>=1.0.1",
         "pillow>=5.3",
-        "requests",
-        "selenium",
+        "requests>=2.24",
+        "selenium>=3.141",
+        "soupsieve>=2.0"
         "tld",
         "urllib3"
     ],

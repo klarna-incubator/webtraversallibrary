@@ -21,8 +21,8 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install setuptools first
-      run: pip3 install setuptools
+    - name: Install setuptools and wheel first
+      run: pip3 install setuptools wheel
 
     - name: Install dependencies (Python)
       run: make update

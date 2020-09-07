@@ -56,6 +56,7 @@ confidence=
 # --disable=W"
 disable=
 # Disabled (not applicable, false positives, or checked by other tool)
+        raise-missing-from,
         fixme,
         invalid-name,
         logging-format-interpolation,

@@ -52,14 +52,14 @@ clean:
 
 .PHONY: reformat
 reformat:
-	isort --recursive webtraversallibrary examples tests
+	isort webtraversallibrary examples tests
 	black webtraversallibrary examples tests
 
 
 .PHONY: lint
 lint:
 	$(PYTHON) -m pycodestyle . --exclude '.env-*,setup.py,docs/*'
-	$(PYTHON) -m isort --recursive --check-only webtraversallibrary examples tests
+	$(PYTHON) -m isort --check-only webtraversallibrary examples tests
 	$(PYTHON) -m black --check webtraversallibrary examples tests
 	$(PYTHON) -m pylint $(SOURCE_FOLDER)
 	$(PYTHON) -m pylint --disable=missing-docstring,no-self-use examples/*.py tests/*
