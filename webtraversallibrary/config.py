@@ -77,6 +77,7 @@ class Config:
             ("scraping.save_mhtml", bool),
             ("scraping.temp_path", str),
             ("scraping.mhtml_timeout", int),
+            ("scraping.full_history", bool),
             ("scrolling.max_page_height", int),
             ("browser.browser", str),
             ("browser.useragent", str),
