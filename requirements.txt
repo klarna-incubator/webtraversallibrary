@@ -15,7 +15,7 @@ pytest==6.*
 pytest-cov
 pytest-mock
 PyYAML==5.3.*
-radon==4.2.*
+radon==4.3.*
 recommonmark==0.6.*
 requests==2.24.*
 selenium==3.141.*
