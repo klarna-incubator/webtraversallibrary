@@ -9,6 +9,7 @@ markdown==3.3
 mypy==0.720
 pillow==6.*
 pip==20.*
+prodict==0.8.*
 pycodestyle==2.6.*
 pylint==2.6.*
 pytest==6.*

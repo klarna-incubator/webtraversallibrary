@@ -15,21 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from webtraversallibrary.config import Config, DotDict
-
-
-def test_dot_dict():
-    ddict = DotDict({"a": "b"})
-    assert ddict.a == "b"
-
-    ddict = DotDict({"a": "b", "c": {"d": {"e": "f"}, "g": 10}})
-
-    assert ddict.a == "b"
-    assert ddict.c.d.e == "f"
-    assert ddict.c.g == 10
-
-    ddict.h = "i"
-    assert ddict.h == "i"
+from webtraversallibrary.config import Config
 
 
 def test_default():
