@@ -202,6 +202,12 @@ class Workflow:
         if policy_stopped:
             self._execute_policy_result({tab: Abort() for tab in self.open_tabs})
 
+        # Reduce memory usage if keeping a lot of views
+        if not self.config.scraping.full_history:
+            for tab in self.open_tabs:
+                self.tab(tab)
+                self.history[-1] = self.history[-1].copy(no_snapshot=True)
+
         # Continue if there is still something in the policy
         return policy_stopped
 

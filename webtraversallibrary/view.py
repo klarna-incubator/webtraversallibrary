@@ -39,3 +39,13 @@ class View:
     actions: Actions = field(hash=False, default_factory=Actions, repr=False)
     tags: Set[str] = field(hash=False, default_factory=set)
     metadata: Dict[Any, Any] = field(hash=False, default_factory=dict)
+
+    def copy(self, no_snapshot: bool = False):
+        """Creates a shallow copy"""
+        return View(
+            name=self.name,
+            snapshot=None if no_snapshot else self.snapshot,
+            actions=self.actions,
+            tags=self.tags,
+            metadata=self.metadata,
+        )
