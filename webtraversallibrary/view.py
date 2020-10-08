@@ -45,7 +45,7 @@ class View:
         return View(
             name=self.name,
             snapshot=None if no_snapshot else self.snapshot,
-            actions=self.actions,
+            actions=None if no_snapshot else self.actions,
             tags=self.tags,
             metadata=self.metadata,
         )
