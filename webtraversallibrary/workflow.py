@@ -109,12 +109,13 @@ class Workflow:
         if self.config.debug.save:
             assert self.output, "Saving debug output requires specifying an output path!"
 
-        # Setup initial stuff
-        self._starting_url = url
-        if isinstance(self._starting_url, str):
-            self._starting_url = {Workflow.SINGLE_TAB: self._starting_url}
-        if isinstance(list(self._starting_url.values())[0], str):
-            self._starting_url = {Workflow.SINGLE_TAB: self._starting_url}  # type: ignore
+        # Setup starting points
+        if isinstance(url, str):
+            url = {Workflow.SINGLE_TAB: url}
+        if isinstance(list(url.values())[0], str):
+            url = {Workflow.SINGLE_TAB: url}  # type: ignore
+        self._starting_url: Dict[str, Dict[str, str]] = url  # type: ignore
+
         self.reset()
 
     def __enter__(self):
