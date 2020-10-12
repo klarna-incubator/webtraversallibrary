@@ -18,6 +18,7 @@
     "mhtml_timeout": 10,
     "save_mhtml": false,
     "temp_path": "~/.webtraversallibrary/",
+    "history": true,
     "full_history": true
   },
   "scrolling": {

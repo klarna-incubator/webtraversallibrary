@@ -116,7 +116,7 @@ class Workflow:
             url = {Workflow.SINGLE_TAB: url}  # type: ignore
         self._starting_url: Dict[str, Dict[str, str]] = url  # type: ignore
 
-        self.reset()
+        self.reset(force=True)
 
     def __enter__(self):
         return self
@@ -162,6 +162,10 @@ class Workflow:
 
         :return: The boolean output from the goal function.
         """
+        # from pympler.asizeof import asizeof
+        # size = asizeof(self._history)
+        # print(size, "B", int(size / 1000.0), "KB")
+
         # Perform required snapshotting
         self.loop_idx += 1
         all_views = self._get_new_views()
@@ -204,7 +208,7 @@ class Workflow:
             self._execute_policy_result({tab: Abort() for tab in self.open_tabs})
 
         # Reduce memory usage if keeping a lot of views
-        if not self.config.scraping.full_history:
+        if self.config.scraping.history and not self.config.scraping.full_history:
             for tab in self.open_tabs:
                 self.tab(tab)
                 self.history[-1] = self.history[-1].copy(no_snapshot=True)
@@ -230,59 +234,68 @@ class Workflow:
                 not self.config.scraping.all
                 and self.previous_policy_result
                 and tab not in self.previous_policy_result
-                and self.history[-1]
-                and self.history[-1].snapshot
+                and self.latest_view
+                and self.latest_view.snapshot
             ):
                 self.history.append(self.history[-1])
                 all_views[tab] = self.history[-1]
                 continue
 
-            # Ensure page is fully loaded
-            self.current_window.scraper.wait_until_loaded()
+            # Store View
+            all_views[tab] = self._get_new_view(tab, initial_action)
 
-            # Run postload callbacks
-            for cb in self.current_window.scraper.postload_callbacks:
-                cb()
+        return all_views
 
-            # Scrape the page
-            snapshot = self.current_window.scraper.scrape_current_page()
+    def _get_new_view(self, name: str, initial_action: Action) -> View:
+        # Ensure page is fully loaded
+        self.current_window.scraper.wait_until_loaded()
 
-            # Assemble basic list of actions
-            action_list: List[Action] = [Abort(), Refresh(), Navigate(), Wait()]
-            action_list += [Revert(step) for step in range(len(self.history))]
-            actions = Actions(action_list)
+        # Run postload callbacks
+        for cb in self.current_window.scraper.postload_callbacks:
+            cb()
 
-            # Setup metadata
+        # Scrape the page
+        snapshot = self.current_window.scraper.scrape_current_page()
+
+        # Assemble basic list of actions
+        action_list: List[Action] = [Abort(), Refresh(), Navigate(), Wait()]
+        action_list += [Revert(step) for step in range(len(self.history))]
+        actions = Actions(action_list)
+
+        # Setup metadata
+        metadata: Dict[str, Any] = {}
+        if self.config.scraping.history:
             if self.history and "next_action" in self.history[self.loop_idx - 1].metadata:
                 metadata = self.history[self.loop_idx - 1].metadata.copy()
                 metadata["previous_action"] = metadata["next_action"]
             else:
-                metadata = {}
                 metadata["previous_action"] = [initial_action]
-            metadata["next_action"] = None
+        metadata["next_action"] = None
 
-            # Create view
-            view = View(name=tab, snapshot=snapshot, actions=actions, metadata=metadata)
+        # Create view
+        view = View(name=name, snapshot=snapshot, actions=actions, metadata=metadata)
 
-            # Add state to history
-            if self.loop_idx < len(self.history):
-                self.history[self.loop_idx] = view
-            else:
-                self.history.append(view)
+        # Add state to history
+        if self.loop_idx < len(self.history):
+            self.history[self.loop_idx] = view
+        else:
+            self.history.append(view)
 
-            # Run element classifiers
-            view.actions.extend(self._run_element_classifiers(snapshot))
+        # Maintain only one level of history if required
+        if not self.config.scraping.history:
+            for i in range(len(self._history[self.current_tab]) - 1):
+                self._history[self.current_tab][i] = None
 
-            # Run page classifiers
-            for classifier in self.classifiers:
-                if classifier.enabled and classifier.callback and isinstance(classifier, ViewClassifier):
-                    result = classifier.callback(view)
-                    view.tags.update(result)
+        # Run element classifiers
+        view.actions.extend(self._run_element_classifiers(snapshot))
 
-            # Store views
-            all_views[tab] = view
+        # Run page classifiers
+        for classifier in self.classifiers:
+            if classifier.enabled and classifier.callback and isinstance(classifier, ViewClassifier):
+                result = classifier.callback(view)
+                view.tags.update(result)
 
-        return all_views
+        return view
 
     def _execute_policy_result(self, policy_result: Dict[str, Union[Action, List[Action]]]):
         # If a reset action was given, perform it directly
@@ -370,6 +383,9 @@ class Workflow:
         The view stores previous_action and next_action in its metadata for future
         resurrection of the workflow.
         """
+        # if not self.config.scraping_history:
+        #     logging.error("History not enabled!")
+        #     return None
         if self.current_tab not in self._history:
             self._history[self.current_tab] = []
             for _ in range(self.loop_idx + 1):
@@ -568,11 +584,13 @@ class Workflow:
             else []
         )
 
-    def reset(self):
+    def reset(self, force: bool = False):
         """
         Resets the workflow.
         Does not clear any history.
         """
+        assert self.config.scraping.history or force, "Cannot reset if config.scraping.history set to False!"
+
         self.loop_idx = -1
         self.previous_policy_result = None
 
@@ -596,6 +614,7 @@ class Workflow:
         Because this resets the `loop_idx` variable to match, saved output will override
         previous output.
         """
+        assert self.config.scraping.history, "Cannot reset if config.scraping.history set to False!"
         assert 0 <= view_index < self.loop_idx, "Cannot revert into the future or before the beginning of time!"
         self.reset()
         self.loop_idx = view_index
