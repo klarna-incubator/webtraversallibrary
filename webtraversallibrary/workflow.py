@@ -116,7 +116,7 @@ class Workflow:
             url = {Workflow.SINGLE_TAB: url}  # type: ignore
         self._starting_url: Dict[str, Dict[str, str]] = url  # type: ignore
 
-        self.reset(force=True)
+        self.reset()
 
     def __enter__(self):
         return self
@@ -162,10 +162,6 @@ class Workflow:
 
         :return: The boolean output from the goal function.
         """
-        # from pympler.asizeof import asizeof
-        # size = asizeof(self._history)
-        # print(size, "B", int(size / 1000.0), "KB")
-
         # Perform required snapshotting
         self.loop_idx += 1
         all_views = self._get_new_views()
@@ -237,7 +233,7 @@ class Workflow:
                 and self.latest_view
                 and self.latest_view.snapshot
             ):
-                self.history.append(self.history[-1])
+                self.history.append(self.latest_view)
                 all_views[tab] = self.history[-1]
                 continue
 
@@ -383,9 +379,6 @@ class Workflow:
         The view stores previous_action and next_action in its metadata for future
         resurrection of the workflow.
         """
-        # if not self.config.scraping_history:
-        #     logging.error("History not enabled!")
-        #     return None
         if self.current_tab not in self._history:
             self._history[self.current_tab] = []
             for _ in range(self.loop_idx + 1):
@@ -584,12 +577,12 @@ class Workflow:
             else []
         )
 
-    def reset(self, force: bool = False):
+    def reset(self):
         """
         Resets the workflow.
         Does not clear any history.
         """
-        assert self.config.scraping.history or force, "Cannot reset if config.scraping.history set to False!"
+        assert self.config.scraping.history or self.loop_idx == -1, "Cannot reset if config.scraping.history is False!"
 
         self.loop_idx = -1
         self.previous_policy_result = None
