@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -30,8 +30,8 @@ jobs:
     - name: Install dependencies (JS)
       run: npm install
 
-    - name: Lint
-      run: make lint radon
+    # - name: Lint
+    #   run: make lint radon
 
     - name: Test
       run: make test test_system
