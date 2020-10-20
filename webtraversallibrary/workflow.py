@@ -111,8 +111,10 @@ class Workflow:
 
         # Setup starting points
         if isinstance(url, str):
+            # Convert url type from str to Dict[str, str]
             url = {Workflow.SINGLE_TAB: url}
         if isinstance(list(url.values())[0], str):
+            # Convert url type from Dict[str, str] to Dict[str, Dict[str, str]]]
             url = {Workflow.SINGLE_TAB: url}  # type: ignore
         self._starting_url: Dict[str, Dict[str, str]] = url  # type: ignore
 
