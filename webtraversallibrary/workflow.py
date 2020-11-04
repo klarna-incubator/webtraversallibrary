@@ -111,8 +111,10 @@ class Workflow:
 
         # Setup starting points
         if isinstance(url, str):
+            # Convert url type from str to Dict[str, str]
             url = {Workflow.SINGLE_TAB: url}
         if isinstance(list(url.values())[0], str):
+            # Convert url type from Dict[str, str] to Dict[str, Dict[str, str]]]
             url = {Workflow.SINGLE_TAB: url}  # type: ignore
         self._starting_url: Dict[str, Dict[str, str]] = url  # type: ignore
 
@@ -479,8 +481,9 @@ class Workflow:
                     assert name not in self.latest_view.snapshot.screenshots
 
                     scr = self.scraper.capture_screenshot("action")
+                    viewport = self.js.find_viewport()
                     scr.highlight(
-                        action.target.bounds,  # type: ignore
+                        action.target.bounds - viewport.minima,  # type: ignore
                         Color(255, 0, 0),
                         f"Action: {action.__class__.__name__}",
                     )

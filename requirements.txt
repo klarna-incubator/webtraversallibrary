@@ -5,7 +5,7 @@ bump2version==1.0.*
 Flask==1.1.2
 html5lib==1.1.*
 isort==5.*
-markdown==3.3.1
+markdown==3.3.3
 mypy==0.790
 pillow==6.*
 pip==20.*

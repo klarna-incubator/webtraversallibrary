@@ -142,6 +142,10 @@ class Rectangle:
         """Returns a copy of the rectangle translated by ``vector`` """
         return Rectangle(self.minima + vector, self.maxima + vector)
 
+    def __sub__(self, vector: Point) -> Rectangle:
+        """Returns a copy of the rectangle inversly translated by ``vector`` """
+        return Rectangle(self.minima - vector, self.maxima - vector)
+
     def __repr__(self):
         return "({}), ({})".format(self.minima, self.maxima)
 
