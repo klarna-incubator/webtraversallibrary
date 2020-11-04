@@ -474,7 +474,6 @@ class Workflow:
                     self.smart_scroll_to(action.target.bounds)  # type: ignore
 
                 if self.config.debug.save and self.config.debug.screenshots and has_element_handle:
-                    print("Hello")
                     index = 1 + len([s for s in self.latest_view.snapshot.screenshots if s.startswith("action")])
                     name = f"action{index}"
                     assert name not in self.latest_view.snapshot.screenshots
@@ -482,7 +481,7 @@ class Workflow:
                     scr = self.scraper.capture_screenshot("action")
                     viewport = self.js.find_viewport()
                     scr.highlight(
-                        action.target.bounds + Point(-viewport.minima.x, -viewport.minima.y),  # type: ignore
+                        action.target.bounds - viewport.minima,  # type: ignore
                         Color(255, 0, 0),
                         f"Action: {action.__class__.__name__}",
                     )
