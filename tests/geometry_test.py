@@ -125,6 +125,12 @@ def test_rectangle_add():
     assert r_moved.bounds == (1, 2, 6, 7)
 
 
+def test_rectangle_sub():
+    r_large = Rectangle.from_list([0, 0, 5, 5])
+    r_moved = r_large - Point(1, 2)
+    assert r_moved.bounds == (-1, -2, 4, 3)
+
+
 def test_rectangle_bounding_box():
     r1 = Rectangle(Point(0, 1), Point(2, 3))
     r2 = Rectangle(Point(0, 0), Point(4, 2))

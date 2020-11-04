@@ -481,8 +481,9 @@ class Workflow:
                     assert name not in self.latest_view.snapshot.screenshots
 
                     scr = self.scraper.capture_screenshot("action")
+                    viewport = self.js.find_viewport()
                     scr.highlight(
-                        action.target.bounds,  # type: ignore
+                        action.target.bounds - viewport.minima,  # type: ignore
                         Color(255, 0, 0),
                         f"Action: {action.__class__.__name__}",
                     )
