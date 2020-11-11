@@ -24,7 +24,7 @@ setuptools==50.3.*
 soupsieve==2.0.*
 sphinx==3.*
 twine==3.2.*
-urllib3==1.25.*
+urllib3==1.26.*
 wheel==0.35.*
 xenon==0.7.*
 xvfbwrapper==0.2.*
