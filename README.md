@@ -27,7 +27,7 @@ You will find more information in the API docs. As a high-level overview, common
 ### Getting started
 See the documentation at [webtraversallibrary.readthedocs.io](https://webtraversallibrary.readthedocs.io/)!
 
-Also watch ["Machine Learning to Auto-Navigate Websites"](https://www.youtube.com/watch?v=X0414BC6Q2I) given at PyCon SE 2020 for an introduction.
+Also watch ["Machine Learning to Auto-Navigate Websites"](https://www.youtube.com/watch?v=X0414BC6Q2I) given at PyCon SE 2020 for an introduction and examples.
 
 ### General architecture
 
