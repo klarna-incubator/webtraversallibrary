@@ -34,7 +34,7 @@ from PIL import Image
 from .config import Config
 from .error import ScrapingError
 from .geometry import Point, Rectangle
-from .graphics import take_element_screenshot
+from .graphics import crop_image
 from .processtools import cached_property
 from .screenshot import Screenshot
 from .selector import Selector
@@ -130,7 +130,7 @@ class PageElement:
         if intersection_box.area == 0:
             return None
 
-        return take_element_screenshot(page_screenshot.image, intersection_box)
+        return crop_image(page_screenshot.image, intersection_box)
 
     @staticmethod
     def parse_resolved_size(value: str) -> float:
