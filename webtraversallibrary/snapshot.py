@@ -231,6 +231,9 @@ class PageSnapshot:
         page_elements = Elements([PageElement(self, metadata) for metadata in self.elements_metadata])
         object.__setattr__(self, "elements", page_elements)
 
+        if "screenshots" not in self.page_metadata:
+            self.page_metadata["screenshots"] = []
+
     def new_screenshot(self, name: str, of: str) -> Screenshot:
         """
         Creates a new screenshot from a copy of a previous one.
