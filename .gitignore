@@ -21,9 +21,6 @@ htmlcov/
 .gitinfo
 .hypothesis/
 
-# Test artifacts
-tests/data/
-
 # Environment
 node_modules/
 .env-*/
