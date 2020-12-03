@@ -15,20 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from time import sleep
-
-import pytest
-
-from webtraversallibrary.processtools import TimeoutContext
+import webtraversallibrary as wtl
 
 
-def test_timeout_context():
-    with TimeoutContext(n_seconds=3):
-        sleep(0.1)
+def test_view_copy():
+    view = wtl.View(name="abcdef", snapshot=1, actions=2, tags=3, metadata=4)
 
-    with TimeoutContext(n_seconds=0):
-        sleep(0.1)
+    view2 = view.copy()
 
-    with pytest.raises(TimeoutError):
-        with TimeoutContext(n_seconds=1):
-            sleep(2)
+    assert view2.name == view.name
+    assert view2.snapshot == view.snapshot
+    assert view2.actions == view.actions
+    assert view2.tags == view.tags
+    assert view2.metadata == view.metadata
+
+    view3 = view.copy(no_snapshot=True)
+
+    assert view3.name == view.name
+    assert view3.snapshot is None
+    assert view3.actions is None
+    assert view3.tags == view.tags
+    assert view3.metadata == view.metadata

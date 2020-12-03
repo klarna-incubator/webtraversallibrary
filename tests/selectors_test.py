@@ -87,3 +87,18 @@ def test_selector_build():
     selector = Selector.build(soup, 12)
     assert selector.css == "html>body>div:nth-of-type(1)"
     assert selector.xpath == "/html/body/div[1]"
+
+    # Unsafe names
+    source = """<html><body>
+<div:nonstandard><a></a></div>
+</body></html>"""
+    soup = bs4.BeautifulSoup(source, "html5lib")
+    element = soup.body.select("a")[0]
+    selector = Selector.build(soup, element)
+    assert selector.css == "html>body>*>a"
+    assert selector.xpath == "/html/body/*/a"
+
+    # Invalid WTL-uid
+    selector = Selector.build(soup, 23)
+    assert selector.css == "bad_wtl_uid_no_matches"
+    assert selector.xpath == "bad_wtl_uid_no_matches"

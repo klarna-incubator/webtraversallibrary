@@ -136,10 +136,11 @@ def setup_driver(config: Config, profile_path: Path = None, preload_callbacks: L
     :return: A WebDriver instance
     """
     driver = None
+    name = config.browser.browser.lower()
 
-    if config.browser.browser == "chrome":
+    if name == "chrome":
         driver = _setup_chrome(config=config, profile_path=profile_path)
-    elif config.browser.browser == "firefox":
+    elif name == "firefox":
         driver = _setup_firefox(config=config, _profile_path=profile_path)
     else:
         raise NotImplementedError(f"Uninmplemented browser type given to setup_driver: {config.browser.browser}")

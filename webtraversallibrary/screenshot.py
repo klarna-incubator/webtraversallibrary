@@ -112,12 +112,12 @@ class Screenshot:
 
     @classmethod
     def load(cls, name: str, path: Path) -> Screenshot:
-        return cls(name, Image.open(path))
+        return cls(name, Image.open(str(path)))
 
     def save(self, path: Path, suffix: str = ""):
         os.makedirs(path, exist_ok=True)
         filename = f"{self.name}_{suffix}.png" if suffix else f"{self.name}.png"
-        self.image.save(path / filename)
+        self.image.save(str(path / filename))
 
     def copy(self, new_name: str) -> Screenshot:
         return Screenshot(new_name, self.image.copy())

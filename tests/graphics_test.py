@@ -17,6 +17,7 @@
 
 from pathlib import Path
 
+import pytest
 from PIL import Image, ImageChops, ImageStat
 
 import webtraversallibrary as wtl
@@ -45,6 +46,14 @@ def test_crop_image():
     reference = Image.open(ORIGINAL_DIR / "crop.png")
 
     assert equal_images(result, reference)
+
+    with pytest.raises(ValueError):
+        rect = wtl.Rectangle.empty()
+        crop_image(img, rect)
+
+    with pytest.raises(ValueError):
+        rect = wtl.Rectangle(wtl.Point(257, 257), wtl.Point(270, 280))
+        crop_image(img, rect)
 
 
 def test_draw_rect():

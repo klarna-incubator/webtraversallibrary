@@ -35,7 +35,6 @@ from urllib3.util import parse_url
 
 from .app_info import get_commit_hash
 from .config import Config
-from .graphics import get_device_pixel_ratio
 from .javascript import JavascriptWrapper
 from .processtools import TimeoutContext
 from .screenshot import Screenshot
@@ -57,6 +56,7 @@ class Scraper:
         self.hide_sticky = hide_sticky
         self.js = JavascriptWrapper(self.driver)
         self.postload_callbacks = postload_callbacks
+        self.device_pixel_ratio = self.js.execute_script("return window.devicePixelRatio;") or 1.0
 
     def scrape_current_page(self) -> PageSnapshot:
         """
@@ -155,10 +155,8 @@ class Scraper:
         """
         Captures the screenshot of the current rendering in the browser window.
         """
-        device_pixel_ratio = get_device_pixel_ratio(self.driver)
-
         return Screenshot.capture(
-            name=name, driver=self.driver, scale=1 / device_pixel_ratio, max_page_height=max_page_height
+            name=name, driver=self.driver, scale=1 / self.device_pixel_ratio, max_page_height=max_page_height
         )
 
     def get_page_as_mhtml(self) -> bytes:
@@ -219,7 +217,7 @@ class Scraper:
             "title": self.driver.title,
             "driver": self.driver.name,
             "full_page_size": (self.config.browser.width, self.js.get_full_height()),
-            "device_pixel_ratio": get_device_pixel_ratio(self.driver),
+            "device_pixel_ratio": self.device_pixel_ratio,
             "num_elements": num_elements,
             "commit_hash": get_commit_hash(),
             "screenshots": list(screenshots.keys()),
