@@ -27,7 +27,7 @@ from webtraversallibrary.screenshot import Screenshot
 ORIGINAL_DIR = Path("tests/data/")
 
 
-class FakeWebdriver:
+class MockWebDriver:
     def __init__(self, filename: str):
         self.filename = filename
 
@@ -45,7 +45,7 @@ class FakeWebdriver:
 
 
 def test_capture_viewport():
-    driver = FakeWebdriver("crop.png")
+    driver = MockWebDriver("crop.png")
     result = Screenshot.capture_viewport("testing", driver)
     reference = Image.open(ORIGINAL_DIR / "crop.png")
 
@@ -60,7 +60,7 @@ def test_capture_viewport():
 
 
 def test_capture(mocker):
-    driver = FakeWebdriver("cat.png")
+    driver = MockWebDriver("cat.png")
 
     mocker.patch("webtraversallibrary.javascript.JavascriptWrapper.get_full_height", return_value=2048)
     mocker.patch(
