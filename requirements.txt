@@ -7,7 +7,7 @@ html5lib==1.1.*
 isort==5.*
 markdown==3.3.3
 mypy==0.790
-pillow==6.*
+pillow==8.*
 pip==20.*
 prodict==0.8.*
 pycodestyle==2.6.*

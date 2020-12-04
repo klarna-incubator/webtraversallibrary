@@ -25,7 +25,7 @@ setuptools.setup(
     install_requires=[
         "beautifulsoup4>=4.8",
         "html5lib>=1.0.1",
-        "pillow>=5.3",
+        "pillow>=7.1",
         "requests>=2.24",
         "selenium>=3.141",
         "soupsieve>=2.0"
