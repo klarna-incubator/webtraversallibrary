@@ -41,7 +41,6 @@ build-all: clean gitinfo radon lint coverage docs build
 
 .PHONY: clean
 clean:
-	rm -f .gitinfo
 	rm -rf build dist *.egg-info
 	find $(SOURCE_FOLDER) -name __pycache__ | xargs rm -rf
 	find $(SOURCE_FOLDER) -name '*.pyc' -delete

@@ -18,7 +18,6 @@ reports/
 .coverage
 coverage.xml
 htmlcov/
-.gitinfo
 .hypothesis/
 
 # Environment
