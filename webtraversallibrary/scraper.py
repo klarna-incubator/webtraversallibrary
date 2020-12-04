@@ -39,6 +39,7 @@ from .javascript import JavascriptWrapper
 from .processtools import TimeoutContext
 from .screenshot import Screenshot
 from .snapshot import PageSnapshot
+from .version import __version__
 
 logger = logging.getLogger("wtl")
 
@@ -221,6 +222,7 @@ class Scraper:
             "device_pixel_ratio": get_device_pixel_ratio(self.driver),
             "num_elements": num_elements,
             "screenshots": list(screenshots.keys()),
+            "wtl_version": __version__,
         }
 
         milliseconds_passed = (datetime.now() - before).total_seconds() * 1000
