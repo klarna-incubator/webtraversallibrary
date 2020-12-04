@@ -98,6 +98,37 @@ def _setup_chrome(config: Config, profile_path: Path = None) -> WebDriver:
     return driver
 
 
+def _setup_firefox(config: Config, _profile_path: Path = None) -> WebDriver:
+    firefox_profile = webdriver.FirefoxProfile()
+    firefox_options = webdriver.FirefoxOptions()
+    browser = config.browser
+
+    # Disable security
+    firefox_options.add_argument("-safe-mode")
+
+    # Force opening in new tabs
+    # firefox_options.set_preference("browser.link.open_newwindow", 3)
+    # firefox_options.set_preference("browser.link.open_newwindow.restriction", 0)
+
+    firefox_options.headless = browser.headless
+
+    if browser.proxy:
+        address = browser.proxy.split(":")
+        firefox_profile.set_preference("network.proxy.http", address[0])
+        firefox_profile.set_preference("network.proxy.http_port", address[1])
+
+    if "useragent" in browser:
+        firefox_profile.set_preference("general.useragent.override", browser.useragent)
+
+    driver = webdriver.Firefox(options=firefox_options, firefox_profile=firefox_profile)
+
+    # Screen size (we can't set viewport size as for Chrome so we adjust screen size)
+    if "width" in browser and "height" in browser:
+        driver.set_window_size(browser.width, browser.height)
+
+    return driver
+
+
 def setup_driver(config: Config, profile_path: Path = None, preload_callbacks: List[Path] = None) -> WebDriver:
     """
     Creates a WebDriver object with the given configuration.
@@ -108,14 +139,15 @@ def setup_driver(config: Config, profile_path: Path = None, preload_callbacks: L
 
     if config.browser.browser == "chrome":
         driver = _setup_chrome(config=config, profile_path=profile_path)
+    elif config.browser.browser == "firefox":
+        driver = _setup_firefox(config=config, _profile_path=profile_path)
+    else:
+        raise NotImplementedError(f"Uninmplemented browser type given to setup_driver: {config.browser.browser}")
 
-    if driver:
-        preload_callbacks = preload_callbacks or []
-        for cb in preload_callbacks:
-            driver.add_script(str(cb))
-        return driver
-
-    raise NotImplementedError(f"Uninmplemented browser type given to setup_driver: {config.browser}")
+    preload_callbacks = preload_callbacks or []
+    for cb in preload_callbacks:
+        driver.add_script(str(cb))
+    return driver
 
 
 def send(driver: WebDriver, cmd: str, params: dict = None) -> int:

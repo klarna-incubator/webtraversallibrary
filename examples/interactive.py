@@ -37,18 +37,20 @@ initials = [
 
 
 textfield_desc = [
-    "A wild Croatian appears and asks you for a name. He hands you a paper and pen to write with.",
+    "A person appears and asks you for a name. He hands you a paper and pen to write with.",
     "An empty notepad really wants something to be written.",
     "You see a dusty whiteboard with a pen that still works.",
     "A piece of paper is asking you what is on your mind. You have a pen in your hand.",
+    "A parchment and quill lie before you.",
 ]
 
 
 vague_desc = [
     "You can see people in the distance.",
-    "wtluts are ringing a bell.",
+    "Marketing people are ringing a bell.",
     "Everything around you looks really clean.",
     "There are multiple paths forward.",
+    "You see shadows lurking about far away. They look friendly.",
 ]
 
 
@@ -56,7 +58,8 @@ content_desc = [
     "A bleached old parchment says: ",
     "A pretty little note by your feet says: ",
     "You find an old metal bracelet with an inscription: ",
-    "You are standing next to an old radio. When you try turning it on, it repeats over and over again: ",
+    "You are standing next to an old radio. It repeats over and over again: ",
+    "A whisper is carried by the wind. It says: ",
 ]
 
 
@@ -72,11 +75,17 @@ def policy():
             title = view.snapshot.page_metadata["title"]
             print(f'{initial}"{title}"')
             spoken = True
-        cmd = input("\n> ").strip().split(" ")
+        cmd = input("\n> ").strip().lower().split(" ")
         action = None
 
         if cmd[0] == "help":
             print("\nAvailable commands:\nhelp: shows this message")
+            print("navigate")
+            print("jump")
+            print("look")
+            print("click")
+            print("move")
+            print("right")
             continue
 
         if cmd[0] == "navigate" or cmd[0] == "jump":
@@ -145,7 +154,7 @@ if __name__ == "__main__":
         )
     )
 
-    logging.getLogger("wtl").setLevel(logging.ERROR)
+    logging.getLogger("wtl").setLevel(logging.FATAL)
 
     workflow.run()
     workflow.quit()

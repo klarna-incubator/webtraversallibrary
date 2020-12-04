@@ -25,7 +25,7 @@ from webtraversallibrary.snapshot import PageSnapshot
 # pylint: disable=unsubscriptable-object, no-member
 
 
-def test_page_snapshot():
+def test_page_snapshot(tmpdir):
     source = """
 <body>
     <div wtl-uid=12>
@@ -68,3 +68,13 @@ def test_page_snapshot():
     assert len(elements.by_raw_score("a", 0.65)) == 2
     assert not elements.by_score("b")
     assert not elements.by_raw_score("b")
+
+    snapshot.save(tmpdir)
+
+    snapshot_2 = PageSnapshot.load(tmpdir)
+
+    assert snapshot.page_source == snapshot_2.page_source
+    assert snapshot.page_metadata == snapshot_2.page_metadata
+    assert len(snapshot.elements) == len(snapshot_2.elements)
+    assert len(snapshot.elements_metadata) == len(snapshot_2.elements_metadata)
+    assert snapshot.screenshots == snapshot_2.screenshots

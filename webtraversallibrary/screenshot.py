@@ -76,22 +76,21 @@ class Screenshot:
         try:
             # We start from bottom, and go up!
             for shot_idx in range(num_shots, -1, -1):
-                # Select what elements to hide
+                # Don't hide elements at the top
                 if shot_idx == 0 or viewport.height > page_height:
-                    # No scrolling is needed, don't hide anything
                     js.show_position_fixed_elements(hidden_elements)
 
-                hidden = _scroll_to(js, shot_idx * int(viewport.height))
+                # Scroll, hide sticky elements, and take viewport screenshot
+                hidden = Screenshot._scroll_to(js, shot_idx * int(viewport.height))
                 hidden_elements.update(hidden)
-
                 viewport_screenshot = cls.capture_viewport("temp", driver, scale).image
 
                 if shot_idx * viewport.height > page_height - viewport.height:
                     new_viewport_area = (
                         0,
-                        viewport.height - (page_height - shot_idx * viewport.height),
+                        0,
                         viewport.width,
-                        viewport.height,
+                        page_height - shot_idx * viewport.height,
                     )
                     viewport_screenshot = viewport_screenshot.crop(new_viewport_area)
 
@@ -152,14 +151,14 @@ class Screenshot:
     def width(self) -> int:
         return self.image.width
 
+    @staticmethod
+    def _scroll_to(js: JavascriptWrapper, y_pos: int, elements: List[str] = None):
+        waiting_time = 0.1
+        hidden: Dict[int, str] = {}
 
-def _scroll_to(js: JavascriptWrapper, y_pos: int, elements: List[str] = None):
-    waiting_time = 0.1
-    hidden: Dict[int, str] = {}
+        js.scroll_to(0, y_pos)
+        time.sleep(waiting_time)
+        hidden = js.hide_position_fixed_elements(elements=elements if elements else [])
+        time.sleep(waiting_time)
 
-    js.scroll_to(0, y_pos)
-    time.sleep(waiting_time)
-    hidden = js.hide_position_fixed_elements(elements=elements if elements else [])
-    time.sleep(waiting_time)
-
-    return hidden
+        return hidden

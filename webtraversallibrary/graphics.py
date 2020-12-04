@@ -39,9 +39,12 @@ def crop_image(image: Image.Image, rect: Rectangle) -> Image.Image:
     Rectangle specified by ``rect`` must lie inside of the image bounds.
     """
 
+    if rect.area == 0:
+        raise ValueError(f"Rectangle {rect} is degenerate")
+
     # Rectangle we crop out must be somewhere within the image
     image_rect = Rectangle(Point(0, 0), Point(image.width, image.height))
-    if not image_rect.contains(rect):
+    if rect not in image_rect:
         raise ValueError(f"Bounds {rect} outside of image area {image_rect}")
 
     return image.crop(rect.bounds)
@@ -52,21 +55,6 @@ def get_device_pixel_ratio(driver: WebDriver) -> float:
     Get device pixel ratio from the browser, useful to handle high density screenshots, like the ones we get on macOS.
     """
     return JavascriptWrapper(driver).execute_script("return window.devicePixelRatio;") or 1.0
-
-
-def take_element_screenshot(page_screenshot: Image.Image, bbox: Rectangle) -> Image.Image:
-    """
-    Returns the cropped subimage with the coordinates given.
-    """
-
-    w, h = page_screenshot.size
-
-    if bbox.area == 0:
-        raise ValueError(f"Rectangle {bbox} is degenerate")
-    if bbox not in Rectangle(Point(0, 0), Point(w, h)):
-        raise ValueError(f"Rectangle {bbox} not contained in the viewport {(0, 0, w, h)}")
-
-    return crop_image(page_screenshot, bbox)
 
 
 def draw_rect(image: Image.Image, rect: Rectangle, color: Color, width: int):
