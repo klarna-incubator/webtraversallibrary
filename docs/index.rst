@@ -42,9 +42,6 @@ Main references
 Other
 =============
 
-.. automodule:: webtraversallibrary.app_info
-    :members:
-
 .. automodule:: webtraversallibrary.color
     :members:
 

@@ -33,13 +33,13 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from urllib3.util import parse_url
 
-from .app_info import get_commit_hash
 from .config import Config
 from .graphics import get_device_pixel_ratio
 from .javascript import JavascriptWrapper
 from .processtools import TimeoutContext
 from .screenshot import Screenshot
 from .snapshot import PageSnapshot
+from .version import __version__
 
 logger = logging.getLogger("wtl")
 
@@ -221,8 +221,8 @@ class Scraper:
             "full_page_size": (self.config.browser.width, self.js.get_full_height()),
             "device_pixel_ratio": get_device_pixel_ratio(self.driver),
             "num_elements": num_elements,
-            "commit_hash": get_commit_hash(),
             "screenshots": list(screenshots.keys()),
+            "wtl_version": __version__,
         }
 
         milliseconds_passed = (datetime.now() - before).total_seconds() * 1000
