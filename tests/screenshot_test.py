@@ -59,6 +59,20 @@ def test_capture_viewport():
     assert equal_images(result_scaled.image, reference_scaled)
 
 
+def test_save_load_copy(tmpdir):
+    driver = MockWebDriver("crop.png")
+    result = Screenshot.capture_viewport("testing", driver)
+    result.save(tmpdir, "mytest")
+    result2 = Screenshot.load("testing", tmpdir / "testing_mytest.png")
+
+    assert equal_images(result.image, result2.image)
+
+    result3 = result.copy("testing3")
+
+    assert result3.name == "testing3"
+    assert equal_images(result.image, result3.image)
+
+
 def test_capture(mocker):
     driver = MockWebDriver("cat.png")
 

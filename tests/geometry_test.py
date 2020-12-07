@@ -79,6 +79,9 @@ def test_rectangle_from_many_representations():
     for r in rects:
         assert r != r_different
 
+    with pytest.raises(ValueError):
+        Rectangle.from_list(1, 2, 3)
+
 
 def test_rectangle_properties():
     x1, y1 = 0, 1
@@ -149,6 +152,9 @@ def test_rectangle_centered_at():
     assert rect_centered_at_xy.height == 2 * radius
     assert rect_centered_at_xy == Rectangle.from_list((x - radius, y - radius, x + radius, y + radius))
 
+    with pytest.raises(ValueError):
+        Rectangle.centered_at(Point(1, 2), -1)
+
 
 def test_rectangle_intersection():
     r_large = Rectangle.from_list([0, 0, 5, 5])
@@ -167,6 +173,11 @@ def test_rectangle_intersection():
     assert int1 != Rectangle.empty()
 
     assert Rectangle.intersection([r_other, Rectangle.empty()]) == Rectangle.empty()
+
+    with pytest.raises(ValueError):
+        Rectangle.intersection([])
+    with pytest.raises(ValueError):
+        Rectangle.intersection([Rectangle.empty()])
 
 
 @pytest.mark.parametrize(
@@ -203,6 +214,9 @@ def test_rectangle_resized():
         _ = r.resized(delta=-6)
 
     assert r.resized(delta=-r.width / 2) == Rectangle(r.center, r.center)
+
+    with pytest.raises(ValueError):
+        Rectangle.bounding_box([])
 
 
 def test_rectangle_unpacking():

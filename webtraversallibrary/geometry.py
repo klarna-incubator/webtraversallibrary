@@ -191,7 +191,7 @@ class Rectangle:
         `Apothem <https://en.wikipedia.org/wiki/Apothem>`_.)
         """
         if radius <= 0:
-            raise TypeError(f"Cannot instantiate rectangle with non-positive side {2 * radius} centered at {center}")
+            raise ValueError(f"Cannot instantiate rectangle with non-positive side {2 * radius} centered at {center}")
 
         radius_point = Point(radius, radius)
         return Rectangle(center - radius_point, center + radius_point)
@@ -204,7 +204,7 @@ class Rectangle:
         if len(args) == 4 and all(isinstance(el, (int, float)) for el in args):
             first_x, first_y, second_x, second_y = args
         else:
-            raise TypeError("Invalid list/tuple to create rectangle from!")
+            raise ValueError("Invalid argument(s) to create rectangle from!")
 
         minima = Point(min(first_x, second_x), min(first_y, second_y))
         maxima = Point(max(first_x, second_x), max(first_y, second_y))

@@ -25,7 +25,7 @@ from .actions import Action, Actions, ElementAction
 from .classifiers import ActiveElementFilter, ElementClassifier, ScalingMode, ViewClassifier
 from .color import Color
 from .config import Config
-from .error import Error
+from .error import ElementNotFoundError, Error, ScrapingError, WebDriverSendError, WindowClosedError
 from .geometry import Point, Rectangle
 from .javascript import JavascriptWrapper
 from .policies import multi_tab_coroutine, single_tab, single_tab_coroutine

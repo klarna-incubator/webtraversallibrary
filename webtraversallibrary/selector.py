@@ -62,7 +62,7 @@ class Selector:
             options = bs4_soup.find_all(attrs={"wtl-uid": target})
             if len(options) != 1:
                 logger.error("Invalid wtl-uid given to Selector.build, returning blank selector")
-                return cls(css="bad_wtl_uid_no_matches")
+                return cls(css="bad_wtl_uid_no_matches", xpath="bad_wtl_uid_no_matches")
             element = options[0]
 
         names, indices = [], []

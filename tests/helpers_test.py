@@ -15,17 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import pytest
+
 import webtraversallibrary as wtl
 from webtraversallibrary.helpers import ClassifierCollection, FrameSwitcher, MonkeyPatches
 
 
 class MockJavascriptWrapper:
-    def __init__(self):
-        self.s = None
-
     def find_iframe_name(self, s):
-        self.s = s
-        return s + "iframe"
+        return None if s == "FAIL" else s + "iframe"
 
 
 class MockWebDriver:
@@ -75,6 +73,8 @@ def test_classifier_collection():
     assert "ddd" in collection
     assert wtl.classifiers.Classifier(name="eee") not in collection
     assert len([c for c in collection if c.enabled]) == 2
+    with pytest.raises(TypeError):
+        _ = 123 in collection
 
     collection.start("bbb")
 
@@ -128,3 +128,6 @@ def test_frame_switcher():
 
     assert fs.name == "abciframe"
     assert driver.f == "default"
+
+    with pytest.raises(wtl.ElementNotFoundError):
+        FrameSwitcher("FAIL", js, driver)

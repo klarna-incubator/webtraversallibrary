@@ -15,12 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from pathlib import Path
+
+import pytest
+
 from webtraversallibrary.config import Config
 
 
 def test_default():
     config = Config.default()
     assert "browser" in config
+
+
+def test_non_default():
+    with pytest.raises(ValueError):
+        Config()
+
+    with pytest.raises(ValueError):
+        Config.default(["timeout='abc'"])
 
 
 def test_update():
@@ -40,6 +52,15 @@ def test_update():
     assert config.a.b.e == 123
     config.update("a.b.e=123.4")
     assert config.a.b.e == 123.4
+
+    config.update("desktop")
+    assert config.browser.browser == "chrome"
+
+    with pytest.raises(FileNotFoundError):
+        config.update(Path("a/b/c/d"))
+
+    with pytest.raises(ValueError):
+        config.update(123)
 
 
 def test_json():

@@ -23,11 +23,9 @@ import importlib.resources
 import logging
 
 from PIL import Image, ImageDraw, ImageFont
-from selenium.webdriver.remote.webdriver import WebDriver
 
 from .color import Color
 from .geometry import Point, Rectangle
-from .javascript import JavascriptWrapper
 
 logger = logging.getLogger("wtl")
 
@@ -48,13 +46,6 @@ def crop_image(image: Image.Image, rect: Rectangle) -> Image.Image:
         raise ValueError(f"Bounds {rect} outside of image area {image_rect}")
 
     return image.crop(rect.bounds)
-
-
-def get_device_pixel_ratio(driver: WebDriver) -> float:
-    """
-    Get device pixel ratio from the browser, useful to handle high density screenshots, like the ones we get on macOS.
-    """
-    return JavascriptWrapper(driver).execute_script("return window.devicePixelRatio;") or 1.0
 
 
 def draw_rect(image: Image.Image, rect: Rectangle, color: Color, width: int):

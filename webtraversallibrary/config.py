@@ -72,7 +72,10 @@ class Config:
         ]
     )
 
-    def __init__(self, cfg: List[Union[str, Path, dict]]):
+    def __init__(self, cfg: List[Union[str, Path, dict]] = None):
+        if cfg is None:
+            cfg = []
+
         self._instance = Prodict()
         for item in cfg:
             self.update(item)
