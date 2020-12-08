@@ -15,10 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import pytest
+
 import webtraversallibrary as wtl
 
+browsers = ["chrome", "firefox"]
 
-def test_workflow():
-    config = wtl.Config.default(["headless"])
+
+@pytest.mark.parametrize("browser", browsers)
+def test_workflow(browser):
+    config = wtl.Config.default(["headless", f"browser.browser={browser}"])
     workflow = wtl.Workflow(url="about:blank", config=config, policy=wtl.policies.DUMMY)
     assert workflow
