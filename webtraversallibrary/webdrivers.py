@@ -20,6 +20,7 @@ Module for different webdrivers considered.
 """
 import importlib.resources
 import json
+import logging
 import os.path
 from pathlib import Path
 from typing import List
@@ -30,6 +31,8 @@ from selenium.webdriver.remote.webdriver import WebDriver
 
 from .config import Config
 from .error import WebDriverSendError
+
+logger = logging.getLogger("wtl")
 
 
 def _setup_chrome(config: Config, profile_path: Path = None) -> WebDriver:
@@ -105,10 +108,9 @@ def _setup_firefox(config: Config, _profile_path: Path = None) -> WebDriver:
 
     # Disable security
     firefox_options.add_argument("-safe-mode")
-
-    # Force opening in new tabs
-    # firefox_options.set_preference("browser.link.open_newwindow", 3)
-    # firefox_options.set_preference("browser.link.open_newwindow.restriction", 0)
+    firefox_profile.set_preference("browser.link.open_newwindow", 3)
+    firefox_profile.set_preference("browser.link.open_newwindow.restriction", 0)
+    firefox_profile.set_preference("media.volume_scale", "0.0")
 
     firefox_options.headless = browser.headless
 
@@ -117,8 +119,24 @@ def _setup_firefox(config: Config, _profile_path: Path = None) -> WebDriver:
         firefox_profile.set_preference("network.proxy.http", address[0])
         firefox_profile.set_preference("network.proxy.http_port", address[1])
 
+    if browser.enable_mhtml:
+        # TODO
+        logger.fatal("Firefox does not currently support MHTML")
+        assert False
+
+    if "pixelRatio" in browser and browser.pixelRatio != 0:
+        # TODO
+        logger.error("Firefox does not currently support custom pixelratio")
+
     if "useragent" in browser:
         firefox_profile.set_preference("general.useragent.override", browser.useragent)
+
+    def _add_script(driver: WebDriver, script_path: str):
+        send(driver, "Page.addScriptToEvaluateOnNewDocument", {"source": script_path})
+
+    WebDriver.add_script = _add_script
+
+    # TODO No support to output console logs for geckodriver
 
     driver = webdriver.Firefox(options=firefox_options, firefox_profile=firefox_profile)
 
