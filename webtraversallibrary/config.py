@@ -139,6 +139,7 @@ class Config:
 
     @staticmethod
     def default(cfg: List[Union[str, Path, dict]] = None) -> Config:
+        """Creates a Config object based on all default values"""
         cfg = cfg or []
         return Config([Path("default.json")] + cfg)  # type: ignore
 

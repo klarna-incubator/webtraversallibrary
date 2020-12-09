@@ -18,7 +18,6 @@
 """
 Web Traversal Library (WTL)
 Provides a bottom abstraction layer for automatic web workflows.
-:noindex:
 """
 
 from .actions import Action, Actions, ElementAction

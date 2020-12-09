@@ -115,6 +115,8 @@ class Screenshot:
         return cls(name, Image.open(str(path)))
 
     def save(self, path: Path, suffix: str = ""):
+        """Saves screenshot to given path. Filename consists of the screenshot name
+        and an optional suffix."""
         os.makedirs(path, exist_ok=True)
         filename = f"{self.name}_{suffix}.png" if suffix else f"{self.name}.png"
         self.image.save(str(path / filename))
