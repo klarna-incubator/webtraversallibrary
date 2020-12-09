@@ -37,11 +37,15 @@ def mock_merchant_website(request):
     request.addfinalizer(server.terminate)
 
 
+browsers = [None, "desktop", "firefox"]
+
+
+@pytest.mark.parametrize("browser", browsers)
 @pytest.mark.system
-def test_simple():
+def test_simple(browser):
     # Just navigate to a single tab, do nothing.
 
-    config = Config.default(["headless"])
+    config = Config.default(["headless", browser])
 
     workflow = wtl.Workflow(
         url=TESTURL,

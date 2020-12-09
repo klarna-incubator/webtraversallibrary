@@ -78,7 +78,8 @@ class Config:
 
         self._instance = Prodict()
         for item in cfg:
-            self.update(item)
+            if item:
+                self.update(item)
 
         self._ensure_has_all_params(Config.REQUIRED_PARAMS)
         logger.debug(f"Configuration loaded from {cfg}")
