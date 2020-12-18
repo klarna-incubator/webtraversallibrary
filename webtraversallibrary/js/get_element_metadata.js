@@ -64,6 +64,7 @@ function extractMetadata(el) {
             y: boundingBox.top + window.scrollY
         },
         text: (el.tagName.toLowerCase() == 'input' ? el.value : el.innerText),
+        text_local: Array.from(el.childNodes).filter(childEl => childEl instanceof Text).map(textEl=>textEl.textContent).join("").trim(),
         children_count: el.childElementCount,
         num_imgs: imgChildren.length - imgSvgChildren.length,
         num_svgs: svgChildren.length + imgSvgChildren.length + (el.tagName.toLowerCase() === 'svg'),

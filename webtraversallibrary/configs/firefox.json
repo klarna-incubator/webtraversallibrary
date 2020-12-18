@@ -1,0 +1,9 @@
+{
+  "browser": {
+    "browser": "firefox",
+    "useragent": "Mozilla/5.0 (X11; Linux i686; rv:83.0) Gecko/20100101 Firefox/83.0",
+    "width": 1280,
+    "height": 1200,
+    "pixelRatio": 0
+  }
+}
