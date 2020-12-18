@@ -83,10 +83,12 @@ class Workflow:
         :param patches: A dictionary of selectors to monkeypatch to other destinations.
         """
         setup_logging(log_dir=output if config.debug.save else None)
+        config = config or Config.default()
+        config.validate()
 
         self.loop_idx = -1
         self.output = output
-        self.config = config if config else Config.default()
+        self.config = config
         self._windows: Dict[str, Window] = {}
         self.policy = policy() if policy.__name__ == "__wtl_wrapped" else policy
         self.goal = goal if goal else FOREVER

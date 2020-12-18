@@ -71,8 +71,8 @@ def safe_selenium_method(func):
                 logger.warning(msg)
             elif level == "error":
                 logger.error(msg)
-            elif level == "fatal":
-                logger.fatal(msg)
+            elif level == "critical":
+                logger.critical(msg)
 
         alert_text = None
         try:
