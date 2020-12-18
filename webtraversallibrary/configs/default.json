@@ -34,6 +34,11 @@
     "enable_mhtml": false,
     "proxy": ""
   },
+  "javascript": {
+    "info": "debug",
+    "warning": "debug",
+    "severe": "error"
+  },
   "debug": {
     "autoscroll": true,
     "default_canvas_viewport": true,

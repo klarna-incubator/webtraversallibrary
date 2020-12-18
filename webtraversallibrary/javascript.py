@@ -38,6 +38,7 @@ from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from .color import Color
+from .config import Config
 from .error import WindowClosedError
 from .geometry import Point, Rectangle
 from .selector import Selector
@@ -50,15 +51,32 @@ def safe_selenium_method(func):
     Handles errors thrown in the browser while executing javascript and outputs information to the log.
     Note: This is a clumsy decorator for instance methods and assumes there is a self.driver member.
     """
-    JS_DEBUG_LEVELS = {"INFO", "WARNING"}
-    JS_ERROR_LEVELS = {"SEVERE"}
 
     @wraps(func)
-    def wrapper(*args, **kwargs):
-        self = args[0]
+    def wrapper(self, *args, **kwargs):
+        def to_logger(msg, js_level):
+            if js_level == "INFO":
+                level = self.config.javascript.info
+            elif js_level == "WARNING":
+                level = self.config.javascript.warning
+            elif js_level == "SEVERE":
+                level = self.config.javascript.severe
+            else:
+                return
+            if level == "debug":
+                logger.debug(msg)
+            elif level == "info":
+                logger.info(msg)
+            elif level == "warning":
+                logger.warning(msg)
+            elif level == "error":
+                logger.error(msg)
+            elif level == "fatal":
+                logger.fatal(msg)
+
         alert_text = None
         try:
-            return func(*args, **kwargs)
+            return func(self, *args, **kwargs)
         except UnexpectedAlertPresentException:
             # Some websites create an alert to communicate an error message instead of throwing the normal exception
             # or instead of things normal people use popups for.
@@ -83,10 +101,8 @@ def safe_selenium_method(func):
             for record in sorted(log_records, key=lambda x: int(x["timestamp"])):
                 record["timestamp"] = datetime.fromtimestamp(record["timestamp"] / 1000).strftime("%H:%M")
                 log_line = "[{level}] {message}".format(**record)
-                if record["level"] in JS_DEBUG_LEVELS:
-                    logger.debug(log_line)
-                elif record["level"] in JS_ERROR_LEVELS:
-                    logger.error(log_line)
+                log_level = record["level"]
+                to_logger(log_line, log_level)
 
             # Then alert text, if there was any
             if alert_text is not None:
@@ -101,9 +117,11 @@ class JavascriptWrapper:
     files and snippets.
     """
 
-    def __init__(self, driver: WebDriver):
+    def __init__(self, driver: WebDriver, config: Config = None):
         assert driver
+        config = config or Config.default()
         self.driver = driver
+        self.config = config
 
     def save_mhtml(self, filename: str):
         """
