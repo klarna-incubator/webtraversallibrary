@@ -51,10 +51,6 @@ from .window import Window
 logger = logging.getLogger("wtl")
 
 
-# Pylint doesn't understand dataclasses just yet
-# pylint: disable=no-member
-
-
 class Workflow:
     """
     The Workflow is the main entry point for using the Web Traversal Library.
