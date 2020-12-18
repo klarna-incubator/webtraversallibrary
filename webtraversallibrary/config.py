@@ -69,6 +69,7 @@ class Config:
             ("debug.screenshots", bool),
             ("debug.save", bool),
             ("debug.preserve_window", bool),
+            ("debug.action_highlight_color", str),
         ]
     )
 

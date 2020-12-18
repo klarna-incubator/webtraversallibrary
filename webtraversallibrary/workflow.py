@@ -490,7 +490,7 @@ class Workflow:
                     self.latest_view.snapshot.screenshots[name] = scr
 
                 if self.config.debug.live:
-                    self.js.highlight(action.selector, Color.from_str("#FFB3C7"))
+                    self.js.highlight(action.selector, Color.from_str(self.config.debug.action_highlight_color))
                     sleep(self.config.debug.live_delay)
 
                 if has_element_handle:
