@@ -54,7 +54,7 @@ class Scraper:
         self.driver = driver
         self.config = config
         self.hide_sticky = hide_sticky
-        self.js = JavascriptWrapper(self.driver)
+        self.js = JavascriptWrapper(self.driver, config)
         self.postload_callbacks = postload_callbacks
         self.device_pixel_ratio = self.js.execute_script("return window.devicePixelRatio;") or 1.0
 
