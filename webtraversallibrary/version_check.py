@@ -26,4 +26,7 @@ def run_cmd(cmd: str, title: str = None) -> bool:
             logger.info(f"{title}: {str(result.stdout.decode('ascii').strip())}")
         return True
     except CalledProcessError:
-        return False
+        if title:
+            logger.info(f"{title}: [FAILED]")
+
+    return False
