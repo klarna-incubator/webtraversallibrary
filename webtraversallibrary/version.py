@@ -16,4 +16,4 @@
 # under the License.
 
 """Maintains version info for this package."""
-__version__ = "0.11.2"
+__version__ = "0.11.3"

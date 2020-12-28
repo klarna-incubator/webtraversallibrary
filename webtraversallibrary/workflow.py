@@ -230,15 +230,16 @@ class Workflow:
                 self._perform_action(initial_action)
 
             # Optimization: Only scrape tab if enforced, action taken, or never scraped before
+            sh = self.history
             if (
                 not self.config.scraping.all
                 and self.previous_policy_result
                 and tab not in self.previous_policy_result
-                and self.latest_view
-                and self.latest_view.snapshot
+                and sh[-1]
+                and sh[-1].snapshot
             ):
-                self.history.append(self.latest_view)
-                all_views[tab] = self.history[-1]
+                self.history.append(sh)
+                all_views[tab] = sh[-1]
                 continue
 
             # Store View
@@ -247,9 +248,6 @@ class Workflow:
         return all_views
 
     def _get_new_view(self, name: str, initial_action: Action) -> View:
-        # Ensure page is fully loaded
-        self.current_window.scraper.wait_until_loaded()
-
         # Run postload callbacks
         for cb in self.current_window.scraper.postload_callbacks:
             cb()
@@ -414,7 +412,7 @@ class Workflow:
 
     @property
     def latest_view(self) -> View:
-        """Returns the latets :class:`View` taken from the current tab."""
+        """Returns the latest :class:`View` taken from the current tab."""
         return self.history[self.loop_idx]
 
     @property
@@ -500,7 +498,8 @@ class Workflow:
 
                 if self.config.debug.live:
                     self.js.highlight(action.selector, Color.from_str(self.config.debug.action_highlight_color))
-                    sleep(self.config.debug.live_delay)
+                    if not self.config.browser.headless:
+                        sleep(self.config.debug.live_delay)
 
                 if has_element_handle:
                     patch = self.monkeypatches.check(action.target.page, action.target)  # type: ignore
