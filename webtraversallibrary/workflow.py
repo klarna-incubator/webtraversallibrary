@@ -32,7 +32,7 @@ from typing import Any, Callable, Dict, List, Union
 from selenium import webdriver
 
 from .actions import Abort, Action, Actions, ElementAction, Navigate, Refresh, Revert, Wait
-from .classifiers import Classifier, ElementClassifier, ViewClassifier
+from .classifiers import Classifier
 from .color import Color
 from .config import Config
 from .error import Error
@@ -284,10 +284,9 @@ class Workflow:
         view.actions.extend(self._run_element_classifiers(snapshot))
 
         # Run page classifiers
-        for classifier in self.classifiers:
-            if classifier.enabled and classifier.callback and isinstance(classifier, ViewClassifier):
-                result = classifier.callback(view)
-                view.tags.update(result)
+        for classifier in self.classifiers.active_view_classifiers:
+            result = classifier.callback(view)
+            view.tags.update(result)
 
         return view
 
@@ -530,16 +529,18 @@ class Workflow:
     def _run_element_classifiers(self, snapshot: PageSnapshot) -> List[Action]:
         action_list: List[Action] = []
 
-        for classifier in self.classifiers:
-            if classifier.enabled and classifier.callback and isinstance(classifier, ElementClassifier):
-                subset = snapshot.elements.by_score(classifier.subset)
-                results = classifier.callback(subset, self)
+        for classifier in self.classifiers.active_element_classifiers:
+            subset = snapshot.elements.by_score(classifier.subset)
+            results = classifier.callback(subset, self)
 
-                if not isinstance(results, dict):
-                    results = {"": results}
+            if not results:
+                continue
 
-                for cls_name, cls_result in results.items():
-                    action_list.extend(self._process_class(classifier, cls_name, cls_result, subset, snapshot))
+            if not isinstance(results, dict):
+                results = {"": results}
+
+            for cls_name, cls_result in results.items():
+                action_list.extend(self._process_class(classifier, cls_name, cls_result, subset, snapshot))
 
         return action_list
 
@@ -547,18 +548,16 @@ class Workflow:
         # Add the classifier name as the prefix on multi-class predictions
         cls_name = f"{classifier.name}__{cls_name}" if cls_name else classifier.name
 
-        if not cls_result:
-            binary_filter = True
-        else:
-            binary_filter = isinstance(cls_result[0], PageElement)
+        binary_filter = isinstance(cls_result[0], PageElement) if cls_result else True
 
         if binary_filter:
-            # If binary filter, assign score=1
             cls_result = [(e, 1.0 if e in cls_result else 0.0) for e in subset]
-            cls_result.sort(key=lambda x: x[1], reverse=True)
+
+        cls_result.sort(key=lambda x: x[1], reverse=True)
+
+        if binary_filter:
             scaled_result = [value[1] for value in cls_result]
         else:
-            cls_result.sort(key=lambda x: x[1], reverse=True)
             scaled_result = classifier.mode.scale([r[1] for r in cls_result])
 
         cls_result = [(e, r, s) for (e, r), s in zip(cls_result, scaled_result)]
@@ -570,11 +569,10 @@ class Workflow:
         if classifier.highlight:
             self._highlight_classifier_result(classifier, cls_name, cls_result, snapshot)
 
-        return (
-            [classifier.action(element) for element, _, score in cls_result if score]  # type: ignore
-            if classifier.action
-            else []
-        )
+        if classifier.action:
+            return [classifier.action(element) for element, _, score in cls_result if score]
+
+        return []
 
     def reset(self):
         """
