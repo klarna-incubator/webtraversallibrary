@@ -57,10 +57,8 @@ class ScalingMode(Enum):
 
         if self == ScalingMode.LINEAR:
             return [(score - minimum) / (maximum - minimum) for score in values]
-        if self == ScalingMode.LOG:
-            return [(math.log(score) - math.log(minimum)) / (math.log(maximum) - math.log(minimum)) for score in values]
 
-        raise ValueError("Invalid ScalingMode value!")
+        return [(math.log(score) - math.log(minimum)) / (math.log(maximum) - math.log(minimum)) for score in values]
 
 
 @dataclass
