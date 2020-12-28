@@ -51,7 +51,7 @@ def test_by_score():
     actions = wtl.actions.Actions(
         [
             wtl.actions.Refresh(),
-            wtl.actions.Click(wtl.PageElement(page=None, metadata={"x": 0.5})),
+            wtl.actions.Click(wtl.PageElement(page=None, metadata={"x": 0.5, "raw_scores": {"x": 2.5}})),
             wtl.actions.Click(wtl.PageElement(page=None, metadata={"x": 0.5, "y": 0.5})),
             wtl.actions.FillText(wtl.PageElement(page=None, metadata={"y": 0.75, "raw_scores": {"y": 2.5}})),
             wtl.actions.FillText(wtl.PageElement(page=None, metadata={"x": 1.5, "y": 1.5, "raw_scores": {"y": 1.5}})),
@@ -61,6 +61,11 @@ def test_by_score():
 
     x_actions = actions.by_score("x")
     assert len(x_actions) == 3
+
+    x_actions_sorted = actions.by_score("x").sort_by("x")
+    assert len(x_actions_sorted) == 3
+    assert x_actions[0] == x_actions_sorted[2]
+    assert x_actions[2] != x_actions_sorted[0]
 
     a_actions = actions.by_score("a")
     assert not a_actions

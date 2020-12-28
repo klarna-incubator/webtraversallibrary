@@ -204,6 +204,13 @@ class Elements(list):
                 return e
         return None
 
+    def sort_by(self, name: str = None, reverse: bool = False) -> Elements:
+        """
+        Sorts by a certain (raw) score. If given name does not exist the element gets (raw) score 0.
+        """
+        self.sort(key=lambda e: e.raw_scores.get(name, 0), reverse=reverse)
+        return self
+
 
 @dataclass(repr=False, frozen=True)
 class PageSnapshot:
