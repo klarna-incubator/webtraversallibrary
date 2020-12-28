@@ -1,0 +1,9 @@
+{
+  "browser": {
+    "browser": "firefox",
+    "useragent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/30.0 Mobile/15E148 Safari/605.1.15",
+    "width": 375,
+    "height": 812,
+    "pixelRatio": 0
+  }
+}
