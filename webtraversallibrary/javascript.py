@@ -195,6 +195,13 @@ class JavascriptWrapper:
 
         self.execute_file(Path("show_position_fixed_elements.js"), id_to_visibility)
 
+    def element_exists(self, selector: Selector) -> bool:
+        """
+        Returns True if an element exists, otherwise False.
+        """
+
+        return self.execute_file(Path("element_exists.js"), selector.css)
+
     def disable_animations(self):
         """
         Turns off animation on the page. Works for jQuery by setting a certain flag and for CSS animations by injecting
