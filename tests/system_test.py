@@ -37,7 +37,7 @@ def mock_merchant_website(request):
     request.addfinalizer(server.terminate)
 
 
-browsers = [None, "desktop", "firefox"]
+browsers = [None, "desktop", "firefox_mobile", "firefox_desktop"]
 
 
 @pytest.mark.parametrize("browser", browsers)
