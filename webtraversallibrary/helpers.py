@@ -23,11 +23,9 @@ import logging
 from collections.abc import Collection
 from typing import Any, Dict, List, Union
 
-from selenium import webdriver
-
+from .browser import Browser
 from .classifiers import Classifier, ElementClassifier, ViewClassifier
 from .error import ElementNotFoundError
-from .javascript import JavascriptWrapper
 from .selector import Selector
 from .snapshot import PageElement, PageSnapshot
 
@@ -112,12 +110,12 @@ class FrameSwitcher:
     Raises ElementNotFoundError if an iframe could not be found.
     """
 
-    def __init__(self, identifier: str, js: JavascriptWrapper, driver: webdriver):
+    def __init__(self, identifier: str, browser: Browser):
         self.name = None
-        self.driver = driver
+        self.browser = browser
 
         if identifier:
-            self.name = js.find_iframe_name(identifier)
+            self.name = self.browser.js.find_iframe_name(identifier)
             if not self.name:
                 raise ElementNotFoundError(f"Found no iframe with identifier '{identifier}'")
 
@@ -127,7 +125,7 @@ class FrameSwitcher:
         """
         if self.name:
             logger.debug(f"Entering iframe: '{self.name}'")
-            self.driver.switch_to.frame(self.name)
+            self.browser.driver.switch_to.frame(self.name)
 
     def __exit__(self, *_):
         """
@@ -135,4 +133,4 @@ class FrameSwitcher:
         """
         if self.name:
             logger.debug(f"Exiting iframe: '{self.name}'")
-            self.driver.switch_to.default_content()
+            self.browser.driver.switch_to.default_content()

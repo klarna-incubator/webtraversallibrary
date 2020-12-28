@@ -328,7 +328,7 @@ class Refresh(PageAction):
     """
 
     def execute(self, workflow):
-        workflow.driver.refresh()
+        workflow.scraper.refresh()
 
 
 @dataclass(frozen=True)

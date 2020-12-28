@@ -21,12 +21,11 @@ from typing import Any, Callable, Dict, List, Set
 
 from selenium.common.exceptions import JavascriptException, UnexpectedAlertPresentException, WebDriverException
 
+from .browser import Browser
 from .config import Config
 from .error import WindowClosedError
-from .javascript import JavascriptWrapper
 from .logging import logging
 from .scraper import Scraper
-from .webdrivers import setup_driver
 
 logger = logging.getLogger("wtl")
 
@@ -38,9 +37,8 @@ class Window:
     """
 
     def __init__(self, config: Config, preload_callbacks: List[Path] = None, postload_callbacks: List[Callable] = None):
-        self._driver = setup_driver(config, preload_callbacks=preload_callbacks)
-        self.scraper = Scraper(driver=self.driver, config=config, postload_callbacks=postload_callbacks)
-        self.js = JavascriptWrapper(self.driver, config)
+        self.browser = Browser(config, preload_callbacks=preload_callbacks)
+        self.scraper = Scraper(browser=self.browser, config=config, postload_callbacks=postload_callbacks)
         self.name_to_handle: Dict[str, int] = {}
         self.closed: Set[str] = set()
         self.current: str = None
@@ -52,8 +50,8 @@ class Window:
         Raises WindowClosedError if this fails.
         """
         try:
-            assert self._driver
-            _ = self._driver.window_handles
+            assert self.browser.driver
+            _ = self.browser.driver.window_handles
         except (AssertionError, WebDriverException) as e:
             raise WindowClosedError("Could not reach the browser window!") from e
 
@@ -61,7 +59,7 @@ class Window:
     def driver(self):
         """Checks if the driver is attached, and if so returns a reference to it."""
         self.ensure_running()
-        return self._driver
+        return self.browser.driver
 
     def is_closed(self, tab):
         """Returns True if the tab has been closed"""
@@ -92,14 +90,14 @@ class Window:
 
     @property
     def cookies(self) -> List[Any]:
-        return self.driver.get_cookies()
+        return self.browser.driver.get_cookies()
 
     @cookies.setter
     def cookies(self, value: List[Any]):
         """Replaces(!) all existing cookies with the given list."""
-        self.driver.delete_all_cookies()
+        self.browser.driver.delete_all_cookies()
         for cookie in value:
-            self.driver.add_cookie(cookie)
+            self.browser.driver.add_cookie(cookie)
 
     def create_tab(self, name: str, url: str = "about:blank"):
         """
@@ -108,15 +106,15 @@ class Window:
         :func:`navigation` method later. The tab will not automatically navigate
         to the given adress. Use a :class:`Scraper` or interact directly with the driver.
         """
-        assert self.driver, "Cannot interact with window after calling quit!"
+        assert self.browser.driver, "Cannot interact with window after calling quit!"
         assert name not in self.closed, "Cannot reopen a closed tab!"
 
         # Every window comes with one tab, reuse if possible
         if len(self.name_to_handle) > 0:
-            self.js.execute_script("window.open('about:blank');")
+            self.browser.js.execute_script("window.open('about:blank');")
 
         # Get mapping of the new tab and store in the dict
-        for _tab in self.driver.window_handles:
+        for _tab in self.browser.driver.window_handles:
             if _tab not in self.name_to_handle.values():
                 self.name_to_handle[name] = _tab
 
@@ -138,14 +136,14 @@ class Window:
         if name in self.closed:
             logger.warning("This tab has been closed. Do not interact with it.")
         else:
-            self.driver.switch_to.window(self.name_to_handle[name])
+            self.browser.driver.switch_to.window(self.name_to_handle[name])
 
     def close_tab(self):
         """Closes the current active tab."""
         assert self.current not in self.closed, "Closing already closed tab!"
         self.closed.add(self.current)
         try:
-            self.driver.close()
+            self.browser.driver.close()
         except (UnexpectedAlertPresentException, JavascriptException, WebDriverException, WindowClosedError):
             logger.warning("Attempting to close failed - window probably already closed.")
 
@@ -154,15 +152,16 @@ class Window:
         Terminates the browser and associated driver of this instance.
         Do not use this window afterwards.
         """
-        if not self._driver:
+        # TODO move to Browser class?
+        if not self.browser.driver:
             return
 
         try:
             for tab in self.open_tabs:
                 self.set_tab(tab)
                 self.close_tab()
-            self._driver.quit()
+            self.browser.driver.quit()
         except WindowClosedError:
             logger.warning("Attempting to close already closed window.")
         finally:
-            self._driver = None
+            self.browser.driver = None

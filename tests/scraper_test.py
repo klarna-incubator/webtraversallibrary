@@ -15,6 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from dataclasses import dataclass
+
 import webtraversallibrary as wtl
 
 
@@ -50,13 +52,20 @@ class MockWebDriver:
         return None
 
 
+@dataclass
+class MockBrowser:
+    driver: MockWebDriver
+    js: wtl.JavascriptWrapper
+
+
 def test_simple():
     config = wtl.Config.default()
     config.scraping.page_load_timeout = 1
     config.scraping.prescroll = True
 
     driver = MockWebDriver()
-    scraper = wtl.Scraper(driver, config)
+    browser = MockBrowser(driver, wtl.JavascriptWrapper(driver))
+    scraper = wtl.Scraper(browser, config)
     assert scraper
 
     scraper.navigate("some url")

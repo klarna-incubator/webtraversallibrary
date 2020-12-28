@@ -15,6 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+from dataclasses import dataclass
+
 import pytest
 
 import webtraversallibrary as wtl
@@ -51,6 +53,12 @@ class MockSnapshot:
 
     def by_selector(self, s):
         return self._elements[s.css]
+
+
+@dataclass
+class MockBrowser:
+    driver: MockWebDriver
+    js: MockJavascriptWrapper
 
 
 def test_classifier_collection():
@@ -121,7 +129,8 @@ def test_monkeypatches():
 def test_frame_switcher():
     js = MockJavascriptWrapper()
     driver = MockWebDriver()
-    fs = FrameSwitcher("abc", js, driver)
+    browser = MockBrowser(driver, js)
+    fs = FrameSwitcher("abc", browser)
 
     with fs:
         assert driver.f == "abciframe"
@@ -130,4 +139,4 @@ def test_frame_switcher():
     assert driver.f == "default"
 
     with pytest.raises(wtl.ElementNotFoundError):
-        FrameSwitcher("FAIL", js, driver)
+        FrameSwitcher("FAIL", browser)

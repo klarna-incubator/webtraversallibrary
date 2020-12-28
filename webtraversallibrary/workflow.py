@@ -392,12 +392,12 @@ class Workflow:
     @property
     def js(self) -> JavascriptWrapper:
         """Returns a :class:`JavascriptWrapper` associated to the current window."""
-        return self.current_window.js
+        return self.current_window.browser.js
 
     @property
     def driver(self) -> webdriver:
         """Returns the WebDriver instance associated to the current window."""
-        return self.current_window.driver
+        return self.current_window.browser.driver
 
     @property
     def scraper(self) -> Scraper:
@@ -457,7 +457,7 @@ class Workflow:
         Returns a context manager for entering and exiting iframes.
         See `FrameSwitcher` for more details.
         """
-        return FrameSwitcher(identifier, self.js, self.driver)
+        return FrameSwitcher(identifier, self.current_window.browser)
 
     def _perform_action(self, action: Action):
         if not action:

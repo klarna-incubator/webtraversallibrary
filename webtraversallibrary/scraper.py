@@ -29,12 +29,11 @@ from typing import Callable, Dict, List
 
 import bs4
 from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, WebDriverException
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from urllib3.util import parse_url
 
+from .browser import Browser
 from .config import Config
-from .javascript import JavascriptWrapper
 from .processtools import TimeoutContext
 from .screenshot import Screenshot
 from .snapshot import PageSnapshot
@@ -49,14 +48,13 @@ class Scraper:
     """
 
     def __init__(
-        self, driver: WebDriver, config: Config, hide_sticky: bool = True, postload_callbacks: List[Callable] = None
+        self, browser: Browser, config: Config, hide_sticky: bool = True, postload_callbacks: List[Callable] = None
     ):
-        self.driver = driver
+        self.browser = browser
         self.config = config
         self.hide_sticky = hide_sticky
-        self.js = JavascriptWrapper(self.driver, config)
         self.postload_callbacks = postload_callbacks
-        self.device_pixel_ratio = self.js.execute_script("return window.devicePixelRatio;") or 1.0
+        self.device_pixel_ratio = self.browser.js.execute_script("return window.devicePixelRatio;") or 1.0
 
     def scrape_current_page(self) -> PageSnapshot:
         """
@@ -98,9 +96,9 @@ class Scraper:
         Triggers a refresh of the page.
         Blocks until page is loaded.
         """
-        self.driver.refresh()
+        self.browser.driver.refresh()
         if self.config.scraping.disable_animations:
-            self.js.disable_animations()
+            self.browser.js.disable_animations()
         self.wait_until_loaded()
 
     def navigate(self, url: str):
@@ -111,14 +109,14 @@ class Scraper:
         try:
             if parse_url(url).scheme is None:
                 url = "http://" + url
-            self.driver.get(url)
+            self.browser.driver.get(url)
         except TimeoutException:
             raise TimeoutError(f"WebDriver page load timed out on url '{url}'")
         except WebDriverException:
             logger.error(f"URL not valid: {url}")
 
         if self.config.scraping.disable_animations:
-            self.js.disable_animations()
+            self.browser.js.disable_animations()
         self.wait_until_loaded()
 
     def wait_until_loaded(self, timeout: int = None):
@@ -134,7 +132,7 @@ class Scraper:
 
         try:
             # Wait until page is loaded from JS and jQuery perspective
-            WebDriverWait(self.driver, timeout).until(self.js.is_page_loaded)
+            WebDriverWait(self.browser.driver, timeout).until(self.browser.js.is_page_loaded)
         except TimeoutException:
             logger.warning("Timed out waiting for the page to fully load, proceeding anyway")
         except UnexpectedAlertPresentException:
@@ -144,11 +142,11 @@ class Scraper:
 
         # Some pages change after scrolling, so simulate some movement
         if self.config.scraping.prescroll:
-            self.js.scroll_to(0, 100)
+            self.browser.js.scroll_to(0, 100)
             time.sleep(self.config.scraping.wait_scroll)
-            self.js.scroll_to(0, 9999)
+            self.browser.js.scroll_to(0, 9999)
             time.sleep(self.config.scraping.wait_scroll)
-            self.js.scroll_to(0, 0)
+            self.browser.js.scroll_to(0, 0)
             time.sleep(self.config.scraping.wait_loading)
 
     def capture_screenshot(self, name: str, max_page_height: int = 0) -> Screenshot:
@@ -156,7 +154,7 @@ class Scraper:
         Captures the screenshot of the current rendering in the browser window.
         """
         return Screenshot.capture(
-            name=name, driver=self.driver, scale=1 / self.device_pixel_ratio, max_page_height=max_page_height
+            name=name, driver=self.browser.driver, scale=1 / self.device_pixel_ratio, max_page_height=max_page_height
         )
 
     def get_page_as_mhtml(self) -> bytes:
@@ -176,7 +174,7 @@ class Scraper:
         except OSError:
             pass
 
-        self.js.save_mhtml(filename)
+        self.browser.js.save_mhtml(filename)
 
         try:
             with TimeoutContext(n_seconds=self.config.scraping.mhtml_timeout):
@@ -192,7 +190,7 @@ class Scraper:
     def _create_snapshot(self) -> PageSnapshot:
         before = datetime.now()
 
-        logger.debug(f"Page title: {self.driver.title}")
+        logger.debug(f"Page title: {self.browser.driver.title}")
 
         # Create screenshots if required
         screenshots: Dict[str, Screenshot] = {}
@@ -205,18 +203,18 @@ class Scraper:
                 screenshots["full"] = self.capture_screenshot("full", max_page_height=max_page_height)
 
         # Gather element metadata
-        elements_metadata = self.js.get_element_metadata() or []
+        elements_metadata = self.browser.js.get_element_metadata() or []
         num_elements = len(elements_metadata)
 
         # Gather page metadata
-        inner_html = self.driver.find_element_by_tag_name("html").get_attribute("innerHTML")
+        inner_html = self.browser.driver.find_element_by_tag_name("html").get_attribute("innerHTML")
         page_source = bs4.BeautifulSoup(f"<!DOCTYPE html><html>{inner_html}</html>", self.config.bs_html_parser)
         page_metadata = {
             "timestamp": before.isoformat(),
-            "url": self.driver.current_url,
-            "title": self.driver.title,
-            "driver": self.driver.name,
-            "full_page_size": (self.config.browser.width, self.js.get_full_height()),
+            "url": self.browser.driver.current_url,
+            "title": self.browser.driver.title,
+            "driver": self.browser.driver.name,
+            "full_page_size": (self.config.browser.width, self.browser.js.get_full_height()),
             "device_pixel_ratio": self.device_pixel_ratio,
             "num_elements": num_elements,
             "screenshots": list(screenshots.keys()),

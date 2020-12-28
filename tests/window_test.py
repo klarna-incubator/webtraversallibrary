@@ -23,7 +23,7 @@ import webtraversallibrary as wtl
 def test_window():
     config = wtl.Config.default(["headless"])
     window = wtl.Window(config=config)
-    assert window.driver is not None
+    assert window.browser is not None
 
     assert len(window.tabs) == 0
 
@@ -52,7 +52,7 @@ def test_window():
     with pytest.raises(wtl.Error):
         window.ensure_running()
 
-    with pytest.raises(wtl.Error):
+    with pytest.raises(AssertionError):
         window.create_tab("tab4")
 
     window.quit()
