@@ -98,6 +98,7 @@ class Workflow:
         self._current_tab: str = None
         self._current_window: Window = None
         self._has_quit = False
+        self._tabs_cache: List[str] = None
         self.metadata: Dict[Any, Any] = {}
         self.monkeypatches = MonkeyPatches(patches)
         self.classifiers = ClassifierCollection(classifiers)
@@ -163,6 +164,8 @@ class Workflow:
 
         :return: The boolean output from the goal function.
         """
+        self._populate_tabs_cache()
+
         # Perform required snapshotting
         self.loop_idx += 1
         all_views = self._get_new_views()
@@ -363,7 +366,7 @@ class Workflow:
     @property
     def tabs(self) -> List[str]:
         """Returns a list of all tab names."""
-        return list(itertools.chain.from_iterable(window.tabs for window in self.windows))
+        return self._tabs_cache
 
     @property
     def open_tabs(self):
@@ -555,6 +558,10 @@ class Workflow:
 
         return action_list
 
+    def _populate_tabs_cache(self):
+        """Updates the cache used by self.tabs property"""
+        self._tabs_cache = list(itertools.chain.from_iterable(window.tabs for window in self.windows))
+
     def _process_class(self, classifier, cls_name, cls_result, subset, snapshot) -> List[Action]:
         # Add the classifier name as the prefix on multi-class predictions
         cls_name = f"{classifier.name}__{cls_name}" if cls_name else classifier.name
@@ -606,6 +613,7 @@ class Workflow:
             window = self.create_window(window_name)
             for tab_name, url in tab_names.items():
                 window.create_tab(tab_name, url=url)
+        self._populate_tabs_cache()
         self.tab(self.tabs[0])
 
     def reset_to(self, view_index: int):
