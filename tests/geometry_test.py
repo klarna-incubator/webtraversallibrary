@@ -121,6 +121,9 @@ def test_rectangle_contains():
     assert Point(1, 1) in r_large
     assert Point(1, 1) in r_small
 
+    with pytest.raises(TypeError):
+        assert "not a rectangle" in r_large
+
 
 def test_rectangle_add():
     r_large = Rectangle.from_list([0, 0, 5, 5])
