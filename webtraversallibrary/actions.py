@@ -122,6 +122,13 @@ class Actions(list):
 
         return actions
 
+    def sort_by(self, name: str = None, reverse: bool = False) -> Actions:
+        """
+        Sorts by a certain action (raw) score. If given name does not exist the element gets (raw) score 0.
+        """
+        self.sort(key=lambda action: action.target.raw_scores.get(name, 0), reverse=reverse)
+        return self
+
 
 @dataclass(frozen=True)
 class ElementAction(Action):
