@@ -122,6 +122,13 @@ class Actions(list):
 
         return actions
 
+    def sort_by(self, name: str = None, reverse: bool = False) -> Actions:
+        """
+        Sorts by a certain action (raw) score. If given name does not exist the element gets (raw) score 0.
+        """
+        self.sort(key=lambda action: action.target.raw_scores.get(name, 0), reverse=reverse)
+        return self
+
 
 @dataclass(frozen=True)
 class ElementAction(Action):
@@ -310,6 +317,21 @@ class Wait(PageAction):
 
 
 @dataclass(frozen=True)
+class WaitForElement(PageAction):
+    """
+    Checks to see if element at given selector exists on the page.
+    Keeps trying indefinitely with a given interval until it succeeds.
+    """
+
+    selector: Selector
+    seconds: float = 1.0
+
+    def execute(self, workflow):
+        while not workflow.js.element_exists(self.selector):
+            sleep(self.seconds)
+
+
+@dataclass(frozen=True)
 class WaitForUser(PageAction):
     """
     Waits until the Enter key is pressed in the terminal.
@@ -328,7 +350,7 @@ class Refresh(PageAction):
     """
 
     def execute(self, workflow):
-        workflow.driver.refresh()
+        workflow.scraper.refresh()
 
 
 @dataclass(frozen=True)

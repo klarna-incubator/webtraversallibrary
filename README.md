@@ -4,6 +4,7 @@
 [![Build Status][ci-image]][ci-url]
 [![License][license-image]][license-url]
 [![Developed at Klarna][klarna-image]][klarna-url]
+[![Documentation Status](https://readthedocs.org/projects/webtraversallibrary/badge/?version=latest)](https://webtraversallibrary.readthedocs.io/en/latest/?badge=latest)
 
 ## Installation
 

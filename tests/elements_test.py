@@ -43,6 +43,11 @@ def test_by_score_and_uid():
     y_raw_elements = elements.by_raw_score("y", limit=1.0)
     assert len(y_raw_elements) == 2
 
+    y_raw_elements_sorted = elements.by_raw_score("y").sort_by("y")
+    assert len(y_raw_elements) == 2
+    assert y_raw_elements[0] == y_raw_elements_sorted[1]
+    assert y_raw_elements[1] == y_raw_elements_sorted[0]
+
     xy_element = elements.by_uid(2)
     assert xy_element.metadata["x"] == xy_element.metadata["y"]
 

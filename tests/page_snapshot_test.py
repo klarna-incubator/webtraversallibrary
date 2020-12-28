@@ -20,9 +20,6 @@ import bs4
 from webtraversallibrary.config import Config
 from webtraversallibrary.snapshot import PageSnapshot
 
-# Pylint doesn't understand dataclasses just yet
-# pylint: disable=unsubscriptable-object
-
 
 def test_page_snapshot():
     source = """

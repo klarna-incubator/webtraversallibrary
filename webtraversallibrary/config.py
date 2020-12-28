@@ -28,6 +28,8 @@ from typing import Any, Dict, List, Union
 
 from prodict import Prodict  # pylint: disable=syntax-error
 
+from .version_check import VERSION_CMD, run_cmd
+
 logger = logging.getLogger("wtl")
 
 
@@ -61,6 +63,9 @@ class Config:
             ("browser.headless", bool),
             ("browser.enable_mhtml", bool),
             ("browser.proxy", str),
+            ("javascript.info", str),
+            ("javascript.warning", str),
+            ("javascript.severe", str),
             ("debug.autoscroll", bool),
             ("debug.default_canvas_viewport", bool),
             ("debug.live", bool),
@@ -69,6 +74,7 @@ class Config:
             ("debug.screenshots", bool),
             ("debug.save", bool),
             ("debug.preserve_window", bool),
+            ("debug.action_highlight_color", str),
         ]
     )
 
@@ -137,6 +143,34 @@ class Config:
 
     def __len__(self):
         return len(self._instance)
+
+    def validate(self):
+        """
+        Performs basic sanity checks on the configuration values.
+        Throws AssertionError if something is incorrect.
+        """
+        LOG_LEVELS = ["", "debug", "info", "warning", "error", "critical"]
+        BROWSERS = ["chrome", "firefox"]
+        cfg = self._instance
+
+        assert cfg.javascript.info in LOG_LEVELS
+        assert cfg.javascript.warning in LOG_LEVELS
+        assert cfg.javascript.severe in LOG_LEVELS
+        assert cfg.timeout >= 0
+        assert cfg.scraping.attempts >= 1
+        assert cfg.scraping.page_load_timeout >= 0
+        assert cfg.scrolling.max_page_height >= 0
+        assert cfg.browser.width >= 1
+        assert cfg.browser.height >= 1
+        assert cfg.debug.live_delay >= 0
+        assert cfg.browser.browser in BROWSERS
+
+        if cfg.browser.browser == "chrome":
+            assert run_cmd(VERSION_CMD.CHROME) or run_cmd(VERSION_CMD.CHROMIUM)
+            assert run_cmd(VERSION_CMD.CHROMEDRIVER)
+        elif cfg.browser.browser == "firefox":
+            assert run_cmd(VERSION_CMD.FIREFOX)
+            assert run_cmd(VERSION_CMD.GECKODRIVER)
 
     @staticmethod
     def default(cfg: List[Union[str, Path, dict]] = None) -> Config:

@@ -718,5 +718,3 @@ const eventMap = {
       }
     }
   };
-
-

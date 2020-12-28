@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Union
 
 from selenium import webdriver
 
-from .classifiers import Classifier
+from .classifiers import Classifier, ElementClassifier, ViewClassifier
 from .error import ElementNotFoundError
 from .javascript import JavascriptWrapper
 from .selector import Selector
@@ -53,6 +53,14 @@ class ClassifierCollection(Collection):
     def stop(self, classifier: Union[str, Classifier]):
         name = classifier if isinstance(classifier, str) else classifier.name
         self._classifiers[name].enabled = False
+
+    @property
+    def active_element_classifiers(self):
+        return ClassifierCollection([c for c in self if c.enabled and c.callback and isinstance(c, ElementClassifier)])
+
+    @property
+    def active_view_classifiers(self):
+        return ClassifierCollection([c for c in self if c.enabled and c.callback and isinstance(c, ViewClassifier)])
 
     def __iter__(self):
         yield from self._classifiers.values()

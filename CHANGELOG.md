@@ -4,7 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.11] - 2020-12-17
+## [0.11.2] - 2020-12-29
+- Updated user agents, split firefox into firefox_desktop and firefox_mobile
+- Added WaitForElement action
+- Fixed bug in Refresh action
+- Now performs basic validation of config inputs
+- Prints browser and webdriver versions on startup
+- Added config settings for javascript log level
+- Added sort_by methods to Elements and Actions to simplify sorting by score
+
+## [0.11.1] - 2020-12-17
 - Added local_text entry in element metadata for text specific to that element
 
 ## [0.11] - 2020-12-17

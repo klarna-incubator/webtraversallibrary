@@ -28,7 +28,7 @@ class MockWebDriver:
         self.calls += 1
         return self.to_return if self.to_return else self.calls
 
-    def get_log(self, *_, **__):  # pylint: disable=no-self-use
+    def get_log(self, *_, **__):
         return []
 
 

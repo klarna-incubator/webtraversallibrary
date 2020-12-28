@@ -41,9 +41,6 @@ from .selector import Selector
 
 logger = logging.getLogger("wtl")
 
-# Pylint doesn't understand dataclasses just yet
-# pylint: disable=no-member, unsubscriptable-object, unsupported-assignment-operation
-
 
 @dataclass(frozen=True)
 class PageElement:
@@ -57,7 +54,7 @@ class PageElement:
     @property
     def raw_scores(self) -> Dict[str, float]:
         """Returns all raw classifier scores."""
-        if "raw_scores" not in self.metadata:  # pylint: disable=unsupported-membership-test
+        if "raw_scores" not in self.metadata:
             self.metadata["raw_scores"] = {}
         return self.metadata["raw_scores"]
 
@@ -206,6 +203,13 @@ class Elements(list):
             if e.wtl_uid == wtl_uid:
                 return e
         return None
+
+    def sort_by(self, name: str = None, reverse: bool = False) -> Elements:
+        """
+        Sorts by a certain (raw) score. If given name does not exist the element gets (raw) score 0.
+        """
+        self.sort(key=lambda e: e.raw_scores.get(name, 0), reverse=reverse)
+        return self
 
 
 @dataclass(repr=False, frozen=True)

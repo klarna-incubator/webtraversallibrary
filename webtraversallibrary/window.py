@@ -40,7 +40,7 @@ class Window:
     def __init__(self, config: Config, preload_callbacks: List[Path] = None, postload_callbacks: List[Callable] = None):
         self._driver = setup_driver(config, preload_callbacks=preload_callbacks)
         self.scraper = Scraper(driver=self.driver, config=config, postload_callbacks=postload_callbacks)
-        self.js = JavascriptWrapper(self.driver)
+        self.js = JavascriptWrapper(self.driver, config)
         self.name_to_handle: Dict[str, int] = {}
         self.closed: Set[str] = set()
         self.current: str = None

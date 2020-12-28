@@ -31,11 +31,15 @@ from selenium.webdriver.remote.webdriver import WebDriver
 
 from .config import Config
 from .error import WebDriverSendError
+from .version_check import VERSION_CMD, run_cmd
 
 logger = logging.getLogger("wtl")
 
 
 def _setup_chrome(config: Config, profile_path: Path = None) -> WebDriver:
+    assert run_cmd(VERSION_CMD.CHROME, "Chrome version") or run_cmd(VERSION_CMD.CHROMIUM, "Chromium version")
+    assert run_cmd(VERSION_CMD.CHROMEDRIVER, "Chromedriver version")
+
     chrome_options = webdriver.ChromeOptions()
     browser = config.browser
 
@@ -102,6 +106,9 @@ def _setup_chrome(config: Config, profile_path: Path = None) -> WebDriver:
 
 
 def _setup_firefox(config: Config, _profile_path: Path = None) -> WebDriver:
+    assert run_cmd(VERSION_CMD.FIREFOX, "Firefox version")
+    assert run_cmd(VERSION_CMD.GECKODRIVER, "Geckodriver version")
+
     firefox_profile = webdriver.FirefoxProfile()
     firefox_options = webdriver.FirefoxOptions()
     browser = config.browser
@@ -121,7 +128,7 @@ def _setup_firefox(config: Config, _profile_path: Path = None) -> WebDriver:
 
     if browser.enable_mhtml:
         # TODO
-        logger.fatal("Firefox does not currently support MHTML")
+        logger.critical("Firefox does not currently support MHTML")
         assert False
 
     if "pixelRatio" in browser and browser.pixelRatio != 0:

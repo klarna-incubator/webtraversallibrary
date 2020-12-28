@@ -32,7 +32,7 @@ from typing import Any, Callable, Dict, List, Union
 from selenium import webdriver
 
 from .actions import Abort, Action, Actions, ElementAction, Navigate, Refresh, Revert, Wait
-from .classifiers import Classifier, ElementClassifier, ViewClassifier
+from .classifiers import Classifier
 from .color import Color
 from .config import Config
 from .error import Error
@@ -49,10 +49,6 @@ from .view import View
 from .window import Window
 
 logger = logging.getLogger("wtl")
-
-
-# Pylint doesn't understand dataclasses just yet
-# pylint: disable=no-member
 
 
 class Workflow:
@@ -87,18 +83,22 @@ class Workflow:
         :param patches: A dictionary of selectors to monkeypatch to other destinations.
         """
         setup_logging(log_dir=output if config.debug.save else None)
+        config = config or Config.default()
+        config.validate()
 
         self.loop_idx = -1
         self.output = output
-        self.config = config if config else Config.default()
+        self.config = config
         self._windows: Dict[str, Window] = {}
         self.policy = policy() if policy.__name__ == "__wtl_wrapped" else policy
         self.goal = goal if goal else FOREVER
         self.preload_callbacks: List[Path] = []
         self.postload_callbacks: List[Callable] = []
         self._history: Dict[str, List[View]] = {}
-        self.current_tab: str = None
+        self._current_tab: str = None
+        self._current_window: Window = None
         self._has_quit = False
+        self._tabs_cache: List[str] = None
         self.metadata: Dict[Any, Any] = {}
         self.monkeypatches = MonkeyPatches(patches)
         self.classifiers = ClassifierCollection(classifiers)
@@ -164,6 +164,8 @@ class Workflow:
 
         :return: The boolean output from the goal function.
         """
+        self._populate_tabs_cache()
+
         # Perform required snapshotting
         self.loop_idx += 1
         all_views = self._get_new_views()
@@ -280,18 +282,18 @@ class Workflow:
             self.history.append(view)
 
         # Maintain only one level of history if required
+        ct = self.current_tab
         if not self.config.scraping.history:
-            for i in range(len(self._history[self.current_tab]) - 1):
-                self._history[self.current_tab][i] = None
+            for i in range(len(self._history[ct]) - 1):
+                self._history[ct][i] = None
 
         # Run element classifiers
         view.actions.extend(self._run_element_classifiers(snapshot))
 
         # Run page classifiers
-        for classifier in self.classifiers:
-            if classifier.enabled and classifier.callback and isinstance(classifier, ViewClassifier):
-                result = classifier.callback(view)
-                view.tags.update(result)
+        for classifier in self.classifiers.active_view_classifiers:
+            result = classifier.callback(view)
+            view.tags.update(result)
 
         return view
 
@@ -347,12 +349,14 @@ class Workflow:
         return window
 
     @property
+    def current_tab(self) -> str:
+        """Returns the name of the current tab"""
+        return self._current_tab
+
+    @property
     def current_window(self) -> Window:
         """Returns the window object for the current tab."""
-        for window in self.windows:
-            if self.current_tab in window.tabs:
-                return window
-        return None
+        return self._current_window
 
     @property
     def success(self) -> bool:
@@ -362,7 +366,7 @@ class Workflow:
     @property
     def tabs(self) -> List[str]:
         """Returns a list of all tab names."""
-        return list(itertools.chain.from_iterable(window.tabs for window in self.windows))
+        return self._tabs_cache
 
     @property
     def open_tabs(self):
@@ -381,11 +385,12 @@ class Workflow:
         The view stores previous_action and next_action in its metadata for future
         resurrection of the workflow.
         """
-        if self.current_tab not in self._history:
-            self._history[self.current_tab] = []
+        ct = self.current_tab
+        if ct not in self._history:
+            self._history[ct] = []
             for _ in range(self.loop_idx + 1):
-                self._history[self.current_tab].append(View(name=self.current_tab, snapshot=None))
-        return self._history[self.current_tab]
+                self._history[ct].append(View(name=ct, snapshot=None))
+        return self._history[ct]
 
     @property
     def aborted(self) -> bool:
@@ -435,10 +440,14 @@ class Workflow:
 
     def tab(self, name: str) -> Workflow:
         """Sets the current tab to the given name."""
-        if len(self.tabs) > 1 and self.current_tab != name:
+        if len(self.tabs) > 1 and self._current_tab != name:
             logger.info(f"> Setting tab: {name}...")
-        self.current_tab = name
-        self.current_window.set_tab(name)
+        self._current_tab = name
+        for window in self.windows:
+            if self._current_tab in window.tabs:
+                self._current_window = window
+                break
+        self._current_window.set_tab(name)
         return self
 
     def window(self, name: str):
@@ -490,7 +499,7 @@ class Workflow:
                     self.latest_view.snapshot.screenshots[name] = scr
 
                 if self.config.debug.live:
-                    self.js.highlight(action.selector, Color.from_str("#FFB3C7"))
+                    self.js.highlight(action.selector, Color.from_str(self.config.debug.action_highlight_color))
                     sleep(self.config.debug.live_delay)
 
                 if has_element_handle:
@@ -534,35 +543,39 @@ class Workflow:
     def _run_element_classifiers(self, snapshot: PageSnapshot) -> List[Action]:
         action_list: List[Action] = []
 
-        for classifier in self.classifiers:
-            if classifier.enabled and classifier.callback and isinstance(classifier, ElementClassifier):
-                subset = snapshot.elements.by_score(classifier.subset)
-                results = classifier.callback(subset, self)
+        for classifier in self.classifiers.active_element_classifiers:
+            subset = snapshot.elements.by_score(classifier.subset)
+            results = classifier.callback(subset, self)
 
-                if not isinstance(results, dict):
-                    results = {"": results}
+            if not results:
+                continue
 
-                for cls_name, cls_result in results.items():
-                    action_list.extend(self._process_class(classifier, cls_name, cls_result, subset, snapshot))
+            if not isinstance(results, dict):
+                results = {"": results}
+
+            for cls_name, cls_result in results.items():
+                action_list.extend(self._process_class(classifier, cls_name, cls_result, subset, snapshot))
 
         return action_list
+
+    def _populate_tabs_cache(self):
+        """Updates the cache used by self.tabs property"""
+        self._tabs_cache = list(itertools.chain.from_iterable(window.tabs for window in self.windows))
 
     def _process_class(self, classifier, cls_name, cls_result, subset, snapshot) -> List[Action]:
         # Add the classifier name as the prefix on multi-class predictions
         cls_name = f"{classifier.name}__{cls_name}" if cls_name else classifier.name
 
-        if not cls_result:
-            binary_filter = True
-        else:
-            binary_filter = isinstance(cls_result[0], PageElement)
+        binary_filter = isinstance(cls_result[0], PageElement) if cls_result else True
 
         if binary_filter:
-            # If binary filter, assign score=1
             cls_result = [(e, 1.0 if e in cls_result else 0.0) for e in subset]
-            cls_result.sort(key=lambda x: x[1], reverse=True)
+
+        cls_result.sort(key=lambda x: x[1], reverse=True)
+
+        if binary_filter:
             scaled_result = [value[1] for value in cls_result]
         else:
-            cls_result.sort(key=lambda x: x[1], reverse=True)
             scaled_result = classifier.mode.scale([r[1] for r in cls_result])
 
         cls_result = [(e, r, s) for (e, r), s in zip(cls_result, scaled_result)]
@@ -574,11 +587,10 @@ class Workflow:
         if classifier.highlight:
             self._highlight_classifier_result(classifier, cls_name, cls_result, snapshot)
 
-        return (
-            [classifier.action(element) for element, _, score in cls_result if score]  # type: ignore
-            if classifier.action
-            else []
-        )
+        if classifier.action:
+            return [classifier.action(element) for element, _, score in cls_result if score]
+
+        return []
 
     def reset(self):
         """
@@ -601,6 +613,7 @@ class Workflow:
             window = self.create_window(window_name)
             for tab_name, url in tab_names.items():
                 window.create_tab(tab_name, url=url)
+        self._populate_tabs_cache()
         self.tab(self.tabs[0])
 
     def reset_to(self, view_index: int):
