@@ -247,9 +247,6 @@ class Workflow:
         return all_views
 
     def _get_new_view(self, name: str, initial_action: Action) -> View:
-        # Ensure page is fully loaded
-        self.current_window.scraper.wait_until_loaded()
-
         # Run postload callbacks
         for cb in self.current_window.scraper.postload_callbacks:
             cb()
@@ -498,7 +495,7 @@ class Workflow:
                     )
                     self.latest_view.snapshot.screenshots[name] = scr
 
-                if self.config.debug.live:
+                if not self.config.browser.headless and self.config.debug.live:
                     self.js.highlight(action.selector, Color.from_str(self.config.debug.action_highlight_color))
                     sleep(self.config.debug.live_delay)
 
