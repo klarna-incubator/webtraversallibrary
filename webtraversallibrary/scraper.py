@@ -29,6 +29,7 @@ from typing import Callable, Dict, List
 
 import bs4
 from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, WebDriverException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from urllib3.util import parse_url
@@ -209,7 +210,7 @@ class Scraper:
         num_elements = len(elements_metadata)
 
         # Gather page metadata
-        inner_html = self.driver.find_element_by_tag_name("html").get_attribute("innerHTML")
+        inner_html = self.driver.find_element(By.XPATH, "/html").get_attribute("innerHTML")
         page_source = bs4.BeautifulSoup(f"<!DOCTYPE html><html>{inner_html}</html>", self.config.bs_html_parser)
         page_metadata = {
             "timestamp": before.isoformat(),
