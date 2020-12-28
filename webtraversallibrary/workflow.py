@@ -230,15 +230,16 @@ class Workflow:
                 self._perform_action(initial_action)
 
             # Optimization: Only scrape tab if enforced, action taken, or never scraped before
+            sh = self.history
             if (
                 not self.config.scraping.all
                 and self.previous_policy_result
                 and tab not in self.previous_policy_result
-                and self.latest_view
-                and self.latest_view.snapshot
+                and sh[-1]
+                and sh[-1].snapshot
             ):
-                self.history.append(self.latest_view)
-                all_views[tab] = self.history[-1]
+                self.history.append(sh)
+                all_views[tab] = sh[-1]
                 continue
 
             # Store View
@@ -411,7 +412,7 @@ class Workflow:
 
     @property
     def latest_view(self) -> View:
-        """Returns the latets :class:`View` taken from the current tab."""
+        """Returns the latest :class:`View` taken from the current tab."""
         return self.history[self.loop_idx]
 
     @property
