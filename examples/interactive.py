@@ -154,7 +154,7 @@ if __name__ == "__main__":
         )
     )
 
-    logging.getLogger("wtl").setLevel(logging.FATAL)
+    logging.getLogger("wtl").setLevel(logging.CRITICAL)
 
     workflow.run()
     workflow.quit()
