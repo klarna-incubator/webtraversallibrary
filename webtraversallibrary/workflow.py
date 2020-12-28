@@ -95,7 +95,8 @@ class Workflow:
         self.preload_callbacks: List[Path] = []
         self.postload_callbacks: List[Callable] = []
         self._history: Dict[str, List[View]] = {}
-        self.current_tab: str = None
+        self._current_tab: str = None
+        self._current_window: Window = None
         self._has_quit = False
         self.metadata: Dict[Any, Any] = {}
         self.monkeypatches = MonkeyPatches(patches)
@@ -278,9 +279,10 @@ class Workflow:
             self.history.append(view)
 
         # Maintain only one level of history if required
+        ct = self.current_tab
         if not self.config.scraping.history:
-            for i in range(len(self._history[self.current_tab]) - 1):
-                self._history[self.current_tab][i] = None
+            for i in range(len(self._history[ct]) - 1):
+                self._history[ct][i] = None
 
         # Run element classifiers
         view.actions.extend(self._run_element_classifiers(snapshot))
@@ -344,12 +346,14 @@ class Workflow:
         return window
 
     @property
+    def current_tab(self) -> str:
+        """Returns the name of the current tab"""
+        return self._current_tab
+
+    @property
     def current_window(self) -> Window:
         """Returns the window object for the current tab."""
-        for window in self.windows:
-            if self.current_tab in window.tabs:
-                return window
-        return None
+        return self._current_window
 
     @property
     def success(self) -> bool:
@@ -378,11 +382,12 @@ class Workflow:
         The view stores previous_action and next_action in its metadata for future
         resurrection of the workflow.
         """
-        if self.current_tab not in self._history:
-            self._history[self.current_tab] = []
+        ct = self.current_tab
+        if ct not in self._history:
+            self._history[ct] = []
             for _ in range(self.loop_idx + 1):
-                self._history[self.current_tab].append(View(name=self.current_tab, snapshot=None))
-        return self._history[self.current_tab]
+                self._history[ct].append(View(name=ct, snapshot=None))
+        return self._history[ct]
 
     @property
     def aborted(self) -> bool:
@@ -432,10 +437,14 @@ class Workflow:
 
     def tab(self, name: str) -> Workflow:
         """Sets the current tab to the given name."""
-        if len(self.tabs) > 1 and self.current_tab != name:
+        if len(self.tabs) > 1 and self._current_tab != name:
             logger.info(f"> Setting tab: {name}...")
-        self.current_tab = name
-        self.current_window.set_tab(name)
+        self._current_tab = name
+        for window in self.windows:
+            if self._current_tab in window.tabs:
+                self._current_window = window
+                break
+        self._current_window.set_tab(name)
         return self
 
     def window(self, name: str):
