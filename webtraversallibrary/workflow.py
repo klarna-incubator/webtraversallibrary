@@ -495,9 +495,10 @@ class Workflow:
                     )
                     self.latest_view.snapshot.screenshots[name] = scr
 
-                if not self.config.browser.headless and self.config.debug.live:
+                if self.config.debug.live:
                     self.js.highlight(action.selector, Color.from_str(self.config.debug.action_highlight_color))
-                    sleep(self.config.debug.live_delay)
+                    if not self.config.browser.headless:
+                        sleep(self.config.debug.live_delay)
 
                 if has_element_handle:
                     patch = self.monkeypatches.check(action.target.page, action.target)  # type: ignore
