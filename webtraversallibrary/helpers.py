@@ -21,7 +21,7 @@ Collection of helper classes used in Workflow.
 
 import logging
 from collections.abc import Collection
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Iterable, Union
 
 from selenium import webdriver
 
@@ -37,7 +37,7 @@ logger = logging.getLogger("wtl")
 class ClassifierCollection(Collection):
     """Helper class for predefined classifiers"""
 
-    def __init__(self, classifiers: List[Classifier]):
+    def __init__(self, classifiers: Iterable[Classifier]):
         self._classifiers: Dict[str, Classifier] = {}
         if classifiers:
             for classifier in classifiers:
