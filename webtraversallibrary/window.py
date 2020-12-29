@@ -17,7 +17,7 @@
 
 """Abstraction layer for interactions with a browser instance."""
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Set
+from typing import Any, Callable, Dict, Iterable, List, Set
 
 from selenium.common.exceptions import JavascriptException, UnexpectedAlertPresentException, WebDriverException
 
@@ -37,7 +37,9 @@ class Window:
     Handles browser instance logic.
     """
 
-    def __init__(self, config: Config, preload_callbacks: List[Path] = None, postload_callbacks: List[Callable] = None):
+    def __init__(
+        self, config: Config, preload_callbacks: Iterable[Path] = None, postload_callbacks: List[Callable] = None
+    ):
         self._driver = setup_driver(config, preload_callbacks=preload_callbacks)
         self.scraper = Scraper(driver=self.driver, config=config, postload_callbacks=postload_callbacks)
         self.js = JavascriptWrapper(self.driver, config)
@@ -95,7 +97,7 @@ class Window:
         return self.driver.get_cookies()
 
     @cookies.setter
-    def cookies(self, value: List[Any]):
+    def cookies(self, value: Iterable[Any]):
         """Replaces(!) all existing cookies with the given list."""
         self.driver.delete_all_cookies()
         for cookie in value:

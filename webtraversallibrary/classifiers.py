@@ -22,7 +22,7 @@ from abc import ABC
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Callable, Iterable, List, Union
+from typing import Any, Callable, Iterable, List, Sequence, Union
 
 from .actions import Action
 from .color import Color
@@ -42,10 +42,10 @@ class ScalingMode(Enum):
     """Map the logarithm of the values to the [0,1] range"""
     LOG = auto()
 
-    def scale(self, values: List[float]) -> List[float]:
+    def scale(self, values: Sequence[float]) -> List[float]:
         """Scales a list of scores according to a given mode"""
         if self == ScalingMode.IDENTITY:
-            return values[:]
+            return list(values)
 
         if self == ScalingMode.CLAMP:
             return [min(1, max(0, score)) for score in values]
@@ -57,10 +57,8 @@ class ScalingMode(Enum):
 
         if self == ScalingMode.LINEAR:
             return [(score - minimum) / (maximum - minimum) for score in values]
-        if self == ScalingMode.LOG:
-            return [(math.log(score) - math.log(minimum)) / (math.log(maximum) - math.log(minimum)) for score in values]
 
-        raise ValueError("Invalid ScalingMode value!")
+        return [(math.log(score) - math.log(minimum)) / (math.log(maximum) - math.log(minimum)) for score in values]
 
 
 @dataclass

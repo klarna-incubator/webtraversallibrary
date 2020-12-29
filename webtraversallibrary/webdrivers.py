@@ -23,7 +23,7 @@ import json
 import logging
 import os.path
 from pathlib import Path
-from typing import List
+from typing import Iterable
 
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
@@ -154,7 +154,7 @@ def _setup_firefox(config: Config, _profile_path: Path = None) -> WebDriver:
     return driver
 
 
-def setup_driver(config: Config, profile_path: Path = None, preload_callbacks: List[Path] = None) -> WebDriver:
+def setup_driver(config: Config, profile_path: Path = None, preload_callbacks: Iterable[Path] = None) -> WebDriver:
     """
     Creates a WebDriver object with the given configuration.
     :param: configuration Configuration dictionary
@@ -181,8 +181,7 @@ def send(driver: WebDriver, cmd: str, params: dict = None) -> int:
     Send command to the webdriver, return resulting status code.
     """
     # pylint: disable=protected-access
-    if params is None:
-        params = {}
+    params = params or {}
     resource = f"/session/{driver.session_id}/chromium/send_command_and_get_result"
     url = driver.command_executor._url + resource
     body = json.dumps({"cmd": cmd, "params": params})

@@ -24,7 +24,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Iterable, List, Union
 
 from prodict import Prodict  # pylint: disable=syntax-error
 
@@ -78,9 +78,8 @@ class Config:
         ]
     )
 
-    def __init__(self, cfg: List[Union[str, Path, dict]] = None):
-        if cfg is None:
-            cfg = []
+    def __init__(self, cfg: Iterable[Union[str, Path, dict]] = None):
+        cfg = cfg or []
 
         self._instance = Prodict()
         for item in cfg:
