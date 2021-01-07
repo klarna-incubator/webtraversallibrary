@@ -15,5 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-"""Maintains version info for this package."""
-__version__ = "0.11.4"
+from webtraversallibrary.version_check import run_cmd
+
+
+def test_run_cmd():
+    assert run_cmd("ls")
+    assert not run_cmd("python ÅÄÖ")

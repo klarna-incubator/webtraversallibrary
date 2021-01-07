@@ -21,7 +21,6 @@ Module for scraping a website and saving contents to file.
 
 import logging
 import os.path
-import time
 from datetime import datetime
 from pathlib import Path
 from time import sleep
@@ -29,6 +28,7 @@ from typing import Callable, Dict, List
 
 import bs4
 from selenium.common.exceptions import TimeoutException, UnexpectedAlertPresentException, WebDriverException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from urllib3.util import parse_url
@@ -140,16 +140,16 @@ class Scraper:
         except UnexpectedAlertPresentException:
             logger.warning("Javascript alert noted, trying to proceed")
 
-        time.sleep(self.config.scraping.wait_loading)
+        sleep(self.config.scraping.wait_loading)
 
         # Some pages change after scrolling, so simulate some movement
         if self.config.scraping.prescroll:
             self.js.scroll_to(0, 100)
-            time.sleep(self.config.scraping.wait_scroll)
+            sleep(self.config.scraping.wait_scroll)
             self.js.scroll_to(0, 9999)
-            time.sleep(self.config.scraping.wait_scroll)
+            sleep(self.config.scraping.wait_scroll)
             self.js.scroll_to(0, 0)
-            time.sleep(self.config.scraping.wait_loading)
+            sleep(self.config.scraping.wait_scroll)
 
     def capture_screenshot(self, name: str, max_page_height: int = 0) -> Screenshot:
         """
@@ -181,7 +181,7 @@ class Scraper:
         try:
             with TimeoutContext(n_seconds=self.config.scraping.mhtml_timeout):
                 while not os.path.exists(folder / filename):
-                    sleep(0.5)
+                    sleep(0.25)
         except TimeoutError:
             logger.error("Failed to get MHTML snapshot within desired time limit!")
             return None
@@ -209,7 +209,7 @@ class Scraper:
         num_elements = len(elements_metadata)
 
         # Gather page metadata
-        inner_html = self.driver.find_element_by_tag_name("html").get_attribute("innerHTML")
+        inner_html = self.driver.find_element(By.XPATH, "/html").get_attribute("innerHTML")
         page_source = bs4.BeautifulSoup(f"<!DOCTYPE html><html>{inner_html}</html>", self.config.bs_html_parser)
         page_metadata = {
             "timestamp": before.isoformat(),

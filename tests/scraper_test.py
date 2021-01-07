@@ -34,7 +34,7 @@ class MockWebDriver:
     def get(self, *_):
         pass
 
-    def find_element_by_tag_name(self, *_):
+    def find_element(self, *_):
         return self
 
     def refresh(self):

@@ -479,7 +479,11 @@ class Workflow:
         try:
             if isinstance(action, ElementAction):
                 has_element_handle = isinstance(action.target, PageElement)
-                if self.config.debug.autoscroll and has_element_handle:
+                if (
+                    self.config.debug.autoscroll
+                    and has_element_handle
+                    and (self.config.debug.screenshots or not self.config.browser.headless)
+                ):
                     self.smart_scroll_to(action.target.bounds)  # type: ignore
 
                 if self.config.debug.save and self.config.debug.screenshots and has_element_handle:
