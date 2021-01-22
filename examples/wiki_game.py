@@ -44,11 +44,11 @@ def policy():
     description = ""
     # Stores first paragraph from page B's body
     try:
-        description = view.snapshot.elements.by_selector(wtl.Selector("div p:nth-of-type(1)"))[0].metadata["text"]
+        description = view.snapshot.elements.by_selector(wtl.Selector("div p:nth-of-type(1)")).unique().metadata["text"]
         if description.empty:
             raise IndexError()
     except IndexError:
-        description = view.snapshot.elements.by_selector(wtl.Selector("div p:nth-of-type(2)"))[0].metadata["text"]
+        description = view.snapshot.elements.by_selector(wtl.Selector("div p:nth-of-type(2)")).unique().metadata["text"]
 
     # Limit the description to 50 characters to improve search
     description_subset = str(description[0:49])
@@ -56,14 +56,14 @@ def policy():
     # Navigate back to page A
     workflow, view = yield wtl.actions.Navigate(page_a_url)
 
-    link_to_click = view.snapshot.elements.by_selector(wtl.Selector("input[type='submit']"))
+    link_to_click = view.snapshot.elements.by_selector(wtl.Selector("input[type='submit']")).unique()
 
     # In the search bar in page A, fill text with description_subset and
     # click search to get search results for the descriptions
 
     workflow, view = yield [
         wtl.actions.FillText(wtl.Selector("input[type='search']"), str(description_subset)),
-        Click(link_to_click[0]),
+        Click(link_to_click),
     ]
 
     # Store search result's URL
