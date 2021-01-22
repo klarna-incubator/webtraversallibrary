@@ -260,11 +260,11 @@ class PageSnapshot:
         if bs4_parser is None:
             bs4_parser = Config.default().bs_html_parser
 
-        with open(path / "source.html") as f:
+        with open(path / "source.html", encoding="utf8") as f:
             page_source = bs4.BeautifulSoup(f.read(), bs4_parser)
-        with open(path / "page_metadata.json") as f:
+        with open(path / "page_metadata.json", encoding="utf8") as f:
             page_metadata = json.load(f)
-        with open(path / "elements_metadata.json") as f:
+        with open(path / "elements_metadata.json", encoding="utf8") as f:
             elements_metadata = json.load(f)
         for f in page_metadata["screenshots"]:
             screenshots[str(f)] = Screenshot.load(str(f), path / f"{f}.png")
@@ -291,11 +291,11 @@ class PageSnapshot:
         """
         os.makedirs(path, exist_ok=True)
 
-        with open(path / "source.html", "w") as f:
+        with open(path / "source.html", "w", encoding="utf8") as f:
             f.write(str(self.page_source))
-        with open(path / "page_metadata.json", "w") as f:
+        with open(path / "page_metadata.json", "w", encoding="utf8") as f:
             json.dump(self.page_metadata, f)
-        with open(path / "elements_metadata.json", "w") as f:
+        with open(path / "elements_metadata.json", "w", encoding="utf8") as f:
             json.dump(self.elements_metadata, f)
         for scr in self.screenshots.values():
             scr.save(path)
