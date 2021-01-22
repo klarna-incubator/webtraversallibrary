@@ -41,10 +41,8 @@ def test_selector_build():
     element = soup.body.select("div")[0]
     selector = Selector.build(soup, element)
     assert selector.css == "html>body>div"
-    assert selector.xpath == "/html/body/div"
     selector = Selector.build(soup, element)
     assert selector.css == "html>body>div"
-    assert selector.xpath == "/html/body/div"
 
     # Complex nesting
     source = """<html><body>
@@ -55,11 +53,9 @@ def test_selector_build():
     elements = soup.body.select("a")
     selector = Selector.build(soup, elements[0])
     assert selector.css == "html>body>a"
-    assert selector.xpath == "/html/body/a"
 
     selector = Selector.build(soup, elements[1])
     assert selector.css == "html>body>div>a"
-    assert selector.xpath == "/html/body/div/a"
 
     # Deeply nested
     source = """<html><body>
@@ -74,19 +70,15 @@ def test_selector_build():
     element = soup.body.select(".e span")[0]
     selector = Selector.build(soup, element)
     assert selector.css == "html>body>div:nth-of-type(1)>div>div>div>div>div>div>span"
-    assert selector.xpath == "/html/body/div[1]/div/div/div/div/div/div/span"
     selector = Selector.build(soup, element)
     assert selector.css == "html>body>div:nth-of-type(1)>div>div>div>div>div>div>span"
-    assert selector.xpath == "/html/body/div[1]/div/div/div/div/div/div/span"
 
     element = soup.body.select(".d > .f > span")[0]
     selector = Selector.build(soup, element)
     assert selector.css == "html>body>div:nth-of-type(2)>div>div>div>div>div>span"
-    assert selector.xpath == "/html/body/div[2]/div/div/div/div/div/span"
 
     selector = Selector.build(soup, 12)
     assert selector.css == "html>body>div:nth-of-type(1)"
-    assert selector.xpath == "/html/body/div[1]"
 
     # Unsafe names
     source = """<html><body>
@@ -96,9 +88,7 @@ def test_selector_build():
     element = soup.body.select("a")[0]
     selector = Selector.build(soup, element)
     assert selector.css == "html>body>*>a"
-    assert selector.xpath == "/html/body/*/a"
 
     # Invalid WTL-uid
     selector = Selector.build(soup, 23)
     assert selector.css == "bad_wtl_uid_no_matches"
-    assert selector.xpath == "bad_wtl_uid_no_matches"

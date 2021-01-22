@@ -34,25 +34,22 @@ logger = logging.getLogger("wtl")
 @dataclass(frozen=True)
 class Selector:
     """
-    Web element selector based on CSS and XPATH.
+    Web element selector based on CSS.
     You may also specify an identifier (name or ID) of an iframe in which the given element is located.
     The class itself provides no guarantees on whether the selector is unique or even matches anything.
     The ``iframe`` value can be used if this selector refers to an element inside an iframe. Specify as ID or name.
     """
 
     css: str = "*"
-    xpath: str = "/"
     iframe: str = None
 
     def __lt__(self, other: Selector) -> bool:
-        if len(self.css) == len(other.css):
-            return self.xpath < other.xpath
         return len(self.css) < len(other.css)
 
     @classmethod
     def build(cls, bs4_soup: bs4.BeautifulSoup, target: Union[bs4.Tag, int]) -> Selector:
         """
-        Compute xpath and css of a ``target`` in a bs4.BeautifulSoup.
+        Compute css selector for a ``target`` in a bs4.BeautifulSoup.
         Will be verbose. Use a separate generalizer if you want reusable selectors.
         """
         # Identify target
@@ -62,7 +59,7 @@ class Selector:
             options = bs4_soup.find_all(attrs={"wtl-uid": target})
             if len(options) != 1:
                 logger.error("Invalid wtl-uid given to Selector.build, returning blank selector")
-                return cls(css="bad_wtl_uid_no_matches", xpath="bad_wtl_uid_no_matches")
+                return cls(css="bad_wtl_uid_no_matches")
             element = options[0]
 
         names, indices = [], []
@@ -78,11 +75,9 @@ class Selector:
         css_components = [
             name if index == -1 else f"{name}:nth-of-type({index})" for (name, index) in zip(names, indices)
         ]
-        xpath_components = [name if index == -1 else f"{name}[{index}]" for (name, index) in zip(names, indices)]
 
         css = ">".join(reversed(css_components)).strip()
-        xpath = "/" + "/".join(reversed(xpath_components)).strip()
-        return Selector(css=css, xpath=xpath)
+        return Selector(css=css)
 
     @classmethod
     def _safe_tag_name(cls, name: str) -> str:
