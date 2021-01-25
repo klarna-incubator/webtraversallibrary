@@ -8,7 +8,7 @@ isort==5.*
 markdown==3.3.3
 mypy==0.790
 pillow==8.*
-pip==20.*
+pip==21.*
 prodict==0.8.*
 pycodestyle==2.6.*
 pylint==2.6.*
