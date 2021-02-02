@@ -211,6 +211,11 @@ class Elements(list):
         self.sort(key=lambda e: e.raw_scores.get(name, 0), reverse=reverse)
         return self
 
+    def unique(self) -> PageElement:
+        """Checks if exactly one element exists, if so returns it. Throws AssertionError otherwise"""
+        assert len(self) == 1
+        return self[0]
+
 
 @dataclass(repr=False, frozen=True)
 class PageSnapshot:

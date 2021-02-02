@@ -34,7 +34,7 @@ def policy(workflow: wtl.Workflow, view: wtl.View) -> wtl.Action:
     assert workflow.duplicate_loop_idx == workflow.loop_idx
 
     # With some small probabilty, refresh instead of clicking.
-    return choice(view.actions.by_type(Click)) if random() < 0.95 else view.actions.by_type(Refresh)[0]
+    return choice(view.actions.by_type(Click)) if random() < 0.95 else view.actions.by_type(Refresh).unique()
 
 
 def set_duplicate_loop_idx(workflow: wtl.Workflow):
