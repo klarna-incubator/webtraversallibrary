@@ -21,7 +21,7 @@ recommonmark==0.7.*
 requests==2.25.*
 selenium==3.141.*
 setuptools==51.3.*
-soupsieve==2.1
+soupsieve==2.2
 sphinx==3.*
 twine==3.3.*
 urllib3==1.26.*
