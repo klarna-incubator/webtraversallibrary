@@ -61,7 +61,9 @@ def project_euler() -> HTML:
         [int(filename[8:-3]) for filename in exercise_solution_files if filename.endswith(".js")]
     )
 
-    with open(os.path.join(STATIC_DIRECTORY, "data", "projectEuler", "projectEulerMetadata.json"), encoding="utf8") as f:
+    with open(
+        os.path.join(STATIC_DIRECTORY, "data", "projectEuler", "projectEulerMetadata.json"), encoding="utf8"
+    ) as f:
         problems_metadata = json.load(f)
 
     solved_problems = [problem for problem in problems_metadata if int(problem["number"]) in solved_problem_numbers]
