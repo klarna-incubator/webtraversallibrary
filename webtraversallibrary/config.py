@@ -218,7 +218,7 @@ class Config:
             if not cfg.exists():
                 raise FileNotFoundError(f"Given config {str(cfg)} does not exist locally or as part of wtl.")
 
-            json_data = json.load(Path(cfg).open())
+            json_data = json.load(Path(cfg).open(encoding="utf8"))
             return Prodict.from_dict(json_data)
 
         raise ValueError(f"Unexpected config input: {cfg}")
