@@ -51,7 +51,7 @@ paragraphs = snapshot.elements.by_selector(wtl.Selector("div p"))  # pylint: dis
 article = ""
 
 # Fetch stopwords from a local file containing an array of stopwords
-with open("examples/stopwords.txt") as f:
+with open("examples/stopwords.txt", encoding="utf8") as f:
     stopwords = f.read()
 
 for p in paragraphs:

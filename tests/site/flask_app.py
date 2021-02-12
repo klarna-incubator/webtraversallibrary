@@ -41,7 +41,7 @@ def activity() -> HTML:
     """
     Renders the activity page
     """
-    with open(os.path.join(STATIC_DIRECTORY, "data", "activity", "publications.json")) as f:
+    with open(os.path.join(STATIC_DIRECTORY, "data", "activity", "publications.json"), encoding="utf8") as f:
         publications = json.load(f)
 
     return render_template("activity.html", publications=publications)
@@ -61,7 +61,7 @@ def project_euler() -> HTML:
         [int(filename[8:-3]) for filename in exercise_solution_files if filename.endswith(".js")]
     )
 
-    with open(os.path.join(STATIC_DIRECTORY, "data", "projectEuler", "projectEulerMetadata.json")) as f:
+    with open(os.path.join(STATIC_DIRECTORY, "data", "projectEuler", "projectEulerMetadata.json"), encoding="utf8") as f:
         problems_metadata = json.load(f)
 
     solved_problems = [problem for problem in problems_metadata if int(problem["number"]) in solved_problem_numbers]
@@ -82,7 +82,7 @@ def blog() -> HTML:
     blog_posts = []
     for metadata in blog_metadata:
         post_location = os.path.join(BLOG_POST_DIRECTORY, metadata["content_file"])
-        with open(post_location, "r") as f:
+        with open(post_location, "r", encoding="utf8") as f:
             metadata["content"] = markdown.markdown(f.read(), extensions=["nl2br"])
         blog_posts.append(metadata)
 
@@ -100,7 +100,7 @@ def post(post_handle: str) -> HTML:
     for metadata in blog_metadata:
         if metadata["content_file"][:-3] == post_handle:
             post_location = os.path.join(BLOG_POST_DIRECTORY, metadata["content_file"])
-            with open(post_location, "r") as f:
+            with open(post_location, "r", encoding="utf8") as f:
                 metadata["content"] = markdown.markdown(f.read(), extensions=["nl2br"])
             return render_template("blogPost.html", post=metadata)
 
@@ -113,5 +113,5 @@ def notebook(notebook_name: str) -> HTML:
     """
     Renders a jupyter notebook as HTML
     """
-    with open(os.path.join(NOTEBOOK_DIRECTORY, f"{notebook_name}.html")) as f:
+    with open(os.path.join(NOTEBOOK_DIRECTORY, f"{notebook_name}.html"), encoding="utf8") as f:
         return f.read()

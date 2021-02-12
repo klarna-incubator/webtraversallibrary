@@ -320,7 +320,7 @@ class JavascriptWrapper:
 
             assert filename.exists() and filename.is_file()
 
-            with open(filename, "rt") as f:
+            with open(filename, "rt", encoding="utf8") as f:
                 contents.append(f.read())
 
         return "\n".join(contents)
