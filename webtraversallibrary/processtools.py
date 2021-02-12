@@ -20,9 +20,15 @@ Module collecting helper functions for common processing tasks, such as muting s
 """
 
 import logging
+import os
 import signal
+from threading import Thread
+from time import sleep
 
 logger = logging.getLogger("wtl")
+
+
+_ON_WINDOWS = os.name == "nt"
 
 
 class cached_property:
@@ -47,6 +53,19 @@ class cached_property:
         return result
 
 
+class Alarm(Thread):
+    """Helper class to run a timeout thread on Windows"""
+
+    def __init__(self, timeout):
+        Thread.__init__(self)
+        self.timeout = timeout
+        self.setDaemon(True)
+
+    def run(self):
+        sleep(self.timeout)
+        os._exit(1)  # pylint: disable=protected-access
+
+
 class TimeoutContext:
     """
     Uses :mod:`signal` to raise TimeoutError within the block, if execution went over a specified timeout.
@@ -55,22 +74,28 @@ class TimeoutContext:
     def __init__(self, n_seconds, error_class=TimeoutError):
         self.n_seconds = n_seconds
         self.error_cls = error_class
+        self.alarm = None
 
     def __enter__(self):
         if self.n_seconds > 0:
-            signal.signal(signal.SIGALRM, self.raise_error)
-            signal.alarm(self.n_seconds)
+            if _ON_WINDOWS:
+                self.alarm = Alarm(self.n_seconds)
+                self.alarm.start()
+            else:
+                signal.signal(signal.SIGALRM, self.raise_error)
+                signal.alarm(self.n_seconds)
             logger.debug(f"TimeoutContext: Operation timeout is set to {self.n_seconds} sec.")
 
     def __exit__(self, *args, **kwargs):
         # Cancel the alarm
         if self.n_seconds > 0:
-            signal.signal(signal.SIGALRM, signal.SIG_DFL)
-            time_left = signal.alarm(0)
-            if time_left > 0:
-                logger.debug(f"TimeoutContext: Operation finished without triggering the alarm ({time_left} sec. left)")
+            if _ON_WINDOWS:
+                del self.alarm
             else:
-                logger.debug("TimeoutContext: Operation was interrupted by the timeout")
+                signal.signal(signal.SIGALRM, signal.SIG_DFL)
+                time_left = signal.alarm(0)
+                if time_left <= 0:
+                    logger.debug("TimeoutContext: Operation was interrupted by the timeout")
 
     def raise_error(self, signal_num, _):
         assert signal_num == signal.SIGALRM
