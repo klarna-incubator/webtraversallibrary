@@ -23,7 +23,7 @@ selenium==3.141.*
 setuptools==56.0.*
 soupsieve==2.2
 sphinx==3.*
-twine==3.3.*
+twine==3.4.*
 urllib3==1.26.*
 wheel==0.36.*
 xenon==0.7.*
