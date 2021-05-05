@@ -20,7 +20,7 @@ radon==4.5.*
 recommonmark==0.7.*
 requests==2.25.*
 selenium==3.141.*
-setuptools==56.0.*
+setuptools==56.1.*
 soupsieve==2.2.1
 sphinx==3.*
 twine==3.4.*
