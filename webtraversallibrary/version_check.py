@@ -8,14 +8,44 @@ from subprocess import CalledProcessError, run
 logger = logging.getLogger("wtl")
 
 
-class VERSION_CMD:
+class _VERSION_CMD:
     """Terminal strings for getting version info"""
 
-    CHROME = "google-chrome --version"
-    CHROMIUM = "chromium --version"
-    CHROMEDRIVER = "chromedriver --version"
-    FIREFOX = "firefox --version"
-    GECKODRIVER = "geckodriver --version"
+    @staticmethod
+    def deprecated_warning():
+        logger.warning(
+            "VERSION_CMD is deprecated and will be removed in future a version. "
+            "Please use the SystemCheck class instead."
+        )
+
+    @property
+    def CHROME(self) -> str:
+        _VERSION_CMD.deprecated_warning()
+        return "google-chrome --version"
+
+    @property
+    def CHROMIUM(self) -> str:
+        _VERSION_CMD.deprecated_warning()
+        return "chromium --version"
+
+    @property
+    def CHROMEDRIVER(self) -> str:
+        _VERSION_CMD.deprecated_warning()
+        return "chromedriver --version"
+
+    @property
+    def FIREFOX(self) -> str:
+        _VERSION_CMD.deprecated_warning()
+        return "firefox --version"
+
+    @property
+    def GECKODRIVER(self) -> str:
+        _VERSION_CMD.deprecated_warning()
+        return "geckodriver --version"
+
+
+# Hack right now to preserve the attributes to the class but have them as callable properties
+VERSION_CMD = _VERSION_CMD()
 
 
 def run_cmd(cmd: str, title: str = None) -> bool:
