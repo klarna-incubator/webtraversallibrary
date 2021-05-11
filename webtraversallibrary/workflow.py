@@ -40,7 +40,7 @@ from .geometry import Point, Rectangle
 from .goals import FOREVER
 from .helpers import ClassifierCollection, FrameSwitcher, MonkeyPatches
 from .javascript import JavascriptWrapper
-from .logging import setup_logging
+from .logging_utils import setup_logging
 from .processtools import TimeoutContext
 from .scraper import Scraper
 from .selector import Selector

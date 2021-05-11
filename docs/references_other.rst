@@ -21,7 +21,7 @@ Other references
 .. automodule:: webtraversallibrary.javascript
     :members:
 
-.. automodule:: webtraversallibrary.logging
+.. automodule:: webtraversallibrary.logging_utils
     :members:
 
 .. automodule:: webtraversallibrary.processtools

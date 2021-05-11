@@ -24,7 +24,7 @@ from selenium.common.exceptions import JavascriptException, UnexpectedAlertPrese
 from .config import Config
 from .error import WindowClosedError
 from .javascript import JavascriptWrapper
-from .logging import logging
+from .logging_utils import logging
 from .scraper import Scraper
 from .webdrivers import setup_driver
 
