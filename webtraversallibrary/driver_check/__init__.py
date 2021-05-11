@@ -24,9 +24,15 @@ import platform
 from subprocess import CalledProcessError, run
 from typing import List, Optional, Union
 
+from driver_check.os_functions import get_os_function_class
+
 
 class Drivers(enum.Enum):
-    CHROME = "google-chrome"
+    """
+    Drivers used for various operations.
+    """
+
+    GOOGLE_CHROME = "google-chrome"
     CHROMIUM = "chromium"
     CHROMEDRIVER = "chromedriver"
     FIREFOX = "firefox"
@@ -34,12 +40,46 @@ class Drivers(enum.Enum):
 
 
 class OS(enum.Enum):
+    """
+    Various supported operating systems.
+    """
+
     LINUX = "linux"
     MACOS = "macos"
     WINDOWS = "windows"
 
 
+def is_driver_installed(driver: Drivers, os: OS = None) -> bool:
+    """
+    Checks if a given driver is installed on the OS.
+    """
+    os = os if os else get_current_os()
+    sf = get_os_function_class(os)
+    return sf.is_driver_installed(driver)
+
+
+def get_driver_version(driver: Drivers, os: OS = None) -> str:
+    """
+    Gets the driver version.
+    """
+    os = os if os else get_current_os()
+    sf = get_os_function_class(os)
+    return sf.get_driver_version(driver)
+
+
+def get_driver_location(driver: Drivers, os: OS = None) -> str:
+    """
+    Gets the location of the driver.
+    """
+    os = os if os else get_current_os()
+    sf = get_os_function_class(os)
+    return sf.get_driver_location(driver)
+
+
 def get_current_os() -> OS:
+    """
+    Gets the current OS of the machine running.
+    """
     system = platform.system()
     os = {
         "Linux": OS.LINUX,
@@ -52,6 +92,9 @@ def get_current_os() -> OS:
 
 
 def get_cmd_output(cmd: Union[str, List]) -> Optional[str]:
+    """
+    Executes a command and returns the output.
+    """
     if isinstance(cmd, str):
         cmd = cmd.split(" ")
     try:

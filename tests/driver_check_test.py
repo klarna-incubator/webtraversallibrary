@@ -14,15 +14,50 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import enum
 
-from webtraversallibrary import driver_check
+from webtraversallibrary.driver_check import OS, get_cmd_output, get_current_os
+from webtraversallibrary.driver_check.os_functions import (
+    OsFunctionsLinux,
+    OsFunctionsMacOs,
+    OsFunctionsWindows,
+    get_os_function_class,
+)
+
+
+class MockDrivers(enum.Enum):
+    PYTHON = "python"
 
 
 def test_get_current_os():
-    os = driver_check.get_current_os()
+    os = get_current_os()
     assert os is not None
 
 
 def test_get_cmd_output():
-    result = driver_check.get_cmd_output("ls")
+    result = get_cmd_output("ls")
     assert result is not None
+
+
+def test_get_os_system_function_class():
+    assert isinstance(get_os_function_class(OS.LINUX), OsFunctionsLinux)
+    assert isinstance(get_os_function_class(OS.MACOS), OsFunctionsMacOs)
+    assert isinstance(get_os_function_class(OS.WINDOWS), OsFunctionsWindows)
+
+
+def test_function_class_get_is_driver_installed():
+    fc = get_os_function_class(OS.LINUX)
+    # noinspection PyTypeChecker
+    assert fc.is_driver_installed(MockDrivers.PYTHON) is True
+
+
+def test_function_class_get_driver_version():
+    fc = get_os_function_class(OS.LINUX)
+    # noinspection PyTypeChecker
+    assert "Python" in fc.get_driver_version(MockDrivers.PYTHON)
+
+
+def test_function_class_get_driver_location():
+    fc = get_os_function_class(OS.LINUX)
+    # noinspection PyTypeChecker
+    assert fc.get_driver_location(MockDrivers.PYTHON) is not None
