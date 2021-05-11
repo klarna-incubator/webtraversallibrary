@@ -77,6 +77,7 @@ class TimeoutContext:
         self.alarm = None
 
     def __enter__(self):
+        # pylint: disable=no-member
         if self.n_seconds > 0:
             if _ON_WINDOWS:
                 self.alarm = Alarm(self.n_seconds)
@@ -87,6 +88,7 @@ class TimeoutContext:
             logger.debug(f"TimeoutContext: Operation timeout is set to {self.n_seconds} sec.")
 
     def __exit__(self, *args, **kwargs):
+        # pylint: disable=no-member
         # Cancel the alarm
         if self.n_seconds > 0:
             if _ON_WINDOWS:
@@ -98,5 +100,9 @@ class TimeoutContext:
                     logger.debug("TimeoutContext: Operation was interrupted by the timeout")
 
     def raise_error(self, signal_num, _):
+        """
+        Raises error on timeout.
+        """
+        # pylint: disable=no-member
         assert signal_num == signal.SIGALRM
         raise self.error_cls(f"Operation timed out after {self.n_seconds} sec.")

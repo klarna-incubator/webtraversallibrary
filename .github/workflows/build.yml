@@ -4,9 +4,10 @@ on: [push]
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest]
         python-version: [3.7, 3.8, 3.9]
 
     steps:
@@ -21,8 +22,15 @@ jobs:
     - name: Install setuptools and wheel first
       run: pip3 install setuptools wheel
 
-    - name: Install XVFB
+    - name: Install XVFB (Ubuntu only)
       run: sudo apt-get install -y xvfb
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+
+    - name: Install XVFB (macOS only)
+      run: |
+          brew install --cask xquartz
+          echo "/usr/X11/bin" >> $GITHUB_PATH
+      if: ${{ matrix.os == 'macos-latest' }}
 
     - name: Install dependencies (Python)
       run: make update
