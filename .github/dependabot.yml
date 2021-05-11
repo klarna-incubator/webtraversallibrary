@@ -6,11 +6,11 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
-      - "naslundx"
+      - "vonNiklasson"
 
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "daily"
     reviewers:
-      - "naslundx"
+      - "vonNiklasson"
