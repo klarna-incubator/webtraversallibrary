@@ -19,34 +19,12 @@
 Helper functions to check versions and existence of installed dependencies.
 """
 
-import enum
+import logging
 import platform
-from subprocess import CalledProcessError, run
-from typing import List, Optional, Union
 
-from driver_check.os_functions import get_os_function_class
+from .os_functions import OS, Drivers, get_os_function_class
 
-
-class Drivers(enum.Enum):
-    """
-    Drivers used for various operations.
-    """
-
-    GOOGLE_CHROME = "google-chrome"
-    CHROMIUM = "chromium"
-    CHROMEDRIVER = "chromedriver"
-    FIREFOX = "firefox"
-    GECKODRIVER = "geckodriver"
-
-
-class OS(enum.Enum):
-    """
-    Various supported operating systems.
-    """
-
-    LINUX = "linux"
-    MACOS = "macos"
-    WINDOWS = "windows"
+logger = logging.getLogger("wtl")
 
 
 def is_driver_installed(driver: Drivers, os: OS = None) -> bool:
@@ -76,6 +54,15 @@ def get_driver_location(driver: Drivers, os: OS = None) -> str:
     return sf.get_driver_location(driver)
 
 
+def log_driver_version(title: str, driver: Drivers, os: OS = None):
+    os = os if os else get_current_os()
+    version = get_driver_version(driver, os)
+    if version:
+        logger.info(f"{title}: {version}")
+    else:
+        logger.info(f"{title}: [FAILED]")
+
+
 def get_current_os() -> OS:
     """
     Gets the current OS of the machine running.
@@ -89,16 +76,3 @@ def get_current_os() -> OS:
     if not os:
         raise SystemError("Could not determine Operating System")
     return os
-
-
-def get_cmd_output(cmd: Union[str, List]) -> Optional[str]:
-    """
-    Executes a command and returns the output.
-    """
-    if isinstance(cmd, str):
-        cmd = cmd.split(" ")
-    try:
-        result = run(cmd, check=True, capture_output=True)
-        return result.stdout.decode().strip()
-    except (CalledProcessError, FileNotFoundError):
-        return None

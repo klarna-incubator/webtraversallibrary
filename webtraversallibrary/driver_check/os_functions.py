@@ -21,11 +21,33 @@ functions to look up external dependencies.
 """
 
 import abc
+import enum
 import sys
 from shutil import which
-from typing import Optional
+from subprocess import CalledProcessError, run
+from typing import List, Optional, Union
 
-from webtraversallibrary.driver_check import OS, Drivers, get_cmd_output
+
+class Drivers(enum.Enum):
+    """
+    Drivers used for various operations.
+    """
+
+    GOOGLE_CHROME = "google-chrome"
+    CHROMIUM = "chromium"
+    CHROMEDRIVER = "chromedriver"
+    FIREFOX = "firefox"
+    GECKODRIVER = "geckodriver"
+
+
+class OS(enum.Enum):
+    """
+    Various supported operating systems.
+    """
+
+    LINUX = "linux"
+    MACOS = "macos"
+    WINDOWS = "windows"
 
 
 class OsFunctionsBase(abc.ABC):
@@ -128,3 +150,16 @@ def get_os_function_class(os: OS) -> OsFunctionsBase:
     if not os_class:
         raise SystemError("Could not determine Operating System")
     return os_class
+
+
+def get_cmd_output(cmd: Union[str, List]) -> Optional[str]:
+    """
+    Executes a command and returns the output.
+    """
+    if isinstance(cmd, str):
+        cmd = cmd.split(" ")
+    try:
+        result = run(cmd, check=True, capture_output=True)
+        return result.stdout.decode().strip()
+    except (CalledProcessError, FileNotFoundError):
+        return None
