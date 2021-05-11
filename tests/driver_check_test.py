@@ -16,12 +16,12 @@
 # under the License.
 import enum
 
-from webtraversallibrary.driver_check import OS, get_cmd_output, get_current_os
+from webtraversallibrary.driver_check import OS, get_current_os, get_os_function_class
 from webtraversallibrary.driver_check.os_functions import (
     OsFunctionsLinux,
     OsFunctionsMacOs,
     OsFunctionsWindows,
-    get_os_function_class,
+    get_cmd_output,
 )
 
 
