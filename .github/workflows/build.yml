@@ -23,6 +23,7 @@ jobs:
 
     - name: Install XVFB
       run: sudo apt-get install -y xvfb
+      if: ${{ matrix.os == 'ubuntu-latest' }}
 
     - name: Install dependencies (Python)
       run: make update
