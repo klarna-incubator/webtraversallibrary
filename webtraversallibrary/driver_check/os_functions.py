@@ -22,10 +22,13 @@ functions to look up external dependencies.
 
 import abc
 import enum
+import logging
 import sys
 from shutil import which
 from subprocess import CalledProcessError, run
 from typing import List, Optional, Union
+
+logger = logging.getLogger("wtl")
 
 
 class Drivers(enum.Enum):
@@ -136,6 +139,13 @@ class OsFunctionsWindows(OsFunctionsBase):
     """
     Extended class for Windows from OsFunctionsBase.
     """
+
+    def is_driver_installed(self, driver: Drivers) -> bool:
+        if super().is_driver_installed(driver):
+            return True
+        # TODO: Add driver check for Windows
+        logger.info("Driver check on Windows is currently not supported.")
+        return True
 
 
 def get_os_function_class(os: OS) -> OsFunctionsBase:
