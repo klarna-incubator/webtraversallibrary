@@ -24,6 +24,9 @@ Other references
 .. automodule:: webtraversallibrary.logging_utils
     :members:
 
+.. automodule:: webtraversallibrary.driver_check
+    :members:
+
 .. automodule:: webtraversallibrary.processtools
     :members:
 
