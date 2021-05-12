@@ -61,11 +61,16 @@ class Alarm(Thread):
     def __init__(self, timeout):
         Thread.__init__(self)
         self.timeout = timeout
+        self._stop_gracefully = False
         self.setDaemon(True)
+
+    def stop(self):
+        self._stop_gracefully = True
 
     def run(self):
         sleep(self.timeout)
-        os._exit(1)  # pylint: disable=protected-access
+        if not self._stop_gracefully:
+            os._exit(1)  # pylint: disable=protected-access
 
 
 class TimeoutContext:
@@ -94,7 +99,7 @@ class TimeoutContext:
         # Cancel the alarm
         if self.n_seconds > 0:
             if _ON_WINDOWS:
-                del self.alarm
+                self.alarm.stop()
             else:
                 signal.signal(signal.SIGALRM, signal.SIG_DFL)
                 time_left = signal.alarm(0)
