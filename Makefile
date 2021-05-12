@@ -32,7 +32,7 @@ env-delete:
 
 .PHONY: update
 update:
-	pip3 install --upgrade -r requirements.txt
+	pip3 install --upgrade -r requirements.txt $(CFLAGS)
 
 
 .PHONY: build-all
