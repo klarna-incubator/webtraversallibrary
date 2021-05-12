@@ -25,10 +25,12 @@ import signal
 from threading import Thread
 from time import sleep
 
+from webtraversallibrary.driver_check import OS, get_current_os
+
 logger = logging.getLogger("wtl")
 
 
-_ON_WINDOWS = os.name == "nt"
+_ON_WINDOWS = get_current_os() == OS.WINDOWS
 
 
 class cached_property:
