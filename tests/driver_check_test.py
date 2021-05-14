@@ -46,18 +46,18 @@ def test_get_os_system_function_class():
 
 
 def test_function_class_get_is_driver_installed():
-    fc = get_os_function_class(OS.LINUX)
+    fc = get_os_function_class(get_current_os())
     # noinspection PyTypeChecker
     assert fc.is_driver_installed(MockDrivers.PYTHON) is True
 
 
 def test_function_class_get_driver_version():
-    fc = get_os_function_class(OS.LINUX)
+    fc = get_os_function_class(get_current_os())
     # noinspection PyTypeChecker
     assert "Python" in fc.get_driver_version(MockDrivers.PYTHON)
 
 
 def test_function_class_get_driver_location():
-    fc = get_os_function_class(OS.LINUX)
+    fc = get_os_function_class(get_current_os())
     # noinspection PyTypeChecker
     assert fc.get_driver_location(MockDrivers.PYTHON) is not None
