@@ -66,7 +66,7 @@ VERSION_CMD = _VERSION_CMD()
 def run_cmd(cmd: str, title: str = None) -> bool:
     """Runs given command. Outputs data if descriptive title is given"""
     logger.warning(
-        "version_check.run_cmd() is deprecated and will be removed in future a version. "
+        "version_check.run_cmd() is deprecated and will be removed in a future version."
         "Please use the system_check.get_cmd_output() function instead."
     )
     try:
