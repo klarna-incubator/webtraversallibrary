@@ -14,7 +14,7 @@ class _VERSION_CMD:
     @staticmethod
     def deprecated_warning():
         logger.warning(
-            "VERSION_CMD is deprecated and will be removed in future a version. "
+            "VERSION_CMD is deprecated and will be removed in a future version."
             "Please use the SystemCheck class instead."
         )
 
