@@ -42,3 +42,13 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.pypi_password }}
+
+    - name: Fetch package version
+      run: echo "PACKAGE_VERSION=$(make version)" >> $GITHUB_ENV
+
+    - name: Notify Slack channel
+      uses: fjogeleit/http-request-action@master
+      with:
+        url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        method: 'POST'
+        data: '{"version": "${{ env.PACKAGE_VERSION }}"}'
