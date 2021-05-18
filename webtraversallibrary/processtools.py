@@ -25,10 +25,12 @@ import signal
 from threading import Thread
 from time import sleep
 
+from webtraversallibrary.driver_check import OS, get_current_os
+
 logger = logging.getLogger("wtl")
 
 
-_ON_WINDOWS = os.name == "nt"
+_ON_WINDOWS = get_current_os() == OS.WINDOWS
 
 
 class cached_property:
@@ -59,11 +61,16 @@ class Alarm(Thread):
     def __init__(self, timeout):
         Thread.__init__(self)
         self.timeout = timeout
+        self._stop_gracefully = False
         self.setDaemon(True)
+
+    def stop(self):
+        self._stop_gracefully = True
 
     def run(self):
         sleep(self.timeout)
-        os._exit(1)  # pylint: disable=protected-access
+        if not self._stop_gracefully:
+            os._exit(1)  # pylint: disable=protected-access
 
 
 class TimeoutContext:
@@ -77,6 +84,7 @@ class TimeoutContext:
         self.alarm = None
 
     def __enter__(self):
+        # pylint: disable=no-member
         if self.n_seconds > 0:
             if _ON_WINDOWS:
                 self.alarm = Alarm(self.n_seconds)
@@ -87,10 +95,11 @@ class TimeoutContext:
             logger.debug(f"TimeoutContext: Operation timeout is set to {self.n_seconds} sec.")
 
     def __exit__(self, *args, **kwargs):
+        # pylint: disable=no-member
         # Cancel the alarm
         if self.n_seconds > 0:
             if _ON_WINDOWS:
-                del self.alarm
+                self.alarm.stop()
             else:
                 signal.signal(signal.SIGALRM, signal.SIG_DFL)
                 time_left = signal.alarm(0)
@@ -98,5 +107,9 @@ class TimeoutContext:
                     logger.debug("TimeoutContext: Operation was interrupted by the timeout")
 
     def raise_error(self, signal_num, _):
+        """
+        Raises error on timeout.
+        """
+        # pylint: disable=no-member
         assert signal_num == signal.SIGALRM
         raise self.error_cls(f"Operation timed out after {self.n_seconds} sec.")

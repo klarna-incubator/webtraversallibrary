@@ -19,16 +19,20 @@ from time import sleep
 
 import pytest
 
+from webtraversallibrary.driver_check import OS, get_current_os
 from webtraversallibrary.processtools import TimeoutContext
 
 
-def test_timeout_context():
+def test_timeout_context_within_limits():
     with TimeoutContext(n_seconds=3):
         sleep(0.1)
 
     with TimeoutContext(n_seconds=0):
         sleep(0.1)
 
+
+@pytest.mark.skipif(get_current_os() == OS.WINDOWS, reason="Windows don't have proper SIGALRM handling.")
+def test_timeout_context_exceeds():
     with pytest.raises(TimeoutError):
         with TimeoutContext(n_seconds=1):
             sleep(2)

@@ -30,15 +30,19 @@ from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from .config import Config
+from .driver_check import Drivers, is_driver_installed, log_driver_version
 from .error import WebDriverSendError
-from .version_check import VERSION_CMD, run_cmd
 
 logger = logging.getLogger("wtl")
 
 
 def _setup_chrome(config: Config, profile_path: Path = None) -> WebDriver:
-    assert run_cmd(VERSION_CMD.CHROME, "Chrome version") or run_cmd(VERSION_CMD.CHROMIUM, "Chromium version")
-    assert run_cmd(VERSION_CMD.CHROMEDRIVER, "Chromedriver version")
+    assert is_driver_installed(Drivers.GOOGLE_CHROME) or is_driver_installed(Drivers.CHROMIUM)
+    assert is_driver_installed(Drivers.CHROMEDRIVER)
+
+    log_driver_version("Google Chrome version", Drivers.GOOGLE_CHROME)
+    log_driver_version("Chromium version", Drivers.CHROMIUM)
+    log_driver_version("Chromedriver version", Drivers.CHROMEDRIVER)
 
     chrome_options = webdriver.ChromeOptions()
     browser = config.browser
@@ -106,8 +110,11 @@ def _setup_chrome(config: Config, profile_path: Path = None) -> WebDriver:
 
 
 def _setup_firefox(config: Config, _profile_path: Path = None) -> WebDriver:
-    assert run_cmd(VERSION_CMD.FIREFOX, "Firefox version")
-    assert run_cmd(VERSION_CMD.GECKODRIVER, "Geckodriver version")
+    assert is_driver_installed(Drivers.FIREFOX)
+    assert is_driver_installed(Drivers.GECKODRIVER)
+
+    log_driver_version("Firefox version", Drivers.FIREFOX)
+    log_driver_version("Geckodriver version", Drivers.GECKODRIVER)
 
     firefox_profile = webdriver.FirefoxProfile()
     firefox_options = webdriver.FirefoxOptions()

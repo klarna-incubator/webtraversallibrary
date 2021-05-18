@@ -28,7 +28,7 @@ from typing import Any, Dict, Iterable, List, Union
 
 from prodict import Prodict  # pylint: disable=syntax-error
 
-from .version_check import VERSION_CMD, run_cmd
+from .driver_check import Drivers, is_driver_installed
 
 logger = logging.getLogger("wtl")
 
@@ -165,11 +165,11 @@ class Config:
         assert cfg.browser.browser in BROWSERS
 
         if cfg.browser.browser == "chrome":
-            assert run_cmd(VERSION_CMD.CHROME) or run_cmd(VERSION_CMD.CHROMIUM)
-            assert run_cmd(VERSION_CMD.CHROMEDRIVER)
+            assert is_driver_installed(Drivers.GOOGLE_CHROME) or is_driver_installed(Drivers.CHROMIUM)
+            assert is_driver_installed(Drivers.CHROMEDRIVER)
         elif cfg.browser.browser == "firefox":
-            assert run_cmd(VERSION_CMD.FIREFOX)
-            assert run_cmd(VERSION_CMD.GECKODRIVER)
+            assert is_driver_installed(Drivers.FIREFOX)
+            assert is_driver_installed(Drivers.GECKODRIVER)
 
     @staticmethod
     def default(cfg: List[Union[str, Path, dict]] = None) -> Config:

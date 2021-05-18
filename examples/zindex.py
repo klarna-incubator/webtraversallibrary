@@ -23,7 +23,7 @@ import logging
 from typing import List, Tuple
 
 import webtraversallibrary as wtl
-from webtraversallibrary.logging import setup_logging
+from webtraversallibrary.logging_utils import setup_logging
 
 from .util import parse_cli_args
 

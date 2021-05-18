@@ -21,9 +21,13 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from xvfbwrapper import Xvfb
 
 import webtraversallibrary as wtl
+from webtraversallibrary.driver_check import OS, get_current_os
+
+# xvfbwrapper is only available on Linux and macOS
+if get_current_os() != OS.WINDOWS:
+    from xvfbwrapper import Xvfb
 
 TESTURL = "http://localhost:5000"
 
@@ -42,6 +46,7 @@ def test_policy():
     yield None
 
 
+@pytest.mark.skipif(get_current_os() == OS.WINDOWS, reason="Can't run xvfb on Windows")
 @pytest.mark.system
 def test_mhtml_export():
     OUTPUT_DIR = Path("./mhtml/")
