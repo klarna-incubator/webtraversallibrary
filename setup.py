@@ -20,7 +20,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/klarna-incubator/webtraversallibrary",
     python_requires=">=3.7",
-    packages=["webtraversallibrary"],
+    packages=["webtraversallibrary", "webtraversallibrary.driver_check"],
     include_package_data=True,
     install_requires=[
         "beautifulsoup4>=4.8",
