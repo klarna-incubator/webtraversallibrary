@@ -104,7 +104,7 @@ docs:
 
 .PHONY: version
 version:
-	python -c "import $(SOURCE_FOLDER); print($(SOURCE_FOLDER).__version__)"
+	@python -c "import $(SOURCE_FOLDER); print($(SOURCE_FOLDER).__version__)"
 
 
 .PHONY: bump-version-patch
