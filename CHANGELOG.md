@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.2] - 2021-05-18
+ - Fixed bug in which the new `driver_check` module wasn't included in the distributed package.
+
 ## [0.13.1] - 2021-05-18
  - Added OS specific version and driver checks.
  - Fixed a bug where it was sometimes not possible to run WTL on macOS and Windows.
