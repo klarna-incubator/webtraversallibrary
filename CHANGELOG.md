@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13] - 2021-05-18
+ - Added OS specific version and driver checks.
+ - Fixed a bug where it was sometimes not possible to run WTL on macOS and Windows.
+ - Adding macOS and Windows to the CI pipeline.
+ - Renamed the `logging` module to `logging_utils` to prevent conflict with internal `logging` module.
+ - Deprecated the `version_check` module, in favour of `driver_check`
+
 ## [0.12] - 2021-02-19
  - Compatibility fixes with Mac and Windows
  - Added unique() method for Actions and Elements
