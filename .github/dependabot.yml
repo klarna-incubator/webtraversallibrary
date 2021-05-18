@@ -7,6 +7,7 @@ updates:
       interval: "daily"
     reviewers:
       - "vonNiklasson"
+      - "redfungus"
 
   - package-ecosystem: "pip"
     directory: "/"
@@ -14,3 +15,4 @@ updates:
       interval: "daily"
     reviewers:
       - "vonNiklasson"
+      - "redfungus"
