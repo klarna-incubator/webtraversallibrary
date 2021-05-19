@@ -46,6 +46,15 @@ jobs:
     - name: Fetch package version
       run: echo "PACKAGE_VERSION=$(make version)" >> $GITHUB_ENV
 
+    - name: Build docs
+      run: make docs
+
+    - name: Deploy docs
+      uses: JamesIves/github-pages-deploy-action@4.1.3
+      with:
+        branch: gh-pages
+        folder: docs/_build/html
+
     - name: Notify Slack channel
       uses: fjogeleit/http-request-action@master
       with:
