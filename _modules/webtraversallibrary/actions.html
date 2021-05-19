@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webtraversallibrary.actions &#8212; Web Traversal Library  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.actions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for webtraversallibrary.actions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Licensed to the Apache Software Foundation (ASF) under one</span>
+<span class="c1"># or more contributor license agreements.  See the NOTICE file</span>
+<span class="c1"># distributed with this work for additional information</span>
+<span class="c1"># regarding copyright ownership.  The ASF licenses this file</span>
+<span class="c1"># to you under the Apache License, Version 2.0 (the</span>
+<span class="c1"># &quot;License&quot;); you may not use this file except in compliance</span>
+<span class="c1"># with the License.  You may obtain a copy of the License at</span>
+
+<span class="c1">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="c1"># Unless required by applicable law or agreed to in writing,</span>
+<span class="c1"># software distributed under the License is distributed on an</span>
+<span class="c1"># &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
+<span class="c1"># KIND, either express or implied.  See the License for the</span>
+<span class="c1"># specific language governing permissions and limitations</span>
+<span class="c1"># under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">An action is an abstraction of some website or browser interaction,</span>
+<span class="sd">often implemented as a javascript snippet or webdriver API execution applicable for a given view.</span>
+
+<span class="sd">Action instances can be incomplete, i.e. they are not initialized with all fields. Call them with</span>
+<span class="sd">the missing attributes to replace those.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">replace</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">.color</span> <span class="kn">import</span> <span class="n">Color</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">from</span> <span class="nn">.selector</span> <span class="kn">import</span> <span class="n">Selector</span>
+<span class="kn">from</span> <span class="nn">.snapshot</span> <span class="kn">import</span> <span class="n">Elements</span><span class="p">,</span> <span class="n">PageElement</span>
+
+
+<div class="viewcode-block" id="Action"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Action">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Action</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all actions. Do not use, refer</span>
+<span class="sd">    instead to :class:`ElementAction` or :class:`PageAction`.</span>
+
+<span class="sd">    Each action must provide an ``execute`` method that performs the required logic.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># If there is only one non-target element, use the positional argument for that</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dataclass_fields__</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s2">&quot;target&quot;</span><span class="p">]</span>  <span class="c1"># pylint: disable=no-member</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Ambiguous action specialiation, use keyword arguments!&quot;</span>
+        <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]})</span></div>
+
+
+<div class="viewcode-block" id="Actions"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Actions">[docs]</a><span class="k">class</span> <span class="nc">Actions</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Helper class for a list of actions&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Actions.by_type"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Actions.by_type">[docs]</a>    <span class="k">def</span> <span class="nf">by_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Actions</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns all actions of the given type.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Actions</span><span class="p">([</span><span class="n">action</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">tag</span><span class="p">)])</span></div>
+
+<div class="viewcode-block" id="Actions.by_score"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Actions.by_score">[docs]</a>    <span class="k">def</span> <span class="nf">by_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Actions</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns all actions with the given score (metadata entry) greater than the given limit.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Actions</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">action</span>
+                <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">ElementAction</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">metadata</span>  <span class="c1"># type: ignore</span>
+                <span class="ow">and</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">limit</span>  <span class="c1"># type: ignore</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Actions.by_raw_score"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Actions.by_raw_score">[docs]</a>    <span class="k">def</span> <span class="nf">by_raw_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Actions</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all actions with the given raw score (output from a classifier before scaling)</span>
+<span class="sd">        greater than the given limit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Actions</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">action</span>
+                <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">ElementAction</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">raw_scores</span>  <span class="c1"># type: ignore</span>
+                <span class="ow">and</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">raw_scores</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">limit</span>  <span class="c1"># type: ignore</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Actions.by_element"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Actions.by_element">[docs]</a>    <span class="k">def</span> <span class="nf">by_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">PageElement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Actions</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns all actions (ElementAction) that act upon the given element.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Actions</span><span class="p">([</span><span class="n">action</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">ElementAction</span><span class="p">)</span> <span class="ow">and</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="n">element</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Actions.by_selector"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Actions.by_selector">[docs]</a>    <span class="k">def</span> <span class="nf">by_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Actions</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Queries the page by the given selector. If at least one element is found,</span>
+<span class="sd">        return all elements equal to one of those.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Actions</span><span class="p">([])</span>
+
+        <span class="n">element_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">by_type</span><span class="p">(</span><span class="n">ElementAction</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">element_actions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Actions</span><span class="p">([])</span>
+
+        <span class="n">tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">element_actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">page</span><span class="o">.</span><span class="n">page_source</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selector</span><span class="o">.</span><span class="n">css</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Actions</span><span class="p">([])</span>
+
+        <span class="n">wtl_uids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;wtl-uid&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">if</span> <span class="s2">&quot;wtl-uid&quot;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">([</span><span class="n">action</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">element_actions</span> <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">wtl_uid</span> <span class="ow">in</span> <span class="n">wtl_uids</span><span class="p">])</span>
+
+        <span class="c1"># Falls back on BS4 tags if selector matches something that hasn&#39;t been snapshotted yet</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">([</span><span class="n">action</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">element_actions</span> <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">actions</span></div>
+
+<div class="viewcode-block" id="Actions.sort_by"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Actions.sort_by">[docs]</a>    <span class="k">def</span> <span class="nf">sort_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Actions</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sorts by a certain action (raw) score. If given name does not exist the element gets (raw) score 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">action</span><span class="p">:</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">raw_scores</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Actions.unique"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Actions.unique">[docs]</a>    <span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Action</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Checks if exactly one element exists, if so returns it. Throws AssertionError otherwise&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="ElementAction"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.ElementAction">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ElementAction</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all actions that execute on a specific element.</span>
+<span class="sd">    Can be initialised with a :class:`PageElement` or a css selector string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PageElement</span><span class="p">,</span> <span class="n">Selector</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ElementAction.transformed_to_element"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.ElementAction.transformed_to_element">[docs]</a>    <span class="k">def</span> <span class="nf">transformed_to_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">Elements</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElementAction</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Modifies this action with a PageElement corresponding to the stored selector&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">Selector</span><span class="p">)</span>
+        <span class="n">selector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">elements</span><span class="o">.</span><span class="n">by_selector</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">tags</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Failed to perform </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: Selector &#39;</span><span class="si">{</span><span class="n">selector</span><span class="o">.</span><span class="n">css</span><span class="si">}</span><span class="s2">&#39; matches no tags&quot;</span>
+        <span class="n">page_element</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">page_element</span><span class="p">,</span> <span class="s2">&quot;selector&quot;</span><span class="p">,</span> <span class="n">selector</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">page_element</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">selector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Selector</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">Selector</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">selector</span></div>
+
+
+<div class="viewcode-block" id="PageAction"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.PageAction">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PageAction</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all actions that do not execute on a specific element.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Click"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Click">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Click</span><span class="p">(</span><span class="n">ElementAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simulates a click on the contained element.</span>
+<span class="sd">    If it isn&#39;t clickable, nothing happens.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">workflow</span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">iframe</span><span class="p">):</span>
+            <span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">click_element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FillText"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.FillText">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">FillText</span><span class="p">(</span><span class="n">ElementAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fills a string by setting the text value in the contained element.</span>
+<span class="sd">    If it isn&#39;t a text field, anything can happen.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">workflow</span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">iframe</span><span class="p">):</span>
+            <span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">fill_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Select"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Select">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Select</span><span class="p">(</span><span class="n">ElementAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Selects the given value on a &lt;select&gt; dropdown element.</span>
+<span class="sd">    If it isn&#39;t a select element, anything can happen.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">workflow</span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">iframe</span><span class="p">):</span>
+            <span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ScrollTo"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.ScrollTo">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ScrollTo</span><span class="p">(</span><span class="n">ElementAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scrolls the current page to center the given element vertically.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="n">workflow</span><span class="o">.</span><span class="n">smart_scroll_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Highlight"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Highlight">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Highlight</span><span class="p">(</span><span class="n">ElementAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Highlights an element by calling workflow.js.highlight(...)</span>
+<span class="sd">    viewport refers to drawing on a floating viewport-sized canvas. If None, uses default value from config.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">color</span><span class="p">:</span> <span class="n">Color</span> <span class="o">=</span> <span class="n">Color</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;#FFB3C7&quot;</span><span class="p">)</span>
+    <span class="n">fill</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">viewport</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="n">viewport</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">default_canvas_viewport</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span>
+        <span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">highlight</span><span class="p">(</span><span class="n">selector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fill</span><span class="p">,</span> <span class="n">viewport</span><span class="o">=</span><span class="n">viewport</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Remove"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Remove">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Remove</span><span class="p">(</span><span class="n">ElementAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Removes the given element from the DOM.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">delete_element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Annotate"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Annotate">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Annotate</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Writes text on a given page by calling workflow.js.annotate(...).</span>
+<span class="sd">    viewport refers to drawing on a viewport canvas. If None, uses default value from config.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">location</span><span class="p">:</span> <span class="n">Point</span>
+    <span class="n">color</span><span class="p">:</span> <span class="n">Color</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">background</span><span class="p">:</span> <span class="n">Color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">viewport</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="n">viewport</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">default_canvas_viewport</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span>
+
+        <span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+            <span class="n">location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="p">,</span>
+            <span class="n">viewport</span><span class="o">=</span><span class="n">viewport</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Clear"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Clear">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Clear</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clears all highlights and annotations.</span>
+<span class="sd">    viewport refers to drawing on a floating viewport-sized canvas. If None, uses default value from config.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">viewport</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="n">viewport</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">default_canvas_viewport</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span>
+        <span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">clear_highlights</span><span class="p">(</span><span class="n">viewport</span><span class="o">=</span><span class="n">viewport</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Navigate"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Navigate">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Navigate</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Navigates to a new URL and waits for the page to load.</span>
+<span class="sd">    If the URL is invalid, you may end up on the browser&#39;s error page.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="n">workflow</span><span class="o">.</span><span class="n">scraper</span><span class="o">.</span><span class="n">navigate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Revert"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Revert">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Revert</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reverts the state of the Workflow to a previous point in time.</span>
+<span class="sd">    In effect, resets the underlying web driver and then replays all actions leading up</span>
+<span class="sd">    to the given view_index. If 0, just perform the initial action of :class:`Navigate`</span>
+<span class="sd">    to the initial URL.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">view_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="n">workflow</span><span class="o">.</span><span class="n">reset_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">view_index</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Wait"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Wait">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Wait</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calls :func:`time.sleep` with the given seconds argument.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WaitForElement"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.WaitForElement">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">WaitForElement</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks to see if element at given selector exists on the page.</span>
+<span class="sd">    Keeps trying indefinitely with a given interval until it succeeds.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span>
+    <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">element_exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">):</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WaitForUser"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.WaitForUser">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">WaitForUser</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Waits until the Enter key is pressed in the terminal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Click [Enter] to continue...&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Refresh"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Refresh">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Refresh</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Triggers a refresh of the current page.</span>
+<span class="sd">    Note that the following snapshot may not have wtl_uid that</span>
+<span class="sd">    map equally to the previous state.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="n">workflow</span><span class="o">.</span><span class="n">scraper</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Abort"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.actions.Abort">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Abort</span><span class="p">(</span><span class="n">PageAction</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stops any future progress on this tab and will set an aborted flag</span>
+<span class="sd">    on the given tab. The tab will not be snapshoted in the future.</span>
+<span class="sd">    If all tabs have received an Abort call, the workflow will stop.</span>
+<span class="sd">    Note! If you&#39;re using multiple tabs, this action has highest priority.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">workflow</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">abort</span><span class="o">.</span><span class="n">close</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">workflow</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">preserve_window</span><span class="p">:</span>
+            <span class="n">workflow</span><span class="o">.</span><span class="n">current_window</span><span class="o">.</span><span class="n">close_tab</span><span class="p">()</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.actions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020 Klarna Bank AB (publ).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

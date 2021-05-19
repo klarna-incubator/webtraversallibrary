@@ -1,0 +1,773 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webtraversallibrary.workflow &#8212; Web Traversal Library  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.workflow</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for webtraversallibrary.workflow</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Licensed to the Apache Software Foundation (ASF) under one</span>
+<span class="c1"># or more contributor license agreements.  See the NOTICE file</span>
+<span class="c1"># distributed with this work for additional information</span>
+<span class="c1"># regarding copyright ownership.  The ASF licenses this file</span>
+<span class="c1"># to you under the Apache License, Version 2.0 (the</span>
+<span class="c1"># &quot;License&quot;); you may not use this file except in compliance</span>
+<span class="c1"># with the License.  You may obtain a copy of the License at</span>
+
+<span class="c1">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="c1"># Unless required by applicable law or agreed to in writing,</span>
+<span class="c1"># software distributed under the License is distributed on an</span>
+<span class="c1"># &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
+<span class="c1"># KIND, either express or implied.  See the License for the</span>
+<span class="c1"># specific language governing permissions and limitations</span>
+<span class="c1"># under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The Workflow is the main entry point for using the Web Traversal Library.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">replace</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
+
+<span class="kn">from</span> <span class="nn">.actions</span> <span class="kn">import</span> <span class="n">Abort</span><span class="p">,</span> <span class="n">Action</span><span class="p">,</span> <span class="n">Actions</span><span class="p">,</span> <span class="n">ElementAction</span><span class="p">,</span> <span class="n">Navigate</span><span class="p">,</span> <span class="n">Refresh</span><span class="p">,</span> <span class="n">Revert</span><span class="p">,</span> <span class="n">Wait</span>
+<span class="kn">from</span> <span class="nn">.classifiers</span> <span class="kn">import</span> <span class="n">Classifier</span>
+<span class="kn">from</span> <span class="nn">.color</span> <span class="kn">import</span> <span class="n">Color</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">.error</span> <span class="kn">import</span> <span class="n">Error</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Rectangle</span>
+<span class="kn">from</span> <span class="nn">.goals</span> <span class="kn">import</span> <span class="n">FOREVER</span>
+<span class="kn">from</span> <span class="nn">.helpers</span> <span class="kn">import</span> <span class="n">ClassifierCollection</span><span class="p">,</span> <span class="n">FrameSwitcher</span><span class="p">,</span> <span class="n">MonkeyPatches</span>
+<span class="kn">from</span> <span class="nn">.javascript</span> <span class="kn">import</span> <span class="n">JavascriptWrapper</span>
+<span class="kn">from</span> <span class="nn">.logging_utils</span> <span class="kn">import</span> <span class="n">setup_logging</span>
+<span class="kn">from</span> <span class="nn">.processtools</span> <span class="kn">import</span> <span class="n">TimeoutContext</span>
+<span class="kn">from</span> <span class="nn">.scraper</span> <span class="kn">import</span> <span class="n">Scraper</span>
+<span class="kn">from</span> <span class="nn">.selector</span> <span class="kn">import</span> <span class="n">Selector</span>
+<span class="kn">from</span> <span class="nn">.snapshot</span> <span class="kn">import</span> <span class="n">PageElement</span><span class="p">,</span> <span class="n">PageSnapshot</span>
+<span class="kn">from</span> <span class="nn">.view</span> <span class="kn">import</span> <span class="n">View</span>
+<span class="kn">from</span> <span class="nn">.window</span> <span class="kn">import</span> <span class="n">Window</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;wtl&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Workflow"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow">[docs]</a><span class="k">class</span> <span class="nc">Workflow</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Workflow is the main entry point for using the Web Traversal Library.</span>
+<span class="sd">    It will handle setup and teardown of all helper classes and appropriate use of the configuration object.</span>
+<span class="sd">    Note that you can &quot;run a workflow&quot; manually by creating Window and Scraper objects manually,</span>
+<span class="sd">    however this is not recommended for general use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">SINGLE_TAB</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tab&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]],</span>
+        <span class="n">policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">goal</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">FOREVER</span><span class="p">,</span>
+        <span class="n">classifiers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Classifier</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">patches</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Selector</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a Workflow and reset it.</span>
+<span class="sd">        :param url: Single string, dict mapping tab name to URL, or dict mapping window name to tab: url dict. Each</span>
+<span class="sd">        tab name must be unique, even among different windows!</span>
+<span class="sd">        :param policy: Function taking workflow and views, returning an action or a list of actions per tab/view.</span>
+<span class="sd">        :param output: Path for storing local data (if needed).</span>
+<span class="sd">        :param config: Configuration object for this instance.</span>
+<span class="sd">        :param goal: Called before each policy call, will halt the workflow if it returns True.</span>
+<span class="sd">        :param classifiers: List of classifiers to run on every snapshots.</span>
+<span class="sd">        :param patches: A dictionary of selectors to monkeypatch to other destinations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">setup_logging</span><span class="p">(</span><span class="n">log_dir</span><span class="o">=</span><span class="n">output</span> <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">save</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">config</span> <span class="ow">or</span> <span class="n">Config</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_windows</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Window</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">policy</span> <span class="o">=</span> <span class="n">policy</span><span class="p">()</span> <span class="k">if</span> <span class="n">policy</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__wtl_wrapped&quot;</span> <span class="k">else</span> <span class="n">policy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">goal</span> <span class="k">if</span> <span class="n">goal</span> <span class="k">else</span> <span class="n">FOREVER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preload_callbacks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postload_callbacks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">View</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_tab</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_window</span><span class="p">:</span> <span class="n">Window</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_quit</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tabs_cache</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monkeypatches</span> <span class="o">=</span> <span class="n">MonkeyPatches</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span> <span class="o">=</span> <span class="n">ClassifierCollection</span><span class="p">(</span><span class="n">classifiers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_policy_result</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Basic error handling</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="s2">&quot;Workflow created without a policy!&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">save</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;Saving debug output requires specifying an output path!&quot;</span>
+
+        <span class="c1"># Setup starting points</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Convert url type from str to Dict[str, str]</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="n">Workflow</span><span class="o">.</span><span class="n">SINGLE_TAB</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Convert url type from Dict[str, str] to Dict[str, Dict[str, str]]]</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="n">Workflow</span><span class="o">.</span><span class="n">SINGLE_TAB</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_starting_url</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">url</span>  <span class="c1"># type: ignore</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">,</span> <span class="o">**</span><span class="n">__</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calls :func:`quit` unless debug.preserve_window in config is True.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">preserve_window</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Workflow.run"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.run">[docs]</a>    <span class="nd">@Error</span><span class="o">.</span><span class="n">wrapped</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the workflow loop!</span>
+<span class="sd">        Intializes the tabs to the starting URLs and then</span>
+<span class="sd">        calls :func:`run_once` in a loop until the goal function returns True</span>
+<span class="sd">        or all tabs have stopped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_quit</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preload_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;js/intercept_event_listeners.js&quot;</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="n">TimeoutContext</span><span class="p">(</span><span class="n">n_seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">timeout</span> <span class="k">else</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">nullcontext</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">ctx</span><span class="p">:</span>
+                <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_once</span><span class="p">():</span>
+                        <span class="k">break</span>
+
+        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Workflow.run() timed out!&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Workflow.run() completed!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Workflow.run_once"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.run_once">[docs]</a>    <span class="nd">@Error</span><span class="o">.</span><span class="n">wrapped</span>
+    <span class="k">def</span> <span class="nf">run_once</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs a single iteration of the WTL flow, i.e. snapshots, runs classifiers,</span>
+<span class="sd">        checks goal, computes actions, calls policy, executes actions.</span>
+<span class="sd">        Check `loop_idx` member attribute for number of iterations.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This does not initialize the tabs to their starting URLs. Normally, use :func:`run` instead.</span>
+
+<span class="sd">        :return: The boolean output from the goal function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_tabs_cache</span><span class="p">()</span>
+
+        <span class="c1"># Perform required snapshotting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">all_views</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_new_views</span><span class="p">()</span>
+
+        <span class="c1"># Stop iterating if we&#39;ve reached our goal</span>
+        <span class="n">goal_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_views</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">goal_result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">goal_result</span> <span class="o">=</span> <span class="n">goal_result</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">goal_result</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">goal_result</span><span class="p">:</span>
+            <span class="c1"># Query the policy</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">policy_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">policy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_views</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">previous_policy_result</span> <span class="o">=</span> <span class="n">policy_result</span>
+                <span class="n">policy_stopped</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Received StopIteration from policy, will not continue.&quot;</span><span class="p">)</span>
+                <span class="n">policy_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># Execute actions</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">policy_stopped</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_execute_policy_result</span><span class="p">(</span><span class="n">policy_result</span><span class="p">)</span>
+
+        <span class="c1"># Save snapshot to disk</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">save</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="n">tab</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_view</span><span class="o">.</span><span class="n">snapshot</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">latest_view</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="c1"># Stop iterating if goal returned True</span>
+        <span class="k">if</span> <span class="n">goal_result</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Abort all remaining tabs if policy is finished</span>
+        <span class="k">if</span> <span class="n">policy_stopped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_policy_result</span><span class="p">({</span><span class="n">tab</span><span class="p">:</span> <span class="n">Abort</span><span class="p">()</span> <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_tabs</span><span class="p">})</span>
+
+        <span class="c1"># Reduce memory usage if keeping a lot of views</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">history</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">full_history</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_tabs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="n">tab</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">no_snapshot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Continue if there is still something in the policy</span>
+        <span class="k">return</span> <span class="n">policy_stopped</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_new_views</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">View</span><span class="p">]:</span>
+        <span class="n">all_views</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">View</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">tab</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_tabs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="n">tab</span><span class="p">)</span>
+
+            <span class="c1"># Navigate if neccessary</span>
+            <span class="n">initial_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_window</span><span class="o">.</span><span class="n">navigation</span>
+            <span class="n">initial_action</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">initial_url</span><span class="p">:</span>
+                <span class="n">initial_action</span> <span class="o">=</span> <span class="n">Navigate</span><span class="p">(</span><span class="n">initial_url</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_perform_action</span><span class="p">(</span><span class="n">initial_action</span><span class="p">)</span>
+
+            <span class="c1"># Optimization: Only scrape tab if enforced, action taken, or never scraped before</span>
+            <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">all</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_policy_result</span>
+                <span class="ow">and</span> <span class="n">tab</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_policy_result</span>
+                <span class="ow">and</span> <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">snapshot</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+                <span class="n">all_views</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Store View</span>
+            <span class="n">all_views</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_new_view</span><span class="p">(</span><span class="n">tab</span><span class="p">,</span> <span class="n">initial_action</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_views</span>
+
+    <span class="k">def</span> <span class="nf">_get_new_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">initial_action</span><span class="p">:</span> <span class="n">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">View</span><span class="p">:</span>
+        <span class="c1"># Run postload callbacks</span>
+        <span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_window</span><span class="o">.</span><span class="n">scraper</span><span class="o">.</span><span class="n">postload_callbacks</span><span class="p">:</span>
+            <span class="n">cb</span><span class="p">()</span>
+
+        <span class="c1"># Scrape the page</span>
+        <span class="n">snapshot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_window</span><span class="o">.</span><span class="n">scraper</span><span class="o">.</span><span class="n">scrape_current_page</span><span class="p">()</span>
+
+        <span class="c1"># Assemble basic list of actions</span>
+        <span class="n">action_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Abort</span><span class="p">(),</span> <span class="n">Refresh</span><span class="p">(),</span> <span class="n">Navigate</span><span class="p">(),</span> <span class="n">Wait</span><span class="p">()]</span>
+        <span class="n">action_list</span> <span class="o">+=</span> <span class="p">[</span><span class="n">Revert</span><span class="p">(</span><span class="n">step</span><span class="p">)</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">))]</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="n">Actions</span><span class="p">(</span><span class="n">action_list</span><span class="p">)</span>
+
+        <span class="c1"># Setup metadata</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">history</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="ow">and</span> <span class="s2">&quot;next_action&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+                <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;previous_action&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;next_action&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;previous_action&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">initial_action</span><span class="p">]</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;next_action&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Create view</span>
+        <span class="n">view</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">snapshot</span><span class="o">=</span><span class="n">snapshot</span><span class="p">,</span> <span class="n">actions</span><span class="o">=</span><span class="n">actions</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+
+        <span class="c1"># Add state to history</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+
+        <span class="c1"># Maintain only one level of history if required</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_tab</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">history</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">ct</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">ct</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Run element classifiers</span>
+        <span class="n">view</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_element_classifiers</span><span class="p">(</span><span class="n">snapshot</span><span class="p">))</span>
+
+        <span class="c1"># Run page classifiers</span>
+        <span class="k">for</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">active_view_classifiers</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+            <span class="n">view</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">view</span>
+
+    <span class="k">def</span> <span class="nf">_execute_policy_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy_result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Action</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">]]]):</span>
+        <span class="c1"># If a reset action was given, perform it directly</span>
+        <span class="n">revert_actions</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">policy_result</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">Revert</span><span class="p">)]</span>
+
+        <span class="n">revert_actions</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">view_index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">revert_actions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_perform_action</span><span class="p">(</span><span class="n">revert_actions</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Execute other actions in the policy result</span>
+        <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_tabs</span><span class="p">:</span>
+            <span class="c1"># Find corresponding actions</span>
+            <span class="k">if</span> <span class="n">tab</span> <span class="ow">in</span> <span class="n">policy_result</span><span class="p">:</span>
+                <span class="n">actions</span> <span class="o">=</span> <span class="n">policy_result</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">policy_result</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">View</span><span class="p">)</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">tab</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No action given for </span><span class="si">{</span><span class="n">tab</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">actions</span> <span class="o">=</span> <span class="n">policy_result</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+            <span class="c1"># Execute actions</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="n">actions</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">actions</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="n">tab</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">action</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">actions</span><span class="p">):</span>
+                <span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">wait_action</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">ElementAction</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">Selector</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">iframe</span>
+                <span class="p">):</span>
+                    <span class="n">action</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">transformed_to_element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latest_view</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_perform_action</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">latest_view</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;next_action&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">actions</span>
+
+<div class="viewcode-block" id="Workflow.create_window"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.create_window">[docs]</a>    <span class="k">def</span> <span class="nf">create_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Window</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Opens a new browser window and adds it to this workflow. Returns the new window.&quot;&quot;&quot;</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">Window</span><span class="p">(</span>
+            <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">preload_callbacks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">preload_callbacks</span><span class="p">,</span> <span class="n">postload_callbacks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">postload_callbacks</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_windows</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">window</span>
+        <span class="k">return</span> <span class="n">window</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the name of the current tab&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_tab</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_window</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Window</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the window object for the current tab.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_window</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if there are any open (i.e. not-cancelled) tabs.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">open_tabs</span> <span class="k">for</span> <span class="n">window</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">windows</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tabs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of all tab names.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tabs_cache</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">open_tabs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of all open tab names.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">open_tabs</span> <span class="k">for</span> <span class="n">window</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">windows</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">windows</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of all window instances.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_windows</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">View</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a history of views for the current tab.</span>
+<span class="sd">        The view stores previous_action and next_action in its metadata for future</span>
+<span class="sd">        resurrection of the workflow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_tab</span>
+        <span class="k">if</span> <span class="n">ct</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">ct</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">ct</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">View</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ct</span><span class="p">,</span> <span class="n">snapshot</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">ct</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">aborted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if the current tab has been closed.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_window</span><span class="o">.</span><span class="n">is_closed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_tab</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">js</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JavascriptWrapper</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a :class:`JavascriptWrapper` associated to the current window.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_window</span><span class="o">.</span><span class="n">js</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">driver</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">webdriver</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the WebDriver instance associated to the current window.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_window</span><span class="o">.</span><span class="n">driver</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">scraper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Scraper</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Provides a :class:`Scraper` instance associated to the current window.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_window</span><span class="o">.</span><span class="n">scraper</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">latest_view</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">View</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the latest :class:`View` taken from the current tab.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns path to output directory for current tab and iteration&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;No output path was specified!&quot;</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="n">output_path</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_tab</span>
+        <span class="k">return</span> <span class="n">output_path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">post_processing_output_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns path to output directory for post processing output.</span>
+<span class="sd">        The Workflow does not put anything here itself by default, but this is provided as</span>
+<span class="sd">        convenience to the user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;No output path was specified!&quot;</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;post&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_path</span>
+
+<div class="viewcode-block" id="Workflow.tab"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.tab">[docs]</a>    <span class="k">def</span> <span class="nf">tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workflow</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets the current tab to the given name.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_tab</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&gt; Setting tab: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_tab</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">for</span> <span class="n">window</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">windows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_tab</span> <span class="ow">in</span> <span class="n">window</span><span class="o">.</span><span class="n">tabs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_current_window</span> <span class="o">=</span> <span class="n">window</span>
+                <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_window</span><span class="o">.</span><span class="n">set_tab</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Workflow.window"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.window">[docs]</a>    <span class="k">def</span> <span class="nf">window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the window instance with the name provided when created with :func:`create_window`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_windows</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Workflow.view"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.view">[docs]</a>    <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">:</span> <span class="n">View</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Workflow</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sets the current tab to the one where given view was taken from.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Workflow.quit"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.quit">[docs]</a>    <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cleans up all windows. Call this after you are done! Do not use again after this.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_quit</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">window</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">windows</span><span class="p">:</span>
+            <span class="n">window</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Workflow.frame"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.frame">[docs]</a>    <span class="k">def</span> <span class="nf">frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrameSwitcher</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a context manager for entering and exiting iframes.</span>
+<span class="sd">        See `FrameSwitcher` for more details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">FrameSwitcher</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">js</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_perform_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">Action</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">action</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;None given as action&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Next action: </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">ElementAction</span><span class="p">):</span>
+                <span class="n">has_element_handle</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">PageElement</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">autoscroll</span>
+                    <span class="ow">and</span> <span class="n">has_element_handle</span>
+                    <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">screenshots</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">headless</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">smart_scroll_to</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">save</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">screenshots</span> <span class="ow">and</span> <span class="n">has_element_handle</span><span class="p">:</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_view</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">screenshots</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">)])</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;action</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">assert</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_view</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">screenshots</span>
+
+                    <span class="n">scr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scraper</span><span class="o">.</span><span class="n">capture_screenshot</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">)</span>
+                    <span class="n">viewport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">find_viewport</span><span class="p">()</span>
+                    <span class="n">scr</span><span class="o">.</span><span class="n">highlight</span><span class="p">(</span>
+                        <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">bounds</span> <span class="o">-</span> <span class="n">viewport</span><span class="o">.</span><span class="n">minima</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                        <span class="n">Color</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                        <span class="sa">f</span><span class="s2">&quot;Action: </span><span class="si">{</span><span class="n">action</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">latest_view</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">screenshots</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">scr</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">highlight</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">selector</span><span class="p">,</span> <span class="n">Color</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">action_highlight_color</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">headless</span><span class="p">:</span>
+                        <span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">live_delay</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">has_element_handle</span><span class="p">:</span>
+                    <span class="n">patch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monkeypatches</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">page</span><span class="p">,</span> <span class="n">action</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+                    <span class="k">if</span> <span class="n">patch</span><span class="p">:</span>
+                        <span class="n">action</span> <span class="o">=</span> <span class="n">Navigate</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Action monkeypatched: </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">action</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">NotImplementedError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Workflow.smart_scroll_to"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.smart_scroll_to">[docs]</a>    <span class="k">def</span> <span class="nf">smart_scroll_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Rectangle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Uses js.scroll_to in a slightly smarter way to minimize</span>
+<span class="sd">        required scrolls and vertically center elements of interest.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">viewport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">find_viewport</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">viewport</span><span class="p">:</span>
+            <span class="c1"># Element is completely visible already, do nothing</span>
+            <span class="k">pass</span>
+
+        <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">viewport</span><span class="o">.</span><span class="n">height</span><span class="p">:</span>
+            <span class="c1"># Element is larger than viewport, fit as much as possible</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">y</span>
+
+        <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">viewport</span><span class="o">.</span><span class="n">y</span><span class="p">:</span>
+            <span class="c1"># Element requires scrolling up, make sure it&#39;s inside the screen</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">y</span>
+
+        <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">element</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">viewport</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">viewport</span><span class="o">.</span><span class="n">height</span><span class="p">:</span>
+            <span class="c1"># Element requires scrolling down, try centering it</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">element</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">viewport</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">scroll_to</span><span class="p">(</span><span class="n">viewport</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">wait_scroll</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_run_element_classifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">:</span> <span class="n">PageSnapshot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">]:</span>
+        <span class="n">action_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">classifier</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">active_element_classifiers</span><span class="p">:</span>
+            <span class="n">subset</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">by_score</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">subset</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">cls_result</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">action_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_class</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">cls_result</span><span class="p">,</span> <span class="n">subset</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">action_list</span>
+
+    <span class="k">def</span> <span class="nf">_populate_tabs_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the cache used by self.tabs property&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tabs_cache</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">tabs</span> <span class="k">for</span> <span class="n">window</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">windows</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_process_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classifier</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">cls_result</span><span class="p">,</span> <span class="n">subset</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Action</span><span class="p">]:</span>
+        <span class="c1"># Add the classifier name as the prefix on multi-class predictions</span>
+        <span class="n">cls_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">classifier</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">cls_name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">cls_name</span> <span class="k">else</span> <span class="n">classifier</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="n">binary_filter</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cls_result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">PageElement</span><span class="p">)</span> <span class="k">if</span> <span class="n">cls_result</span> <span class="k">else</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">binary_filter</span><span class="p">:</span>
+            <span class="n">cls_result</span> <span class="o">=</span> <span class="p">[(</span><span class="n">e</span><span class="p">,</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">cls_result</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">subset</span><span class="p">]</span>
+
+        <span class="n">cls_result</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">binary_filter</span><span class="p">:</span>
+            <span class="n">scaled_result</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cls_result</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scaled_result</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">scale</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">cls_result</span><span class="p">])</span>
+
+        <span class="n">cls_result</span> <span class="o">=</span> <span class="p">[(</span><span class="n">e</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cls_result</span><span class="p">,</span> <span class="n">scaled_result</span><span class="p">)]</span>
+
+        <span class="k">for</span> <span class="n">element</span><span class="p">,</span> <span class="n">raw_score</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">cls_result</span><span class="p">:</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">raw_scores</span><span class="p">[</span><span class="n">cls_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_score</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">cls_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">classifier</span><span class="o">.</span><span class="n">highlight</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_highlight_classifier_result</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">,</span> <span class="n">cls_result</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">classifier</span><span class="o">.</span><span class="n">action</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">classifier</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">cls_result</span> <span class="k">if</span> <span class="n">score</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Workflow.reset"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets the workflow.</span>
+<span class="sd">        Does not clear any history.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">history</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Cannot reset if config.scraping.history is False!&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_policy_result</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Clear any existing windows</span>
+        <span class="k">for</span> <span class="n">window</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">windows</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">window</span><span class="p">:</span>
+                <span class="n">window</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_windows</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Create all windows and tabs</span>
+        <span class="k">for</span> <span class="n">window_name</span><span class="p">,</span> <span class="n">tab_names</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_starting_url</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_window</span><span class="p">(</span><span class="n">window_name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">tab_name</span><span class="p">,</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">tab_names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">window</span><span class="o">.</span><span class="n">create_tab</span><span class="p">(</span><span class="n">tab_name</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_tabs_cache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Workflow.reset_to"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.workflow.Workflow.reset_to">[docs]</a>    <span class="k">def</span> <span class="nf">reset_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets the Workflow and replays the first ``view_index`` actions.</span>
+<span class="sd">        History in memory will be mutated.</span>
+<span class="sd">        Because this resets the `loop_idx` variable to match, saved output will override</span>
+<span class="sd">        previous output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">history</span><span class="p">,</span> <span class="s2">&quot;Cannot reset if config.scraping.history set to False!&quot;</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">view_index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span><span class="p">,</span> <span class="s2">&quot;Cannot revert into the future or before the beginning of time!&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop_idx</span> <span class="o">=</span> <span class="n">view_index</span>
+
+        <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">tab</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">tab</span><span class="p">][:</span> <span class="n">view_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">view_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replaying index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+            <span class="n">policy_result</span> <span class="o">=</span> <span class="p">{</span><span class="n">tab</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tab</span><span class="p">(</span><span class="n">tab</span><span class="p">)</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;previous_action&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">tab</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tabs</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_policy_result</span><span class="p">(</span><span class="n">policy_result</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_new_views</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_highlight_classifier_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classifier</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">):</span>
+        <span class="c1"># Given a classifier and its output, call highlighting accordingly.</span>
+        <span class="c1"># Takes a list of tuples (element, raw_score, score).</span>
+        <span class="c1"># Highlights according to the scaled score.</span>
+
+        <span class="n">do_screenshots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">screenshots</span>
+        <span class="k">if</span> <span class="n">do_screenshots</span><span class="p">:</span>
+            <span class="n">scr</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">new_screenshot</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">classifier</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">of</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_highlight</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">raw_score</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">score</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">color</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">highlight_color</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">score</span> <span class="o">*</span> <span class="mi">255</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">highlight</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">selector</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+            <span class="n">score_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">raw_score</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_score</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">raw_score</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="o">.</span><span class="n">live_annotation</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                    <span class="n">Point</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">element</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">element</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">10</span><span class="p">),</span>
+                    <span class="n">color</span><span class="p">,</span>
+                    <span class="mi">10</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">score_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">do_screenshots</span><span class="p">:</span>
+                <span class="n">scr</span><span class="o">.</span><span class="n">highlight</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">score_str</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">highlight</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)):</span>
+                <span class="n">_highlight</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">highlight</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">highlight</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">))):</span>
+                <span class="n">_highlight</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">highlight</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">classifier</span><span class="o">.</span><span class="n">highlight</span><span class="p">:</span>
+                    <span class="n">_highlight</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid classifier.highlight value in </span><span class="si">{</span><span class="n">classifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.workflow</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020 Klarna Bank AB (publ).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

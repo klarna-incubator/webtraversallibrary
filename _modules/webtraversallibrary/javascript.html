@@ -1,0 +1,445 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webtraversallibrary.javascript &#8212; Web Traversal Library  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.javascript</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for webtraversallibrary.javascript</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Licensed to the Apache Software Foundation (ASF) under one</span>
+<span class="c1"># or more contributor license agreements.  See the NOTICE file</span>
+<span class="c1"># distributed with this work for additional information</span>
+<span class="c1"># regarding copyright ownership.  The ASF licenses this file</span>
+<span class="c1"># to you under the Apache License, Version 2.0 (the</span>
+<span class="c1"># &quot;License&quot;); you may not use this file except in compliance</span>
+<span class="c1"># with the License.  You may obtain a copy of the License at</span>
+
+<span class="c1">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="c1"># Unless required by applicable law or agreed to in writing,</span>
+<span class="c1"># software distributed under the License is distributed on an</span>
+<span class="c1"># &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
+<span class="c1"># KIND, either express or implied.  See the License for the</span>
+<span class="c1"># specific language governing permissions and limitations</span>
+<span class="c1"># under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Wrapper functions around JavaScript code to be used from Selenium WebDriver. The main reason to store JS code in</span>
+<span class="sd">files instead of embedding it in Python code is convenience: it is more readable and has better IDE support.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">selenium.common.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">JavascriptException</span><span class="p">,</span>
+    <span class="n">NoAlertPresentException</span><span class="p">,</span>
+    <span class="n">UnexpectedAlertPresentException</span><span class="p">,</span>
+    <span class="n">WebDriverException</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.common.alert</span> <span class="kn">import</span> <span class="n">Alert</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.remote.webdriver</span> <span class="kn">import</span> <span class="n">WebDriver</span>
+
+<span class="kn">from</span> <span class="nn">.color</span> <span class="kn">import</span> <span class="n">Color</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">.error</span> <span class="kn">import</span> <span class="n">WindowClosedError</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Rectangle</span>
+<span class="kn">from</span> <span class="nn">.selector</span> <span class="kn">import</span> <span class="n">Selector</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;wtl&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="safe_selenium_method"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.safe_selenium_method">[docs]</a><span class="k">def</span> <span class="nf">safe_selenium_method</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles errors thrown in the browser while executing javascript and outputs information to the log.</span>
+<span class="sd">    Note: This is a clumsy decorator for instance methods and assumes there is a self.driver member.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">to_logger</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">js_level</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">js_level</span> <span class="o">==</span> <span class="s2">&quot;INFO&quot;</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">javascript</span><span class="o">.</span><span class="n">info</span>
+            <span class="k">elif</span> <span class="n">js_level</span> <span class="o">==</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">javascript</span><span class="o">.</span><span class="n">warning</span>
+            <span class="k">elif</span> <span class="n">js_level</span> <span class="o">==</span> <span class="s2">&quot;SEVERE&quot;</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">javascript</span><span class="o">.</span><span class="n">severe</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;debug&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;info&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;warning&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">alert_text</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">UnexpectedAlertPresentException</span><span class="p">:</span>
+            <span class="c1"># Some websites create an alert to communicate an error message instead of throwing the normal exception</span>
+            <span class="c1"># or instead of things normal people use popups for.</span>
+            <span class="c1"># However, selenium can be &quot;too quick&quot; to dismiss the alerts and crash.</span>
+            <span class="n">alert</span> <span class="o">=</span> <span class="n">Alert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">alert_text</span> <span class="o">=</span> <span class="n">alert</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">alert</span><span class="o">.</span><span class="n">dismiss</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">NoAlertPresentException</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">except</span> <span class="n">JavascriptException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Exception thrown in the browser&#39;s Javascript engine.&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">log_records</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">log_records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">get_log</span><span class="p">(</span><span class="s2">&quot;browser&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">WebDriverException</span><span class="p">,</span> <span class="n">WindowClosedError</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to fetch log records from the driver&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Print browser logs</span>
+            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">log_records</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">])):</span>
+                <span class="n">record</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
+                <span class="n">log_line</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{level}</span><span class="s2">] </span><span class="si">{message}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">record</span><span class="p">)</span>
+                <span class="n">log_level</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s2">&quot;level&quot;</span><span class="p">]</span>
+                <span class="n">to_logger</span><span class="p">(</span><span class="n">log_line</span><span class="p">,</span> <span class="n">log_level</span><span class="p">)</span>
+
+            <span class="c1"># Then alert text, if there was any</span>
+            <span class="k">if</span> <span class="n">alert_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  JS Alert text:  </span><span class="si">{</span><span class="n">alert_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="JavascriptWrapper"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper">[docs]</a><span class="k">class</span> <span class="nc">JavascriptWrapper</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper class for executing built-in javascript scripts or custom</span>
+<span class="sd">    files and snippets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">driver</span><span class="p">:</span> <span class="n">WebDriver</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">driver</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">config</span> <span class="ow">or</span> <span class="n">Config</span><span class="o">.</span><span class="n">default</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+<div class="viewcode-block" id="JavascriptWrapper.save_mhtml"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.save_mhtml">[docs]</a>    <span class="k">def</span> <span class="nf">save_mhtml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Executes the MHTML saving extension. Saves to the path specified in config.scraping.temp_path.</span>
+<span class="sd">        Note: If the file already exists, it will not be overwritten.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="s1">&#39;window.postMessage({type: &quot;SAVE_MHTML&quot;, filename: &quot;&#39;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;&quot;})&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.get_full_height"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.get_full_height">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full page height, i.e. the height of the document.</span>
+<span class="sd">        :return: document height in pixels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;get_full_page_height.js&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.find_iframe_name"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.find_iframe_name">[docs]</a>    <span class="k">def</span> <span class="nf">find_iframe_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Looks for an iframe where name, ID, or class equals the identifier,</span>
+<span class="sd">        and returns its name. Returns empty string if no matching object was found.</span>
+<span class="sd">        :return: iframe name or empty string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;find_iframe_name.js&quot;</span><span class="p">),</span> <span class="n">identifier</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.find_viewport"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.find_viewport">[docs]</a>    <span class="k">def</span> <span class="nf">find_viewport</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Rectangle</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the width of the web browser window with content.</span>
+<span class="sd">        :return: viewport height in pixels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;find_viewport.js&quot;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to compute get viewport size&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Rectangle</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">Rectangle</span><span class="o">.</span><span class="n">from_list</span><span class="p">([</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;h&quot;</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.get_element_metadata"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.get_element_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_element_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collects metadata about web page DOM elements: their tags, some of the HTML attributes, position and size on the</span>
+<span class="sd">        page, CSS styles and classes, inner text.</span>
+
+<span class="sd">        Each element on the page is assigned a unique within the scope of the page ``wtl_uid`` and</span>
+<span class="sd">        has a pointer to the parent DOM element in the ``wtl_parent_uid`` field and are not to be confused</span>
+<span class="sd">        with ``id`` attribute in HTML which is neither unique nor mandatory.</span>
+
+<span class="sd">        :return: a list of JSON objects (in their Python dict form) with HTML attributes, additionally calculated</span>
+<span class="sd">                properties and unique IDs. Refer to the script code for the keys&#39; names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;get_element_metadata.js&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.hide_position_fixed_elements"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.hide_position_fixed_elements">[docs]</a>    <span class="k">def</span> <span class="nf">hide_position_fixed_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hides page elements that are fixed or sticky (the ones that stay on the page when you scroll)</span>
+<span class="sd">        by setting their visibility to &quot;hidden&quot;.</span>
+
+<span class="sd">        Returns a map from element ids (wtl-uid) to the old visibility values.</span>
+
+<span class="sd">        Mutates the web page.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="n">elements</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;hide_position_fixed_elements.js&quot;</span><span class="p">),</span> <span class="n">elements</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.show_position_fixed_elements"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.show_position_fixed_elements">[docs]</a>    <span class="k">def</span> <span class="nf">show_position_fixed_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_to_visibility</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the specified visibility to the elements with ids listed in ``id_to_visibility``.</span>
+
+<span class="sd">        The 2nd parameter is expected to be the (possibly accumulated) output of hide_position_fixed_elements.</span>
+
+<span class="sd">        Mutates the web page (hopefully undoing the changes made by hide_position_fixed_elements)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;show_position_fixed_elements.js&quot;</span><span class="p">),</span> <span class="n">id_to_visibility</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.element_exists"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.element_exists">[docs]</a>    <span class="k">def</span> <span class="nf">element_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if an element exists, otherwise False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;element_exists.js&quot;</span><span class="p">),</span> <span class="n">selector</span><span class="o">.</span><span class="n">css</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.disable_animations"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.disable_animations">[docs]</a>    <span class="k">def</span> <span class="nf">disable_animations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turns off animation on the page. Works for jQuery by setting a certain flag and for CSS animations by injecting</span>
+<span class="sd">        an additional style into the page code.</span>
+
+<span class="sd">        Mutates the web page.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;disable_animations.js&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.is_page_loaded"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.is_page_loaded">[docs]</a>    <span class="k">def</span> <span class="nf">is_page_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies some heuristics to check if the page is loaded. But since it is in general a hard question to answer,</span>
+<span class="sd">        is known to be faulty in some cases.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ignores any input arguments given by WebDriverWait.until()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;is_page_loaded.js&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.find_active_elements"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.find_active_elements">[docs]</a>    <span class="k">def</span> <span class="nf">find_active_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Uses a couple of heuristics to try and find all clickable elements in the page.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;find_active_elements.js&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.scroll_to"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.scroll_to">[docs]</a>    <span class="k">def</span> <span class="nf">scroll_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scroll the page to given coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scrollTo(</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="si">}</span><span class="s2">);&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.make_canvas"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.make_canvas">[docs]</a>    <span class="k">def</span> <span class="nf">make_canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create viewport and page canvases and add them to the DOM.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;make_canvas.js&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.annotate"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.annotate">[docs]</a>    <span class="k">def</span> <span class="nf">annotate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">location</span><span class="p">:</span> <span class="n">Point</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Color</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">background</span><span class="p">:</span> <span class="n">Color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">viewport</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes text with a given color on the page.</span>
+<span class="sd">        Shares an HTML canvas with `highlight`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_canvas</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;annotate.js&quot;</span><span class="p">),</span>
+            <span class="n">location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">.</span><span class="n">to_str</span><span class="p">(),</span>
+            <span class="n">size</span><span class="p">,</span>
+            <span class="n">text</span><span class="p">,</span>
+            <span class="n">background</span><span class="o">.</span><span class="n">to_str</span><span class="p">(),</span>
+            <span class="n">background</span><span class="o">.</span><span class="n">a</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span>
+            <span class="n">viewport</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.highlight"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.highlight">[docs]</a>    <span class="k">def</span> <span class="nf">highlight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">Color</span><span class="p">,</span> <span class="n">fill</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">viewport</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Highlight an element as found by a given selector with arbitrary</span>
+<span class="sd">        color and intensity.</span>
+<span class="sd">        Note: If more elements can be found, only one will be highlighted.</span>
+<span class="sd">        Shares an HTML canvas with `annotate`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_canvas</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;highlight.js&quot;</span><span class="p">),</span> <span class="n">selector</span><span class="o">.</span><span class="n">css</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">to_str</span><span class="p">(),</span> <span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">viewport</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.clear_highlights"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.clear_highlights">[docs]</a>    <span class="k">def</span> <span class="nf">clear_highlights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">viewport</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes all highlights created by :func:`highlight`.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;clear_highlights.js&quot;</span><span class="p">),</span> <span class="n">viewport</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.click_element"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.click_element">[docs]</a>    <span class="k">def</span> <span class="nf">click_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clicks an element found by the given selector.</span>
+<span class="sd">        Note: If more elements can be found, only one will be clicked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">([</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;dom.js&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;click_element.js&quot;</span><span class="p">)],</span> <span class="n">selector</span><span class="o">.</span><span class="n">css</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.delete_element"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.delete_element">[docs]</a>    <span class="k">def</span> <span class="nf">delete_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes an element found by the given selector.</span>
+<span class="sd">        Note: If more elements can be found, only one will be clicked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;delete_element.js&quot;</span><span class="p">),</span> <span class="n">selector</span><span class="o">.</span><span class="n">css</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.fill_text"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.fill_text">[docs]</a>    <span class="k">def</span> <span class="nf">fill_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fills an element as found by a given selector with given text.</span>
+<span class="sd">        Note: If more elements can be found, only one will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">([</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;dom.js&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;fill_text.js&quot;</span><span class="p">)],</span> <span class="n">selector</span><span class="o">.</span><span class="n">css</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.select"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">:</span> <span class="n">Selector</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select an element of a dropdown (select) element.</span>
+<span class="sd">        Note: If more elements can be found, only one will be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_file</span><span class="p">([</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;dom.js&quot;</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;select.js&quot;</span><span class="p">)],</span> <span class="n">selector</span><span class="o">.</span><span class="n">css</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.assemble_script"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.assemble_script">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">assemble_script</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filenames</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concatenates the contents of several Javascript files into one, with caching.</span>
+<span class="sd">        :param filenames: Path to the JS files either in webtraversallibrary/js or an absolute path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">/</span> <span class="s2">&quot;js&quot;</span> <span class="o">/</span> <span class="n">filename</span>
+
+            <span class="k">assert</span> <span class="n">filename</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.execute_file"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.execute_file">[docs]</a>    <span class="k">def</span> <span class="nf">execute_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">execute_async</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the JavaScript code in given file and return the result</span>
+<span class="sd">        :param filename: Path to the JS file(s) either in webtraversallibrary/js or an absolute path.</span>
+<span class="sd">        :param execute_async: if True, will wait until the javascript code has called</span>
+<span class="sd">        arguments[arguments.length-1] and will return its input arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="p">[</span><span class="n">filename</span><span class="p">]</span>
+
+        <span class="n">script</span> <span class="o">=</span> <span class="n">JavascriptWrapper</span><span class="o">.</span><span class="n">assemble_script</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">execute_async</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_script_async</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.execute_script"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.execute_script">[docs]</a>    <span class="nd">@safe_selenium_method</span>
+    <span class="k">def</span> <span class="nf">execute_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the JavaScript code in `script` and return the result</span>
+<span class="sd">        :param script: path to the JS file relative to this package</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JavascriptWrapper.execute_script_async"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.javascript.JavascriptWrapper.execute_script_async">[docs]</a>    <span class="nd">@safe_selenium_method</span>
+    <span class="k">def</span> <span class="nf">execute_script_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute the JavaScript code in `script` asynchronously and returns the result</span>
+<span class="sd">        :param script: path to the JS file relative to this package</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">execute_async_script</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.javascript</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020 Klarna Bank AB (publ).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webtraversallibrary.classifiers &#8212; Web Traversal Library  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.classifiers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for webtraversallibrary.classifiers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Licensed to the Apache Software Foundation (ASF) under one</span>
+<span class="c1"># or more contributor license agreements.  See the NOTICE file</span>
+<span class="c1"># distributed with this work for additional information</span>
+<span class="c1"># regarding copyright ownership.  The ASF licenses this file</span>
+<span class="c1"># to you under the Apache License, Version 2.0 (the</span>
+<span class="c1"># &quot;License&quot;); you may not use this file except in compliance</span>
+<span class="c1"># with the License.  You may obtain a copy of the License at</span>
+
+<span class="c1">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="c1"># Unless required by applicable law or agreed to in writing,</span>
+<span class="c1"># software distributed under the License is distributed on an</span>
+<span class="c1"># &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
+<span class="c1"># KIND, either express or implied.  See the License for the</span>
+<span class="c1"># specific language governing permissions and limitations</span>
+<span class="c1"># under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;Base classes for prior classifiers.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">.actions</span> <span class="kn">import</span> <span class="n">Action</span>
+<span class="kn">from</span> <span class="nn">.color</span> <span class="kn">import</span> <span class="n">Color</span>
+
+
+<div class="viewcode-block" id="ScalingMode"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.classifiers.ScalingMode">[docs]</a><span class="k">class</span> <span class="nc">ScalingMode</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;No scaling at all, preserve the raw score&quot;&quot;&quot;</span>
+
+    <span class="n">IDENTITY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+
+    <span class="sd">&quot;&quot;&quot;Any values less than 0 are set to 0, any values larger than 1 are set to 1&quot;&quot;&quot;</span>
+    <span class="n">CLAMP</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+
+    <span class="sd">&quot;&quot;&quot;Map values to the [0,1] range&quot;&quot;&quot;</span>
+    <span class="n">LINEAR</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+
+    <span class="sd">&quot;&quot;&quot;Map the logarithm of the values to the [0,1] range&quot;&quot;&quot;</span>
+    <span class="n">LOG</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ScalingMode.scale"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.classifiers.ScalingMode.scale">[docs]</a>    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Scales a list of scores according to a given mode&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">ScalingMode</span><span class="o">.</span><span class="n">IDENTITY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">ScalingMode</span><span class="o">.</span><span class="n">CLAMP</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">score</span><span class="p">))</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+
+        <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">minimum</span> <span class="o">==</span> <span class="n">maximum</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">ScalingMode</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">score</span> <span class="o">-</span> <span class="n">minimum</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">maximum</span> <span class="o">-</span> <span class="n">minimum</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">minimum</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">maximum</span><span class="p">)</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">minimum</span><span class="p">))</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="Classifier"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.classifiers.Classifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Classifier</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all prior classifiers. Do not use,</span>
+<span class="sd">    refer instead to :class:`ElementClassifier` or :class:`ViewClassifier`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">callback</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ElementClassifier"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.classifiers.ElementClassifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ElementClassifier</span><span class="p">(</span><span class="n">Classifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Classifies a set of elements. The callback will receive a list of</span>
+<span class="sd">    elements that have have tags for all tags given in subset.</span>
+
+<span class="sd">    The callback either returns a sublist of elements, or a list of tuples</span>
+<span class="sd">    mapping element to a numeric score.</span>
+
+<span class="sd">    If the callback is doing multi-class prediction, then the output should be</span>
+<span class="sd">    a dictionary mapping class name to a sublist or list of tuples described above.</span>
+<span class="sd">    The prediction results would be stored as &lt;classifier_name&gt;__&lt;class name&gt;.</span>
+
+<span class="sd">    If highlight is True, highlight every element returned by this classifier.</span>
+<span class="sd">    If highlight is a float x, highlight every element with a score larger than x.</span>
+<span class="sd">    If highlight is an int N, highlight the top N scoring elemnets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">action</span><span class="p">:</span> <span class="n">Action</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">highlight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">ScalingMode</span> <span class="o">=</span> <span class="n">ScalingMode</span><span class="o">.</span><span class="n">CLAMP</span>
+    <span class="n">highlight_color</span><span class="p">:</span> <span class="n">Color</span> <span class="o">=</span> <span class="n">Color</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;#5A1911&quot;</span><span class="p">)</span>
+    <span class="n">subset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+    <span class="n">result_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">float</span></div>
+
+
+<div class="viewcode-block" id="ViewClassifier"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.classifiers.ViewClassifier">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ViewClassifier</span><span class="p">(</span><span class="n">Classifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Classifies a given view. The callback will receive a view</span>
+<span class="sd">    and return an iterable of string tags.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<span class="k">def</span> <span class="nf">_active_element_filter_func</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+    <span class="n">actives</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">workflow</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">execute_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;find_active_elements.js&quot;</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">elem</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">elements</span> <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">wtl_uid</span> <span class="ow">in</span> <span class="n">actives</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="ActiveElementFilter"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.classifiers.ActiveElementFilter">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ActiveElementFilter</span><span class="p">(</span><span class="n">ElementClassifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns all elements that are considered active, i.e. interactable in some way.</span>
+<span class="sd">    Will also add a boolean `is_active` field to every element&#39;s metadata.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;is_active&quot;</span>
+    <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">_active_element_filter_func</span>
+    <span class="n">result_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">bool</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.classifiers</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020 Klarna Bank AB (publ).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

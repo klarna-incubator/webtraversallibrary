@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Getting started &#8212; Web Traversal Library  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Web Traversal Library" href="index.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Web Traversal Library"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Web Traversal Library  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Getting started</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>It’s super easy! Create an empty policy, a <code class="docutils literal notranslate"><span class="pre">Workflow</span></code> object, and call run.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">webtraversallibrary</span> <span class="k">as</span> <span class="nn">wtl</span>
+
+<span class="k">def</span> <span class="nf">policy</span><span class="p">(</span><span class="n">workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{}</span>
+
+<span class="n">workflow</span> <span class="o">=</span> <span class="n">wtl</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s1">&#39;www.concernsofadataguy.com&#39;</span><span class="p">,</span>
+    <span class="n">policy</span><span class="o">=</span><span class="n">policy</span>
+<span class="p">)</span>
+
+<span class="n">workflow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The above will go to your URL and not do anything, forever. Good stuff.</p>
+<p>The input to the policy is a reference to the <code class="docutils literal notranslate"><span class="pre">Workflow</span></code> object as well as snapshots of all open tabs (one, in this case), called <code class="docutils literal notranslate"><span class="pre">View</span></code>(s).</p>
+<p>You can improve upon this in the following ways:</p>
+<ul class="simple">
+<li><p>Have the policy actually do something by returning an action or a list of actions. Actions are divided into <code class="docutils literal notranslate"><span class="pre">ElementAction</span></code> and <code class="docutils literal notranslate"><span class="pre">ViewAction</span></code>. Examples of the former are <code class="docutils literal notranslate"><span class="pre">Click</span></code> and <code class="docutils literal notranslate"><span class="pre">FillText</span></code>. Examples of the latter are <code class="docutils literal notranslate"><span class="pre">Navigate</span></code> and <code class="docutils literal notranslate"><span class="pre">Refresh</span></code>.</p></li>
+</ul>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="nd">@wtl</span><span class="o">.</span><span class="n">single_tab</span>
+<span class="k">def</span> <span class="nf">policy</span><span class="p">(</span><span class="n">workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">wtl</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">Click</span><span class="p">(</span><span class="n">wtl</span><span class="o">.</span><span class="n">Selector</span><span class="p">(</span><span class="s1">&#39;#next&#39;</span><span class="p">))</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The single_tab decorator simplifies policies for you if you have only one tab. Instead of getting a dictionary of tab name to View, you will only get the single View. There are also decorators that facilitate using coroutines, see the examples for details.</p>
+<ul class="simple">
+<li><p>Specify a <code class="docutils literal notranslate"><span class="pre">goal</span></code> function that returns a boolean on whether the target has been reached. If this returns <code class="docutils literal notranslate"><span class="pre">True</span></code>, the workflow ends. This function takes the same parameters as the policy.</p></li>
+</ul>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="nd">@wtl</span><span class="o">.</span><span class="n">single_tab</span>
+<span class="k">def</span> <span class="nf">goal</span><span class="p">(</span><span class="n">workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">view</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">page_metadata</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;www.goal.com&#39;</span>
+
+<span class="n">workflow</span> <span class="o">=</span> <span class="n">wtl</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span>
+    <span class="o">...</span>
+    <span class="n">goal</span><span class="o">=</span><span class="n">goal</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Add element and view classifiers. These will run before the policy is executed and supply scores to all or a subset of the elements located on the page. There is also API for running a classifier on request, and enabling/disabling recurring classifiers. An action is either created on the fly or picked from the list of available actions, populated by a prior classifier (below, all links will be considered clickable).</p></li>
+</ul>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">link_classifier_func</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">workflow</span><span class="p">):</span>
+    <span class="c1"># The condition here is completely hard-coded for the given page.</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">elem</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">elements</span> <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">]</span>
+
+<span class="n">workflow</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">wtl</span><span class="o">.</span><span class="n">ElementClassifier</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;link&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">wtl</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">Click</span><span class="p">,</span>
+        <span class="n">highlight</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">callback</span><span class="o">=</span><span class="n">link_classifier_func</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Alter default configuration values by creating a new <code class="docutils literal notranslate"><span class="pre">Config</span></code> object and supplying it to the <code class="docutils literal notranslate"><span class="pre">workflow</span></code> initializer. Some configurations are grouped into predefined sets, such as <code class="docutils literal notranslate"><span class="pre">desktop</span></code>, but all values can be set manually. See documentation for the <code class="docutils literal notranslate"><span class="pre">Config</span></code> class for details.</p></li>
+</ul>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="n">wtl</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">default</span><span class="p">([</span><span class="s2">&quot;desktop&quot;</span><span class="p">])</span>
+<span class="n">config</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">2000</span>
+
+<span class="n">workflow</span> <span class="o">=</span> <span class="n">wtl</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span>
+    <span class="o">...</span>
+    <span class="n">config</span><span class="o">=</span><span class="n">config</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Use multiple tabs and windows by supplying a dictionary to the url parameter. Each element is the name of a tab or a window. The policy should then return a dictionary of tab name to action (or list of actions).</p></li>
+</ul>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span>
+<span class="n">workflow</span> <span class="o">=</span> <span class="n">wtl</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span>
+    <span class="o">...</span>
+    <span class="n">url</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;window_1&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;tab_1&quot;</span><span class="p">:</span> <span class="s2">&quot;url_1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tab_2&quot;</span><span class="p">:</span> <span class="s2">&quot;url_2&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;window_2&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;tab_3&quot;</span><span class="p">:</span> <span class="s2">&quot;url_3&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Provide an output directory (needed if configured with <code class="docutils literal notranslate"><span class="pre">config.debug.save:</span> <span class="pre">true</span></code>). The folder will be created if it does not exist and populated with enumerated (0, 1, 2, …) subfolders, one for each invocation of the workflow policy. Inside each snapshot for all open tabs will be saved.</p></li>
+</ul>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">workflow</span> <span class="o">=</span> <span class="n">wtl</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span>
+    <span class="o">...</span>
+    <span class="n">output</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;my_output/&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Web Traversal Library</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Examples</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gettingstarted.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Web Traversal Library"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Web Traversal Library  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Getting started</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020 Klarna Bank AB (publ).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

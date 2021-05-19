@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webtraversallibrary.policies &#8212; Web Traversal Library  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.policies</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for webtraversallibrary.policies</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Licensed to the Apache Software Foundation (ASF) under one</span>
+<span class="c1"># or more contributor license agreements.  See the NOTICE file</span>
+<span class="c1"># distributed with this work for additional information</span>
+<span class="c1"># regarding copyright ownership.  The ASF licenses this file</span>
+<span class="c1"># to you under the Apache License, Version 2.0 (the</span>
+<span class="c1"># &quot;License&quot;); you may not use this file except in compliance</span>
+<span class="c1"># with the License.  You may obtain a copy of the License at</span>
+
+<span class="c1">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="c1"># Unless required by applicable law or agreed to in writing,</span>
+<span class="c1"># software distributed under the License is distributed on an</span>
+<span class="c1"># &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
+<span class="c1"># KIND, either express or implied.  See the License for the</span>
+<span class="c1"># specific language governing permissions and limitations</span>
+<span class="c1"># under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;Contains built-in simple, common policies and helper decorators for building custom policies.&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+<span class="kn">from</span> <span class="nn">.workflow</span> <span class="kn">import</span> <span class="n">Workflow</span>
+
+
+<div class="viewcode-block" id="DUMMY"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.policies.DUMMY">[docs]</a><span class="k">def</span> <span class="nf">DUMMY</span><span class="p">(</span><span class="n">_workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Never takes any action.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">view</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="RANDOM"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.policies.RANDOM">[docs]</a><span class="k">def</span> <span class="nf">RANDOM</span><span class="p">(</span><span class="n">_workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Picks a completely random (available) action for every view.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">actions</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">view</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="single_tab"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.policies.single_tab">[docs]</a><span class="k">def</span> <span class="nf">single_tab</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator for simplifying policies or goals when just one tab is in use.</span>
+<span class="sd">    Simplifies the API, the views (dict) argument is replaced by the single (first) view instance.</span>
+<span class="sd">    Also, the policy can now just return action (or list of actions) without a dict mapping.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="n">tab</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">[</span><span class="n">tab</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">tab</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<span class="k">class</span> <span class="nc">_PolicyCoroutine</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper for writing coroutines/generators that work as policy functions.</span>
+<span class="sd">    Do not use directly, instead refer to `single_tab_coroutine` and `multi_tab_coroutine` decorators.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">single</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">single</span> <span class="o">=</span> <span class="n">single</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">single</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="n">workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">[</span><span class="n">Workflow</span><span class="o">.</span><span class="n">SINGLE_TAB</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">Workflow</span><span class="o">.</span><span class="n">SINGLE_TAB</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">send</span><span class="p">((</span><span class="n">workflow</span><span class="p">,</span> <span class="n">view</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="single_tab_coroutine"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.policies.single_tab_coroutine">[docs]</a><span class="k">def</span> <span class="nf">single_tab_coroutine</span><span class="p">(</span><span class="n">policy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator for simplifying policies given by a generator/coroutine on a single tab.</span>
+<span class="sd">    Interface will be the same as when using @single_tab for normal functions.</span>
+<span class="sd">    Allows you to yield from the policy and pass the reference to the function/coroutine</span>
+<span class="sd">    as you would for a normal method, without instantiating an object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__wtl_wrapped</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">_PolicyCoroutine</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">__wtl_wrapped</span></div>
+
+
+<div class="viewcode-block" id="multi_tab_coroutine"><a class="viewcode-back" href="../../references_main.html#webtraversallibrary.policies.multi_tab_coroutine">[docs]</a><span class="k">def</span> <span class="nf">multi_tab_coroutine</span><span class="p">(</span><span class="n">policy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator for simplifying policies given by a generator/coroutine on multiple tabs.</span>
+<span class="sd">    Allows you to yield from the policy and pass the reference to the function/coroutine</span>
+<span class="sd">    as you would for a normal method, without instantiating an object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__wtl_wrapped</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">_PolicyCoroutine</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">single</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">__wtl_wrapped</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.policies</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020 Klarna Bank AB (publ).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

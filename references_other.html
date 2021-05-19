@@ -1,0 +1,726 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Other references &#8212; Web Traversal Library  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Main classes" href="references_main.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references_main.html" title="Main classes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Web Traversal Library  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Other references</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-webtraversallibrary.color">
+<span id="other-references"></span><h1>Other references<a class="headerlink" href="#module-webtraversallibrary.color" title="Permalink to this headline">¶</a></h1>
+<p>Representation of an RGB(A) color.</p>
+<dl class="py class">
+<dt id="webtraversallibrary.color.Color">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Color</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">255</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/color.html#Color"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.color.Color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Representation of an 8-bit RGBA color.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.color.Color.from_str">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">from_str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.color.Color" title="webtraversallibrary.color.Color"><span class="pre">webtraversallibrary.color.Color</span></a><a class="reference internal" href="_modules/webtraversallibrary/color.html#Color.from_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.color.Color.from_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a color from a “#RRGGBBAA” representation. Alpha is optional.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.color.Color.to_str">
+<code class="sig-name descname"><span class="pre">to_str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">with_alpha</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/webtraversallibrary/color.html#Color.to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.color.Color.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an “#RRGGBBAA” string from this color. Alpha is optional.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.color.Color.to_tuple">
+<code class="sig-name descname"><span class="pre">to_tuple</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">with_alpha</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><a class="reference internal" href="_modules/webtraversallibrary/color.html#Color.to_tuple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.color.Color.to_tuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns either a 3- or a 4-tuple with the values,
+depending on the value of <cite>with_alpha</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.config"></span><p>Configuration object for discovery workflow</p>
+<dl class="py class">
+<dt id="webtraversallibrary.config.Config">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Config</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.config.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a config object.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.config.Config.default">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">default</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.config.Config" title="webtraversallibrary.config.Config"><span class="pre">webtraversallibrary.config.Config</span></a><a class="reference internal" href="_modules/webtraversallibrary/config.html#Config.default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.config.Config.default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Config object based on all default values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.config.Config.validate">
+<code class="sig-name descname"><span class="pre">validate</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/config.html#Config.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.config.Config.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs basic sanity checks on the configuration values.
+Throws AssertionError if something is incorrect.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.error"></span><p>Contains common library-level errors</p>
+<dl class="py exception">
+<dt id="webtraversallibrary.error.ElementNotFoundError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">ElementNotFoundError</span></code><a class="reference internal" href="_modules/webtraversallibrary/error.html#ElementNotFoundError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.error.ElementNotFoundError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any error related to finding elements on the page.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="webtraversallibrary.error.Error">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">Error</span></code><a class="reference internal" href="_modules/webtraversallibrary/error.html#Error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.error.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all WTL-specific exceptions.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.error.Error.wrapped">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">wrapped</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/error.html#Error.wrapped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.error.Error.wrapped" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wraps a function in a try-except block where AssertionErrors are logged and reraised as Error.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="webtraversallibrary.error.ScrapingError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">ScrapingError</span></code><a class="reference internal" href="_modules/webtraversallibrary/error.html#ScrapingError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.error.ScrapingError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any error related to scraping/parsing webpages.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="webtraversallibrary.error.WebDriverSendError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">WebDriverSendError</span></code><a class="reference internal" href="_modules/webtraversallibrary/error.html#WebDriverSendError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.error.WebDriverSendError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any error related to custom sending commands to a WebDriver instance</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="webtraversallibrary.error.WindowClosedError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">WindowClosedError</span></code><a class="reference internal" href="_modules/webtraversallibrary/error.html#WindowClosedError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.error.WindowClosedError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trying to access a browser instance that was closed by the user</p>
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.geometry"></span><p>Basic 2-dimensional geometric constructs: points, rectangles, etc.</p>
+<dl class="py class">
+<dt id="webtraversallibrary.geometry.Point">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Point</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a point in 2-dimensional plane (e.g. image).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="webtraversallibrary.geometry.Rectangle">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Rectangle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minima</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Point" title="webtraversallibrary.geometry.Point"><span class="pre">webtraversallibrary.geometry.Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxima</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Point" title="webtraversallibrary.geometry.Point"><span class="pre">webtraversallibrary.geometry.Point</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a rectangle in a 2-dimensional plane.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.bounding_box">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">bounding_box</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rectangles</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle.bounding_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.bounding_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the bounding box of <code class="docutils literal notranslate"><span class="pre">rectangles</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.bounds">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">bounds</span></code><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns min x, min y, max x, max y</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.center">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">center</span></code><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the midpoint of the rectangle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.centered_at">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">centered_at</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Point" title="webtraversallibrary.geometry.Point"><span class="pre">webtraversallibrary.geometry.Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle.centered_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.centered_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>A new square centered at <code class="docutils literal notranslate"><span class="pre">center</span></code> with side length <code class="docutils literal notranslate"><span class="pre">radius</span></code>. (The technically correct term here is
+<a class="reference external" href="https://en.wikipedia.org/wiki/Apothem">Apothem</a>.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.clip">
+<code class="sig-name descname"><span class="pre">clip</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle.clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new rectangle generated by clipping this one by the bounds of <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
+<p>Similar to intersection, but clipping non-intersecting rectangles will result in a degenerate rectangle
+located on one of the edges of <code class="docutils literal notranslate"><span class="pre">other</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>New, clipped <code class="docutils literal notranslate"><span class="pre">Rectangle</span></code> (possibly degenerate)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.contains">
+<code class="sig-name descname"><span class="pre">contains</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#webtraversallibrary.geometry.Point" title="webtraversallibrary.geometry.Point"><span class="pre">webtraversallibrary.geometry.Point</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests whether the rectangle contains <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if other contained in the rectangle, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.empty">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle.empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a rectangle of zero area at origo.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.from_list">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">from_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle.from_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts tuple/list (x1, y1, x2, y2) to a Rectangle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.intersection">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">intersection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rectangles</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle.intersection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the rectangle which is the intersection of a sequence of <code class="docutils literal notranslate"><span class="pre">rectangles</span></code>. In case the
+intersection is empty, it returns an empty rectangle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.resized">
+<code class="sig-name descname"><span class="pre">resized</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><a class="reference internal" href="_modules/webtraversallibrary/geometry.html#Rectangle.resized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.resized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a resized rectangle, shrinked (inflated for <code class="docutils literal notranslate"><span class="pre">delta&lt;0</span></code>) by <code class="docutils literal notranslate"><span class="pre">2*delta</span></code> in width and in height.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.x">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">x</span></code><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>The x-coordinate of the lower left vertex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.geometry.Rectangle.y">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">y</span></code><a class="headerlink" href="#webtraversallibrary.geometry.Rectangle.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>The y-coordinate of the lower-left vertex</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.graphics"></span><p>Module containing helper functions for graphics-related operations on webdrivers and snapshots.</p>
+<dl class="py function">
+<dt id="webtraversallibrary.graphics.crop_image">
+<code class="sig-name descname"><span class="pre">crop_image</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PIL.Image.Image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rect</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">PIL.Image.Image</span><a class="reference internal" href="_modules/webtraversallibrary/graphics.html#crop_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.graphics.crop_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crops the part of the image specified by its <code class="docutils literal notranslate"><span class="pre">rect</span></code>.</p>
+<p>Rectangle specified by <code class="docutils literal notranslate"><span class="pre">rect</span></code> must lie inside of the image bounds.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="webtraversallibrary.graphics.draw_rect">
+<code class="sig-name descname"><span class="pre">draw_rect</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PIL.Image.Image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rect</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.color.Color" title="webtraversallibrary.color.Color"><span class="pre">webtraversallibrary.color.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/graphics.html#draw_rect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.graphics.draw_rect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws a bounding box around the specified rectangle on the image.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="webtraversallibrary.graphics.draw_text">
+<code class="sig-name descname"><span class="pre">draw_text</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PIL.Image.Image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_left</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Point" title="webtraversallibrary.geometry.Point"><span class="pre">webtraversallibrary.geometry.Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.color.Color" title="webtraversallibrary.color.Color"><span class="pre">webtraversallibrary.color.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/graphics.html#draw_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.graphics.draw_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws text on a PIL image.</p>
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.helpers"></span><p>Collection of helper classes used in Workflow.</p>
+<dl class="py class">
+<dt id="webtraversallibrary.helpers.ClassifierCollection">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">ClassifierCollection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classifiers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="references_main.html#webtraversallibrary.classifiers.Classifier" title="webtraversallibrary.classifiers.Classifier"><span class="pre">webtraversallibrary.classifiers.Classifier</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/helpers.html#ClassifierCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.helpers.ClassifierCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper class for predefined classifiers</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="webtraversallibrary.helpers.FrameSwitcher">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">FrameSwitcher</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">identifier:</span> <span class="pre">str</span></em>, <em class="sig-param"><span class="pre">js:</span> <span class="pre">webtraversallibrary.javascript.JavascriptWrapper</span></em>, <em class="sig-param"><span class="pre">driver:</span> <span class="pre">&lt;module</span> <span class="pre">'selenium.webdriver'</span> <span class="pre">from</span> <span class="pre">'/opt/hostedtoolcache/Python/3.7.10/x64/lib/python3.7/site-packages/selenium/webdriver/__init__.py'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/helpers.html#FrameSwitcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.helpers.FrameSwitcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper class for entering and exiting iframes.
+Raises ElementNotFoundError if an iframe could not be found.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="webtraversallibrary.helpers.MonkeyPatches">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">MonkeyPatches</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#webtraversallibrary.selector.Selector" title="webtraversallibrary.selector.Selector"><span class="pre">webtraversallibrary.selector.Selector</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/helpers.html#MonkeyPatches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.helpers.MonkeyPatches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper class for monkeypatches</p>
+<dl class="py method">
+<dt id="webtraversallibrary.helpers.MonkeyPatches.check">
+<code class="sig-name descname"><span class="pre">check</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snapshot</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">webtraversallibrary.snapshot.PageSnapshot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">webtraversallibrary.snapshot.PageElement</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/webtraversallibrary/helpers.html#MonkeyPatches.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.helpers.MonkeyPatches.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a rule applies for given element for given snapshot, return the most specific value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.helpers.MonkeyPatches.set_default">
+<code class="sig-name descname"><span class="pre">set_default</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patch</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/helpers.html#MonkeyPatches.set_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.helpers.MonkeyPatches.set_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">check(Selector(&quot;*&quot;),</span> <span class="pre">element)</span></code> but much faster.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.javascript"></span><p>Wrapper functions around JavaScript code to be used from Selenium WebDriver. The main reason to store JS code in
+files instead of embedding it in Python code is convenience: it is more readable and has better IDE support.</p>
+<dl class="py class">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">JavascriptWrapper</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">selenium.webdriver.remote.webdriver.WebDriver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#webtraversallibrary.config.Config" title="webtraversallibrary.config.Config"><span class="pre">webtraversallibrary.config.Config</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper class for executing built-in javascript scripts or custom
+files and snippets.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.annotate">
+<code class="sig-name descname"><span class="pre">annotate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Point" title="webtraversallibrary.geometry.Point"><span class="pre">webtraversallibrary.geometry.Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.color.Color" title="webtraversallibrary.color.Color"><span class="pre">webtraversallibrary.color.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.color.Color" title="webtraversallibrary.color.Color"><span class="pre">webtraversallibrary.color.Color</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">Color(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewport</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.annotate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.annotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes text with a given color on the page.
+Shares an HTML canvas with <cite>highlight</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.assemble_script">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">assemble_script</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.assemble_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.assemble_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenates the contents of several Javascript files into one, with caching.
+:param filenames: Path to the JS files either in webtraversallibrary/js or an absolute path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.clear_highlights">
+<code class="sig-name descname"><span class="pre">clear_highlights</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viewport</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.clear_highlights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.clear_highlights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all highlights created by <a class="reference internal" href="#webtraversallibrary.javascript.JavascriptWrapper.highlight" title="webtraversallibrary.javascript.JavascriptWrapper.highlight"><code class="xref py py-func docutils literal notranslate"><span class="pre">highlight()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.click_element">
+<code class="sig-name descname"><span class="pre">click_element</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.selector.Selector" title="webtraversallibrary.selector.Selector"><span class="pre">webtraversallibrary.selector.Selector</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.click_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.click_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clicks an element found by the given selector.
+Note: If more elements can be found, only one will be clicked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.delete_element">
+<code class="sig-name descname"><span class="pre">delete_element</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.selector.Selector" title="webtraversallibrary.selector.Selector"><span class="pre">webtraversallibrary.selector.Selector</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.delete_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.delete_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes an element found by the given selector.
+Note: If more elements can be found, only one will be clicked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.disable_animations">
+<code class="sig-name descname"><span class="pre">disable_animations</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.disable_animations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.disable_animations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns off animation on the page. Works for jQuery by setting a certain flag and for CSS animations by injecting
+an additional style into the page code.</p>
+<p>Mutates the web page.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.element_exists">
+<code class="sig-name descname"><span class="pre">element_exists</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.selector.Selector" title="webtraversallibrary.selector.Selector"><span class="pre">webtraversallibrary.selector.Selector</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.element_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.element_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if an element exists, otherwise False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.execute_file">
+<code class="sig-name descname"><span class="pre">execute_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">,</span> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execute_async</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.execute_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.execute_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the JavaScript code in given file and return the result
+:param filename: Path to the JS file(s) either in webtraversallibrary/js or an absolute path.
+:param execute_async: if True, will wait until the javascript code has called
+arguments[arguments.length-1] and will return its input arguments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.execute_script">
+<code class="sig-name descname"><span class="pre">execute_script</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.execute_script"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.execute_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the JavaScript code in <cite>script</cite> and return the result
+:param script: path to the JS file relative to this package</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.execute_script_async">
+<code class="sig-name descname"><span class="pre">execute_script_async</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">script</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Any</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.execute_script_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.execute_script_async" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the JavaScript code in <cite>script</cite> asynchronously and returns the result
+:param script: path to the JS file relative to this package</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.fill_text">
+<code class="sig-name descname"><span class="pre">fill_text</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.selector.Selector" title="webtraversallibrary.selector.Selector"><span class="pre">webtraversallibrary.selector.Selector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.fill_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.fill_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fills an element as found by a given selector with given text.
+Note: If more elements can be found, only one will be used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.find_active_elements">
+<code class="sig-name descname"><span class="pre">find_active_elements</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.find_active_elements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.find_active_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses a couple of heuristics to try and find all clickable elements in the page.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.find_iframe_name">
+<code class="sig-name descname"><span class="pre">find_iframe_name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.find_iframe_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.find_iframe_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks for an iframe where name, ID, or class equals the identifier,
+and returns its name. Returns empty string if no matching object was found.
+:return: iframe name or empty string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.find_viewport">
+<code class="sig-name descname"><span class="pre">find_viewport</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.find_viewport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.find_viewport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the width of the web browser window with content.
+:return: viewport height in pixels</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.get_element_metadata">
+<code class="sig-name descname"><span class="pre">get_element_metadata</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.get_element_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.get_element_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collects metadata about web page DOM elements: their tags, some of the HTML attributes, position and size on the
+page, CSS styles and classes, inner text.</p>
+<p>Each element on the page is assigned a unique within the scope of the page <code class="docutils literal notranslate"><span class="pre">wtl_uid</span></code> and
+has a pointer to the parent DOM element in the <code class="docutils literal notranslate"><span class="pre">wtl_parent_uid</span></code> field and are not to be confused
+with <code class="docutils literal notranslate"><span class="pre">id</span></code> attribute in HTML which is neither unique nor mandatory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a list of JSON objects (in their Python dict form) with HTML attributes, additionally calculated
+properties and unique IDs. Refer to the script code for the keys’ names.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.get_full_height">
+<code class="sig-name descname"><span class="pre">get_full_height</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.get_full_height"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.get_full_height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the full page height, i.e. the height of the document.
+:return: document height in pixels</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.hide_position_fixed_elements">
+<code class="sig-name descname"><span class="pre">hide_position_fixed_elements</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.hide_position_fixed_elements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.hide_position_fixed_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hides page elements that are fixed or sticky (the ones that stay on the page when you scroll)
+by setting their visibility to “hidden”.</p>
+<p>Returns a map from element ids (wtl-uid) to the old visibility values.</p>
+<p>Mutates the web page.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.highlight">
+<code class="sig-name descname"><span class="pre">highlight</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.selector.Selector" title="webtraversallibrary.selector.Selector"><span class="pre">webtraversallibrary.selector.Selector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.color.Color" title="webtraversallibrary.color.Color"><span class="pre">webtraversallibrary.color.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewport</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.highlight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.highlight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Highlight an element as found by a given selector with arbitrary
+color and intensity.
+Note: If more elements can be found, only one will be highlighted.
+Shares an HTML canvas with <cite>annotate</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.is_page_loaded">
+<code class="sig-name descname"><span class="pre">is_page_loaded</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.is_page_loaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.is_page_loaded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies some heuristics to check if the page is loaded. But since it is in general a hard question to answer,
+is known to be faulty in some cases.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.make_canvas">
+<code class="sig-name descname"><span class="pre">make_canvas</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.make_canvas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.make_canvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create viewport and page canvases and add them to the DOM.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.save_mhtml">
+<code class="sig-name descname"><span class="pre">save_mhtml</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.save_mhtml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.save_mhtml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the MHTML saving extension. Saves to the path specified in config.scraping.temp_path.
+Note: If the file already exists, it will not be overwritten.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.scroll_to">
+<code class="sig-name descname"><span class="pre">scroll_to</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.scroll_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.scroll_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scroll the page to given coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.select">
+<code class="sig-name descname"><span class="pre">select</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.selector.Selector" title="webtraversallibrary.selector.Selector"><span class="pre">webtraversallibrary.selector.Selector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select an element of a dropdown (select) element.
+Note: If more elements can be found, only one will be used.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.javascript.JavascriptWrapper.show_position_fixed_elements">
+<code class="sig-name descname"><span class="pre">show_position_fixed_elements</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_to_visibility</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#JavascriptWrapper.show_position_fixed_elements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.JavascriptWrapper.show_position_fixed_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the specified visibility to the elements with ids listed in <code class="docutils literal notranslate"><span class="pre">id_to_visibility</span></code>.</p>
+<p>The 2nd parameter is expected to be the (possibly accumulated) output of hide_position_fixed_elements.</p>
+<p>Mutates the web page (hopefully undoing the changes made by hide_position_fixed_elements)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="webtraversallibrary.javascript.safe_selenium_method">
+<code class="sig-name descname"><span class="pre">safe_selenium_method</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/javascript.html#safe_selenium_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.javascript.safe_selenium_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles errors thrown in the browser while executing javascript and outputs information to the log.
+Note: This is a clumsy decorator for instance methods and assumes there is a self.driver member.</p>
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.logging_utils"></span><p>Helper function for logging.</p>
+<dl class="py function">
+<dt id="webtraversallibrary.logging_utils.setup_logging">
+<code class="sig-name descname"><span class="pre">setup_logging</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logging_level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/logging_utils.html#setup_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.logging_utils.setup_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up logging: create a directory to write log files to, configure handlers. Sets sane
+default values for in-house and third-party modules.</p>
+<p>Will remove any existing logging handlers with the name “webtraversallibrary” before proceeding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_dir</strong> – directory to write log files to.</p></li>
+<li><p><strong>logging_level</strong> – level of logging you wish to have, accepts number or logging.LEVEL</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.driver_check"></span><p>Helper functions to check versions and existence of installed dependencies.</p>
+<dl class="py function">
+<dt id="webtraversallibrary.driver_check.get_current_os">
+<code class="sig-name descname"><span class="pre">get_current_os</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">webtraversallibrary.driver_check.os_functions.OS</span><a class="reference internal" href="_modules/webtraversallibrary/driver_check.html#get_current_os"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.driver_check.get_current_os" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the current OS of the machine running.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="webtraversallibrary.driver_check.get_driver_location">
+<code class="sig-name descname"><span class="pre">get_driver_location</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">webtraversallibrary.driver_check.os_functions.Drivers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">os</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">webtraversallibrary.driver_check.os_functions.OS</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/webtraversallibrary/driver_check.html#get_driver_location"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.driver_check.get_driver_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the location of the driver.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="webtraversallibrary.driver_check.get_driver_version">
+<code class="sig-name descname"><span class="pre">get_driver_version</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">webtraversallibrary.driver_check.os_functions.Drivers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">os</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">webtraversallibrary.driver_check.os_functions.OS</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/webtraversallibrary/driver_check.html#get_driver_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.driver_check.get_driver_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the driver version.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="webtraversallibrary.driver_check.is_driver_installed">
+<code class="sig-name descname"><span class="pre">is_driver_installed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">webtraversallibrary.driver_check.os_functions.Drivers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">os</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">webtraversallibrary.driver_check.os_functions.OS</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="_modules/webtraversallibrary/driver_check.html#is_driver_installed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.driver_check.is_driver_installed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a given driver is installed on the OS.</p>
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.processtools"></span><p>Module collecting helper functions for common processing tasks, such as muting stdout within a context.</p>
+<dl class="py class">
+<dt id="webtraversallibrary.processtools.Alarm">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Alarm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/processtools.html#Alarm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.processtools.Alarm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper class to run a timeout thread on Windows</p>
+<p>This constructor should always be called with keyword arguments. Arguments are:</p>
+<p><em>group</em> should be None; reserved for future extension when a ThreadGroup
+class is implemented.</p>
+<p><em>target</em> is the callable object to be invoked by the run()
+method. Defaults to None, meaning nothing is called.</p>
+<p><em>name</em> is the thread name. By default, a unique name is constructed of
+the form “Thread-N” where N is a small decimal number.</p>
+<p><em>args</em> is the argument tuple for the target invocation. Defaults to ().</p>
+<p><em>kwargs</em> is a dictionary of keyword arguments for the target
+invocation. Defaults to {}.</p>
+<p>If a subclass overrides the constructor, it must make sure to invoke
+the base class constructor (Thread.__init__()) before doing anything
+else to the thread.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.processtools.Alarm.run">
+<code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/processtools.html#Alarm.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.processtools.Alarm.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method representing the thread’s activity.</p>
+<p>You may override this method in a subclass. The standard run() method
+invokes the callable object passed to the object’s constructor as the
+target argument, if any, with sequential and keyword arguments taken
+from the args and kwargs arguments, respectively.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="webtraversallibrary.processtools.TimeoutContext">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">TimeoutContext</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">n_seconds</span></em>, <em class="sig-param"><span class="pre">error_class=&lt;class</span> <span class="pre">'TimeoutError'&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/processtools.html#TimeoutContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.processtools.TimeoutContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses <code class="xref py py-mod docutils literal notranslate"><span class="pre">signal</span></code> to raise TimeoutError within the block, if execution went over a specified timeout.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.processtools.TimeoutContext.raise_error">
+<code class="sig-name descname"><span class="pre">raise_error</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/processtools.html#TimeoutContext.raise_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.processtools.TimeoutContext.raise_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises error on timeout.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="webtraversallibrary.processtools.cached_property">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">cached_property</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/processtools.html#cached_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.processtools.cached_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator that caches a property return value and will return it on later calls.
+Adapted from The Python Cookbok, 2nd edition.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to map different arguments to values, use <cite>functools.lru_cache</cite>!</p>
+</div>
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.screenshot"></span><p>Abstraction layer for a screenshot of a site</p>
+<dl class="py class">
+<dt id="webtraversallibrary.screenshot.Screenshot">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Screenshot</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PIL.Image.Image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/screenshot.html#Screenshot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.screenshot.Screenshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstraction layer for a screenshot of a site, allowing for various annotations.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.screenshot.Screenshot.annotate">
+<code class="sig-name descname"><span class="pre">annotate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_left</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Point" title="webtraversallibrary.geometry.Point"><span class="pre">webtraversallibrary.geometry.Point</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.color.Color" title="webtraversallibrary.color.Color"><span class="pre">webtraversallibrary.color.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/screenshot.html#Screenshot.annotate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.screenshot.Screenshot.annotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes text with a given color on the screenshot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.screenshot.Screenshot.capture">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">capture</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">selenium.webdriver.remote.webdriver.WebDriver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_page_height</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.screenshot.Screenshot" title="webtraversallibrary.screenshot.Screenshot"><span class="pre">webtraversallibrary.screenshot.Screenshot</span></a><a class="reference internal" href="_modules/webtraversallibrary/screenshot.html#Screenshot.capture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.screenshot.Screenshot.capture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a snapshot on the given webdriver under certain conditions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.screenshot.Screenshot.capture_viewport">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">capture_viewport</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">selenium.webdriver.remote.webdriver.WebDriver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.screenshot.Screenshot" title="webtraversallibrary.screenshot.Screenshot"><span class="pre">webtraversallibrary.screenshot.Screenshot</span></a><a class="reference internal" href="_modules/webtraversallibrary/screenshot.html#Screenshot.capture_viewport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.screenshot.Screenshot.capture_viewport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a screenshot of the current viewport of a given webdriver.
+Scales the image by some pixel ratio, if given.
+Uses PIL as a backend.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.screenshot.Screenshot.highlight">
+<code class="sig-name descname"><span class="pre">highlight</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rect</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.geometry.Rectangle" title="webtraversallibrary.geometry.Rectangle"><span class="pre">webtraversallibrary.geometry.Rectangle</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.color.Color" title="webtraversallibrary.color.Color"><span class="pre">webtraversallibrary.color.Color</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/screenshot.html#Screenshot.highlight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.screenshot.Screenshot.highlight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws a colored rectangle on the screenshot.
+Can also annotate with a text below the rectangle, if given.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.screenshot.Screenshot.save">
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/screenshot.html#Screenshot.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.screenshot.Screenshot.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves screenshot to given path. Filename consists of the screenshot name
+and an optional suffix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="webtraversallibrary.screenshot.Screenshot.size">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">size</span></code><a class="headerlink" href="#webtraversallibrary.screenshot.Screenshot.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a (width, height) Point of the screenshot size in pixels</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.selector"></span><p>This module contains heuristics for generating selectors.</p>
+<dl class="py class">
+<dt id="webtraversallibrary.selector.Selector">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Selector</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">css</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xpath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iframe</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/selector.html#Selector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.selector.Selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Web element selector based on CSS and XPATH.
+You may also specify an identifier (name or ID) of an iframe in which the given element is located.
+The class itself provides no guarantees on whether the selector is unique or even matches anything.
+The <code class="docutils literal notranslate"><span class="pre">iframe</span></code> value can be used if this selector refers to an element inside an iframe. Specify as ID or name.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.selector.Selector.build">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">build</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bs4_soup</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bs4.BeautifulSoup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bs4.element.Tag</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#webtraversallibrary.selector.Selector" title="webtraversallibrary.selector.Selector"><span class="pre">webtraversallibrary.selector.Selector</span></a><a class="reference internal" href="_modules/webtraversallibrary/selector.html#Selector.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.selector.Selector.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute xpath and css of a <code class="docutils literal notranslate"><span class="pre">target</span></code> in a bs4.BeautifulSoup.
+Will be verbose. Use a separate generalizer if you want reusable selectors.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.view"></span><p>Base representation of the current state of a tab.</p>
+<dl class="py class">
+<dt id="webtraversallibrary.view.View">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">View</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">str</span></em>, <em class="sig-param"><span class="pre">snapshot:</span> <span class="pre">webtraversallibrary.snapshot.PageSnapshot</span></em>, <em class="sig-param"><span class="pre">actions:</span> <span class="pre">webtraversallibrary.actions.Actions</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em>, <em class="sig-param"><span class="pre">tags:</span> <span class="pre">Set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em>, <em class="sig-param"><span class="pre">metadata:</span> <span class="pre">Dict[Any</span></em>, <em class="sig-param"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/view.html#View"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.view.View" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base representation of the current state of a tab. Holds a snapshot, a list of
+available actions, and output from the prior classifiers.
+Note: The <cite>metadata</cite> field can be added to arbitrarily, and contents will be deeply
+copied to the next view (do not store too large objects!)
+If you need large metadata storage, use the workflow.metadata instead.</p>
+<dl class="py method">
+<dt id="webtraversallibrary.view.View.copy">
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">no_snapshot</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/webtraversallibrary/view.html#View.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.view.View.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a shallow copy</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-webtraversallibrary.webdrivers"></span><p>Module for different webdrivers considered.</p>
+<dl class="py function">
+<dt id="webtraversallibrary.webdrivers.send">
+<code class="sig-name descname"><span class="pre">send</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">selenium.webdriver.remote.webdriver.WebDriver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/webtraversallibrary/webdrivers.html#send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.webdrivers.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send command to the webdriver, return resulting status code.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="webtraversallibrary.webdrivers.setup_driver">
+<code class="sig-name descname"><span class="pre">setup_driver</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#webtraversallibrary.config.Config" title="webtraversallibrary.config.Config"><span class="pre">webtraversallibrary.config.Config</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preload_callbacks</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">selenium.webdriver.remote.webdriver.WebDriver</span><a class="reference internal" href="_modules/webtraversallibrary/webdrivers.html#setup_driver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#webtraversallibrary.webdrivers.setup_driver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a WebDriver object with the given configuration.
+:param: configuration Configuration dictionary
+:return: A WebDriver instance</p>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="references_main.html"
+                        title="previous chapter">Main classes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/references_other.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references_main.html" title="Main classes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Web Traversal Library  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Other references</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020 Klarna Bank AB (publ).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>

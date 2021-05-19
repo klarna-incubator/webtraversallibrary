@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webtraversallibrary.webdrivers &#8212; Web Traversal Library  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.webdrivers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for webtraversallibrary.webdrivers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Licensed to the Apache Software Foundation (ASF) under one</span>
+<span class="c1"># or more contributor license agreements.  See the NOTICE file</span>
+<span class="c1"># distributed with this work for additional information</span>
+<span class="c1"># regarding copyright ownership.  The ASF licenses this file</span>
+<span class="c1"># to you under the Apache License, Version 2.0 (the</span>
+<span class="c1"># &quot;License&quot;); you may not use this file except in compliance</span>
+<span class="c1"># with the License.  You may obtain a copy of the License at</span>
+
+<span class="c1">#   http://www.apache.org/licenses/LICENSE-2.0</span>
+
+<span class="c1"># Unless required by applicable law or agreed to in writing,</span>
+<span class="c1"># software distributed under the License is distributed on an</span>
+<span class="c1"># &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
+<span class="c1"># KIND, either express or implied.  See the License for the</span>
+<span class="c1"># specific language governing permissions and limitations</span>
+<span class="c1"># under the License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module for different webdrivers considered.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">importlib.resources</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
+
+<span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver</span> <span class="kn">import</span> <span class="n">DesiredCapabilities</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.remote.webdriver</span> <span class="kn">import</span> <span class="n">WebDriver</span>
+
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">.driver_check</span> <span class="kn">import</span> <span class="n">Drivers</span><span class="p">,</span> <span class="n">is_driver_installed</span><span class="p">,</span> <span class="n">log_driver_version</span>
+<span class="kn">from</span> <span class="nn">.error</span> <span class="kn">import</span> <span class="n">WebDriverSendError</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;wtl&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_setup_chrome</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">profile_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WebDriver</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">is_driver_installed</span><span class="p">(</span><span class="n">Drivers</span><span class="o">.</span><span class="n">GOOGLE_CHROME</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_driver_installed</span><span class="p">(</span><span class="n">Drivers</span><span class="o">.</span><span class="n">CHROMIUM</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">is_driver_installed</span><span class="p">(</span><span class="n">Drivers</span><span class="o">.</span><span class="n">CHROMEDRIVER</span><span class="p">)</span>
+
+    <span class="n">log_driver_version</span><span class="p">(</span><span class="s2">&quot;Google Chrome version&quot;</span><span class="p">,</span> <span class="n">Drivers</span><span class="o">.</span><span class="n">GOOGLE_CHROME</span><span class="p">)</span>
+    <span class="n">log_driver_version</span><span class="p">(</span><span class="s2">&quot;Chromium version&quot;</span><span class="p">,</span> <span class="n">Drivers</span><span class="o">.</span><span class="n">CHROMIUM</span><span class="p">)</span>
+    <span class="n">log_driver_version</span><span class="p">(</span><span class="s2">&quot;Chromedriver version&quot;</span><span class="p">,</span> <span class="n">Drivers</span><span class="o">.</span><span class="n">CHROMEDRIVER</span><span class="p">)</span>
+
+    <span class="n">chrome_options</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">ChromeOptions</span><span class="p">()</span>
+    <span class="n">browser</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">browser</span>
+
+    <span class="c1"># Disable security</span>
+    <span class="c1"># Don&#39;t enforce the same-origin policy, see https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS</span>
+    <span class="c1"># Without this the JS code executed with Selenium WebDriver cannot access cross-domain CSS which are popular.</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--disable-web-security&quot;</span><span class="p">)</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--allow-running-insecure-content&quot;</span><span class="p">)</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no-sandbox&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Disable unused/annoying features</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--disable-infobars&quot;</span><span class="p">)</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--mute-audio&quot;</span><span class="p">)</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--hide-scrollbars&quot;</span><span class="p">)</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--disable-dev-shm-usage&quot;</span><span class="p">)</span>
+
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">headless</span> <span class="o">=</span> <span class="n">browser</span><span class="o">.</span><span class="n">headless</span>
+
+    <span class="k">if</span> <span class="n">profile_path</span><span class="p">:</span>
+        <span class="n">profile_dir</span> <span class="o">=</span> <span class="n">profile_path</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">user_data_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">profile_path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--user-data-dir=</span><span class="si">{</span><span class="n">user_data_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--profile-directory=</span><span class="si">{</span><span class="n">profile_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">browser</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--proxy-server=</span><span class="si">{</span><span class="n">browser</span><span class="o">.</span><span class="n">proxy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--disk-cache-dir=chrometemp/&quot;</span><span class="p">)</span>  <span class="c1"># Proxy messes up access rights of cache folder</span>
+
+    <span class="k">if</span> <span class="n">browser</span><span class="o">.</span><span class="n">enable_mhtml</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">importlib</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;webtraversallibrary.extension&quot;</span><span class="p">,</span> <span class="s2">&quot;wtl_extension.crx&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">filepath</span><span class="p">:</span>
+            <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_extension</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+        <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_experimental_option</span><span class="p">(</span>
+            <span class="s2">&quot;prefs&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;download.default_directory&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">temp_path</span><span class="p">)}</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;pixelRatio&quot;</span> <span class="ow">in</span> <span class="n">browser</span> <span class="ow">and</span> <span class="n">browser</span><span class="o">.</span><span class="n">pixelRatio</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Emulating a mobile device - the full set of parameters must be provided</span>
+        <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_experimental_option</span><span class="p">(</span>
+            <span class="s2">&quot;mobileEmulation&quot;</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;deviceMetrics&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">browser</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">browser</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="s2">&quot;pixelRatio&quot;</span><span class="p">:</span> <span class="n">browser</span><span class="o">.</span><span class="n">pixelRatio</span><span class="p">},</span>
+                <span class="s2">&quot;userAgent&quot;</span><span class="p">:</span> <span class="n">browser</span><span class="o">.</span><span class="n">useragent</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;useragent&quot;</span> <span class="ow">in</span> <span class="n">browser</span><span class="p">:</span>
+            <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;--user-agent=&quot;</span><span class="si">{</span><span class="n">browser</span><span class="o">.</span><span class="n">useragent</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;width&quot;</span> <span class="ow">in</span> <span class="n">browser</span> <span class="ow">and</span> <span class="s2">&quot;height&quot;</span> <span class="ow">in</span> <span class="n">browser</span><span class="p">:</span>
+        <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--window-size=</span><span class="si">{</span><span class="n">browser</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">browser</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">120</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">capabilities</span> <span class="o">=</span> <span class="n">DesiredCapabilities</span><span class="o">.</span><span class="n">CHROME</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">capabilities</span><span class="p">[</span><span class="s2">&quot;goog:loggingPrefs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;browser&quot;</span><span class="p">:</span> <span class="s2">&quot;ALL&quot;</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_add_script</span><span class="p">(</span><span class="n">driver</span><span class="p">:</span> <span class="n">WebDriver</span><span class="p">,</span> <span class="n">script_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">send</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="s2">&quot;Page.addScriptToEvaluateOnNewDocument&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">script_path</span><span class="p">})</span>
+
+    <span class="n">WebDriver</span><span class="o">.</span><span class="n">add_script</span> <span class="o">=</span> <span class="n">_add_script</span>
+
+    <span class="c1"># launch Chrome</span>
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Chrome</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">chrome_options</span><span class="p">,</span> <span class="n">desired_capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">driver</span>
+
+
+<span class="k">def</span> <span class="nf">_setup_firefox</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">_profile_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WebDriver</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">is_driver_installed</span><span class="p">(</span><span class="n">Drivers</span><span class="o">.</span><span class="n">FIREFOX</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">is_driver_installed</span><span class="p">(</span><span class="n">Drivers</span><span class="o">.</span><span class="n">GECKODRIVER</span><span class="p">)</span>
+
+    <span class="n">log_driver_version</span><span class="p">(</span><span class="s2">&quot;Firefox version&quot;</span><span class="p">,</span> <span class="n">Drivers</span><span class="o">.</span><span class="n">FIREFOX</span><span class="p">)</span>
+    <span class="n">log_driver_version</span><span class="p">(</span><span class="s2">&quot;Geckodriver version&quot;</span><span class="p">,</span> <span class="n">Drivers</span><span class="o">.</span><span class="n">GECKODRIVER</span><span class="p">)</span>
+
+    <span class="n">firefox_profile</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">FirefoxProfile</span><span class="p">()</span>
+    <span class="n">firefox_options</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">FirefoxOptions</span><span class="p">()</span>
+    <span class="n">browser</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">browser</span>
+
+    <span class="c1"># Disable security</span>
+    <span class="n">firefox_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-safe-mode&quot;</span><span class="p">)</span>
+    <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span><span class="s2">&quot;browser.link.open_newwindow&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span><span class="s2">&quot;browser.link.open_newwindow.restriction&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span><span class="s2">&quot;media.volume_scale&quot;</span><span class="p">,</span> <span class="s2">&quot;0.0&quot;</span><span class="p">)</span>
+
+    <span class="n">firefox_options</span><span class="o">.</span><span class="n">headless</span> <span class="o">=</span> <span class="n">browser</span><span class="o">.</span><span class="n">headless</span>
+
+    <span class="k">if</span> <span class="n">browser</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">browser</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span><span class="s2">&quot;network.proxy.http&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span><span class="s2">&quot;network.proxy.http_port&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">browser</span><span class="o">.</span><span class="n">enable_mhtml</span><span class="p">:</span>
+        <span class="c1"># TODO</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Firefox does not currently support MHTML&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="s2">&quot;pixelRatio&quot;</span> <span class="ow">in</span> <span class="n">browser</span> <span class="ow">and</span> <span class="n">browser</span><span class="o">.</span><span class="n">pixelRatio</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># TODO</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Firefox does not currently support custom pixelratio&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;useragent&quot;</span> <span class="ow">in</span> <span class="n">browser</span><span class="p">:</span>
+        <span class="n">firefox_profile</span><span class="o">.</span><span class="n">set_preference</span><span class="p">(</span><span class="s2">&quot;general.useragent.override&quot;</span><span class="p">,</span> <span class="n">browser</span><span class="o">.</span><span class="n">useragent</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_script</span><span class="p">(</span><span class="n">driver</span><span class="p">:</span> <span class="n">WebDriver</span><span class="p">,</span> <span class="n">script_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">send</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="s2">&quot;Page.addScriptToEvaluateOnNewDocument&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">script_path</span><span class="p">})</span>
+
+    <span class="n">WebDriver</span><span class="o">.</span><span class="n">add_script</span> <span class="o">=</span> <span class="n">_add_script</span>
+
+    <span class="c1"># TODO No support to output console logs for geckodriver</span>
+
+    <span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Firefox</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">firefox_options</span><span class="p">,</span> <span class="n">firefox_profile</span><span class="o">=</span><span class="n">firefox_profile</span><span class="p">)</span>
+
+    <span class="c1"># Screen size (we can&#39;t set viewport size as for Chrome so we adjust screen size)</span>
+    <span class="k">if</span> <span class="s2">&quot;width&quot;</span> <span class="ow">in</span> <span class="n">browser</span> <span class="ow">and</span> <span class="s2">&quot;height&quot;</span> <span class="ow">in</span> <span class="n">browser</span><span class="p">:</span>
+        <span class="n">driver</span><span class="o">.</span><span class="n">set_window_size</span><span class="p">(</span><span class="n">browser</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">browser</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">driver</span>
+
+
+<div class="viewcode-block" id="setup_driver"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.webdrivers.setup_driver">[docs]</a><span class="k">def</span> <span class="nf">setup_driver</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">profile_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">preload_callbacks</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WebDriver</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a WebDriver object with the given configuration.</span>
+<span class="sd">    :param: configuration Configuration dictionary</span>
+<span class="sd">    :return: A WebDriver instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">driver</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;chrome&quot;</span><span class="p">:</span>
+        <span class="n">driver</span> <span class="o">=</span> <span class="n">_setup_chrome</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">profile_path</span><span class="o">=</span><span class="n">profile_path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;firefox&quot;</span><span class="p">:</span>
+        <span class="n">driver</span> <span class="o">=</span> <span class="n">_setup_firefox</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">_profile_path</span><span class="o">=</span><span class="n">profile_path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uninmplemented browser type given to setup_driver: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">browser</span><span class="o">.</span><span class="n">browser</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">preload_callbacks</span> <span class="o">=</span> <span class="n">preload_callbacks</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cb</span> <span class="ow">in</span> <span class="n">preload_callbacks</span><span class="p">:</span>
+        <span class="n">driver</span><span class="o">.</span><span class="n">add_script</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cb</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">driver</span></div>
+
+
+<div class="viewcode-block" id="send"><a class="viewcode-back" href="../../references_other.html#webtraversallibrary.webdrivers.send">[docs]</a><span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">driver</span><span class="p">:</span> <span class="n">WebDriver</span><span class="p">,</span> <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send command to the webdriver, return resulting status code.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=protected-access</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">params</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">resource</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/session/</span><span class="si">{</span><span class="n">driver</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">/chromium/send_command_and_get_result&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">command_executor</span><span class="o">.</span><span class="n">_url</span> <span class="o">+</span> <span class="n">resource</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="n">cmd</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">})</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">command_executor</span><span class="o">.</span><span class="n">_request</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">WebDriverSendError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Command &#39;</span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&#39; returned status=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">value</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Web Traversal Library  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">webtraversallibrary.webdrivers</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020 Klarna Bank AB (publ).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.4.
+    </div>
+  </body>
+</html>
