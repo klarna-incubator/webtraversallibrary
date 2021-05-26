@@ -11,7 +11,7 @@ pillow==8.1.*
 pip==21.*
 prodict==0.8.*
 pycodestyle==2.7.*
-pylint==2.6.*
+pylint==2.8.*
 pytest==6.*
 pytest-cov
 pytest-mock
