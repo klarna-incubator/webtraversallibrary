@@ -4,6 +4,6 @@
     "description": "JS helper parts for WTL",
     "private": true,
     "dependencies": {
-        "jshint": "~2.13.0"
+        "jshint": "~2.13.1"
     }
 }
