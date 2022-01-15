@@ -82,8 +82,8 @@ class Workflow:
         :param classifiers: List of classifiers to run on every snapshots.
         :param patches: A dictionary of selectors to monkeypatch to other destinations.
         """
-        setup_logging(log_dir=output if config.debug.save else None)
         config = config or Config.default()
+        setup_logging(log_dir=output if config.debug.save else None)
         config.validate()
 
         self.loop_idx = -1
