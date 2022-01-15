@@ -81,7 +81,7 @@ def test_capture(mocker):
         "webtraversallibrary.javascript.JavascriptWrapper.find_viewport",
         return_value=wtl.Rectangle(wtl.Point(0, 0), wtl.Point(256, 256)),
     )
-    mocker.patch("webtraversallibrary.javascript.JavascriptWrapper.hide_position_fixed_elements", return_value=dict())
+    mocker.patch("webtraversallibrary.javascript.JavascriptWrapper.hide_position_fixed_elements", return_value={})
 
     result = Screenshot.capture("testing", driver, max_page_height=900)
     reference = Image.open(ORIGINAL_DIR / "page.png")

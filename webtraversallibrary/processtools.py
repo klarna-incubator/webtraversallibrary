@@ -62,7 +62,7 @@ class Alarm(Thread):
         Thread.__init__(self)
         self.timeout = timeout
         self._stop_gracefully = False
-        self.setDaemon(True)
+        self.daemon = True
 
     def stop(self):
         self._stop_gracefully = True

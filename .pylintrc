@@ -59,11 +59,10 @@ disable=
         raise-missing-from,
         fixme,
         invalid-name,
-        logging-format-interpolation,
         logging-fstring-interpolation,
-        logging-not-lazy,
-        bad-continuation,
-        unsubscriptable-object
+        duplicate-code,
+        consider-using-with,
+        no-member
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

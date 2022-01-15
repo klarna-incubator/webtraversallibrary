@@ -51,13 +51,12 @@ clean:
 
 .PHONY: reformat
 reformat:
-	isort webtraversallibrary examples tests
-	black webtraversallibrary examples tests
+	$(PYTHON) -m isort webtraversallibrary examples tests
+	$(PYTHON) -m black webtraversallibrary examples tests
 
 
 .PHONY: lint
 lint:
-	$(PYTHON) -m pycodestyle . --exclude '.env-*,setup.py,docs/*'
 	$(PYTHON) -m isort --check-only webtraversallibrary examples tests
 	$(PYTHON) -m black --check webtraversallibrary examples tests
 	$(PYTHON) -m pylint $(SOURCE_FOLDER)

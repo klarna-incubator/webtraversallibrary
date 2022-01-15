@@ -55,14 +55,13 @@ def safe_selenium_method(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         def to_logger(msg, js_level):
+            level = None
             if js_level == "INFO":
                 level = self.config.javascript.info
             elif js_level == "WARNING":
                 level = self.config.javascript.warning
             elif js_level == "SEVERE":
                 level = self.config.javascript.severe
-            else:
-                return
             if level == "debug":
                 logger.debug(msg)
             elif level == "info":
@@ -100,13 +99,15 @@ def safe_selenium_method(func):
             # Print browser logs
             for record in sorted(log_records, key=lambda x: int(x["timestamp"])):
                 record["timestamp"] = datetime.fromtimestamp(record["timestamp"] / 1000).strftime("%H:%M")
-                log_line = "[{level}] {message}".format(**record)
+                log_line = f"[{record['level']}] {record['message']}"
                 log_level = record["level"]
                 to_logger(log_line, log_level)
 
             # Then alert text, if there was any
             if alert_text is not None:
                 logger.error(f"  JS Alert text:  {alert_text}")
+
+        return None
 
     return wrapper
 
