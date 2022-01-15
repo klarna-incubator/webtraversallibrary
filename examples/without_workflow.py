@@ -65,7 +65,7 @@ for word in article.lower().split():
         wordcount[word] += 1
 
 n_print = int(input("How many most common words to print: "))
-print("\nOK. The {} most common words are as follows\n".format(n_print))
+print(f"\nOK. The {n_print} most common words are as follows\n")
 word_counter = collections.Counter(wordcount)
 for word, count in word_counter.most_common(n_print):
     print(word, ": ", count)

@@ -248,7 +248,7 @@ class PageSnapshot:
         Creates a new screenshot from a copy of a previous one.
         Saves it to this snapshot and returns the new screenshot object.
         """
-        assert of in self.screenshots.keys(), "Creating screenshot from nonexistant original!"
+        assert of in self.screenshots, "Creating screenshot from nonexistant original!"
         self.screenshots[name] = self.screenshots[of].copy(name)
         return self.screenshots[name]
 

@@ -65,9 +65,9 @@ def test_simple():
     page = scraper.scrape_current_page()
     assert str(page.page_source) == "<!DOCTYPE html>\n<html><head></head><body><div>Hello</div></body></html>"
     assert page.page_metadata
-    assert page.elements == []
-    assert page.elements_metadata == []
-    assert page.screenshots == {}
+    assert not page.elements
+    assert not page.elements_metadata
+    assert not page.screenshots
     assert page.mhtml_source is None
 
     mhtml_page = scraper.get_page_as_mhtml()

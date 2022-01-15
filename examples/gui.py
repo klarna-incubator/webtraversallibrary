@@ -166,7 +166,7 @@ def gui_thread():
         nonlocal listbox
 
         with data_lock:
-            data = str(listbox.get(listbox.curselection())).split(" (")[0]
+            data = str(listbox.get(listbox.curselection())).split(" (", maxsplit=1)[0]
             state = 0
             current_action = wtl.actions.Click(wtl.Selector(f'[wtl-uid="{data}"]'))
 
@@ -179,7 +179,7 @@ def gui_thread():
         """
         Checks state and updates the GUI with screenshot and list of actions.
         """
-        global state, current_view, show_actives, current_filename
+        global state, current_filename
         nonlocal img, listbox
 
         with data_lock:
