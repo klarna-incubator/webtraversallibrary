@@ -24,6 +24,6 @@ soupsieve==2.3.1
 sphinx==3.*
 twine==3.4.*
 urllib3==1.26.*
-wheel==0.36.*
+wheel==0.37.*
 xenon==0.8.*
 xvfbwrapper==0.2.*
