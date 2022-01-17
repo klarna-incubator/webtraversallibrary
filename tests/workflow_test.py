@@ -15,11 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import os
+
 import pytest
 
 import webtraversallibrary as wtl
 
-browsers = ["chrome", "firefox"]
+browsers = ["chrome"] + (["firefox"] if os.name != "nt" else [])
 
 
 @pytest.mark.parametrize("browser", browsers)
