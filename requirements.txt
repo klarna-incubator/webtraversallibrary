@@ -7,8 +7,7 @@ html5lib==1.1.*
 isort==5.*
 markdown==3.3.6
 mypy==0.931
-pillow==8.1.*
-pip==21.*
+pillow==9.*
 prodict==0.8.*
 pylint==2.12.*
 pytest==6.*
@@ -21,7 +20,7 @@ requests==2.27.*
 selenium==3.141.*
 setuptools==60.*
 soupsieve==2.3.1
-sphinx==3.*
+sphinx==4.*
 twine==3.7.*
 urllib3==1.26.*
 wheel==0.37.*
