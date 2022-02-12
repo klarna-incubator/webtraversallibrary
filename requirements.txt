@@ -10,7 +10,7 @@ mypy==0.931
 pillow==9.*
 prodict==0.8.*
 pylint==2.12.*
-pytest==6.*
+pytest==7.*
 pytest-cov
 pytest-mock
 PyYAML==5.4.*
