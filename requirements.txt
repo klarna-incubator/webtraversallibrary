@@ -24,5 +24,5 @@ sphinx==4.*
 twine==3.8.*
 urllib3==1.26.*
 wheel==0.37.*
-xenon==0.8.*
+xenon==0.9.*
 xvfbwrapper==0.2.*
