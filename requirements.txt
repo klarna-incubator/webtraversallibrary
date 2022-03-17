@@ -13,7 +13,7 @@ pylint==2.12.*
 pytest==7.*
 pytest-cov
 pytest-mock
-PyYAML==5.4.*
+PyYAML==6.0
 radon==5.*
 recommonmark==0.7.*
 requests==2.27.*
