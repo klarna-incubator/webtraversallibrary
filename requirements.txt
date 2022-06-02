@@ -9,7 +9,7 @@ markdown==3.3.6
 mypy==0.941
 pillow==9.*
 prodict==0.8.*
-pylint==2.12.*
+pylint==2.14.*
 pytest==7.*
 pytest-cov
 pytest-mock
