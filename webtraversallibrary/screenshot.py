@@ -90,7 +90,7 @@ class Screenshot:
                         0,
                         0,
                         viewport.width,
-                        page_height - shot_idx * viewport.height,
+                        page_height - (shot_idx - 1) * viewport.height,
                     )
                     viewport_screenshot = viewport_screenshot.crop(new_viewport_area)
 
