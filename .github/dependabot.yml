@@ -6,6 +6,7 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
+      - "naslundx"
       - "vonNiklasson"
       - "redfungus"
 
@@ -14,5 +15,6 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
+      - "naslundx"
       - "vonNiklasson"
       - "redfungus"
