@@ -19,7 +19,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/klarna-incubator/webtraversallibrary",
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     packages=["webtraversallibrary", "webtraversallibrary.driver_check"],
     include_package_data=True,
     install_requires=[
@@ -34,7 +34,6 @@ setuptools.setup(
         "prodict>=0.8"
     ],
     classifiers=[
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",

@@ -67,7 +67,7 @@ lint:
 
 .PHONY: test tests
 test tests:
-	$(PYTHON) -m pytest tests/ -m 'not system'
+	$(PYTHON) -m pytest tests/ -m 'not system' -s
 
 
 .PHONY: test_system
